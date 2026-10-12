@@ -78,10 +78,12 @@ h3 .zh,h4 .zh,.profile-role .zh,.experience-role .zh,.section-nav .zh,.mobile-in
 .kind{display:block;font-size:10px;line-height:1.7;margin-top:12px;color:var(--muted);max-width:83px}
 .experience-content{min-width:0}
 .experience-header{display:flex;align-items:flex-start;gap:14px}
+.experience-logos{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
 .experience-logo{width:48px;height:48px;flex:0 0 48px;margin-top:2px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:8px;background:#fff;box-shadow:none;overflow:hidden}
 .experience-logo img{display:block;width:36px;height:36px;object-fit:contain}
 .experience-logo--alibaba img{width:32px;height:32px;border-radius:5px}
 .experience-logo--hust img{width:40px;height:40px}
+.experience-logo--psl img{width:42px;height:36px}
 .experience-heading{min-width:0;flex:1}
 .experience-header h3{font-size:24px;line-height:1.4;font-weight:500;letter-spacing:-.02em;font-family:var(--font-display)}
 .experience-role{font-size:15px;line-height:1.7;margin-top:5px;color:var(--ink);font-weight:500}

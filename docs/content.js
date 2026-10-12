@@ -67,7 +67,7 @@ const portfolio = {
   glance: [
     {time:"2024 — 2026",title:T("阿里巴巴", "Alibaba"),desc:T("AI 算法 · 营销与增长", "AI algorithms · Marketing & growth"),target:"alibaba"},
     {time:"2024",title:T("深圳科创学院", "Shenzhen InnoX"),desc:T("产品定义 · 智能硬件", "Product definition · Smart hardware"),target:"innox"},
-    {time:"2021 — 2024",title:T("华中科技大学", "HUST"),desc:T("时序预测 · 新能源研究", "Forecasting · Renewable power"),target:"hust"},
+    {time:"2021 — 2024",title:T("华中科技大学 & 巴黎文理大学", "HUST & PSL University"),desc:T("联合培养 · 时序预测与新能源研究", "Joint training · Forecasting & renewable power"),target:"hust"},
   ],
   experience: [
     {
@@ -222,9 +222,9 @@ const portfolio = {
     },
     {
       id:"hust",index:"03",kind:"research",
-      company:T("华中科技大学", "Huazhong University of Science and Technology"),
-      shortCompany:T("华中科技大学", "HUST"),
-      entity:T("硕士阶段科研项目 · 新能源电力系统", "Master’s research projects · Renewable power systems"),
+      company:T("华中科技大学 & 巴黎文理大学", "Huazhong University of Science and Technology & PSL University"),
+      shortCompany:T("华中科技大学 & 巴黎文理大学", "HUST & PSL University"),
+      entity:T("联合培养 · 硕士阶段科研项目 · 新能源电力系统", "Joint master’s training · Research projects · Renewable power systems"),
       role:T("主要研究成员", "Core Research Contributor"),date:"2021.01 — 2024.01",
       overview:T("围绕新能源电力系统开展时序预测研究，探索个性化联邦学习、动态图与区间预测；参与方法设计、实验验证及英文论文写作。", "Researched time-series forecasting for renewable power systems through personalized federated learning, dynamic graphs and interval prediction, contributing to method design, experiments and academic writing."),
       focus:["Federated Learning", "Dynamic Graphs", "Forecasting"],

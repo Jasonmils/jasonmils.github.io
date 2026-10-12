@@ -16,3 +16,9 @@ Huazhong University of Science and Technology emblem, public preview
 https://www.urongda.com/images/normal/medium/huazhong-university-of-science-and-technology-logo-1024px.png
 https://www.urongda.com/logos/4142010487
 Official identity reference: https://vi.hust.edu.cn/jcbf/bzgf/xhgf.htm
+
+psl.svg
+PSL University official website header logo
+https://psl.eu/themes/custom/oooooo/assets/images/Header-150x61.svg
+https://psl.eu/
+Downloaded on 2026-10-12. Original colors and proportions preserved.
