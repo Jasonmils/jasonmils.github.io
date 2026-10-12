@@ -61,6 +61,39 @@
       '<li>' + diagramIcon(step[0]) + '<strong>' + bi(step[1]) + '</strong><span class="step-caption">' + bi(step[2]) + '</span></li>'
     ).join('') + '</ol>' + (loop ? '<div class="diagram-return"><span aria-hidden="true">↶</span>' + bi(loop) + '</div>' : '') + '</div>';
   const visualNote = value => '<p class="visual-note">' + bi(value) + '</p>';
+  const renderPaperFigure = figure => '<figure class="paper-figure"><figcaption><span class="paper-figure-number">FIGURE ' +
+    figure.number + '</span><strong>' + bi(figure.title) + '</strong></figcaption><a class="paper-figure-image" href="' +
+    escapeHTML(figure.src) + '" target="_blank" rel="noopener noreferrer" aria-label="Open original figure ' + figure.number + '">' +
+    '<img src="' + escapeHTML(figure.src) + '" alt="DEFormer paper Figure ' + figure.number + ': ' + escapeHTML(figure.title.en) +
+    '" width="' + figure.width + '" height="' + figure.height + '" loading="lazy" decoding="async"></a><p>' + bi(figure.note) +
+    '</p><a class="paper-zoom" href="' + escapeHTML(figure.src) + '" target="_blank" rel="noopener noreferrer">' +
+    bi(T("查看原图", "View original figure"),true) + diagonal + '</a></figure>';
+  const renderPaperTable = (rows, title) => '<div class="paper-table-scroll" tabindex="0" role="region" aria-label="' +
+    escapeHTML(title.en) + '"><table class="paper-result-table"><caption>' + bi(title) + '</caption><thead><tr><th scope="col">' +
+    bi(T("模型 / 配置", "Model / setup"),true) + '</th><th scope="col">wMAPE ↓</th><th scope="col">MAPE ↓</th>' +
+    '<th scope="col">SC ↑</th><th scope="col">WSC ↑</th></tr></thead><tbody>' + rows.map((row,i) =>
+      '<tr' + (!i ? ' class="paper-best-row"' : '') + '><th scope="row">' + escapeHTML(row[0]) + '</th>' +
+      [row[2],row[1],row[3],row[4]].map(value => '<td>' + value.toFixed(3) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+  const renderPaperResults = study => '<div class="paper-results"><div class="paper-result-summary">' + study.datasets.map(dataset => {
+    const method = dataset.comparison[0], baseline = dataset.comparison[1];
+    return '<div><span>' + dataset.name + ' · ' + dataset.items.toLocaleString("en") + '</span><strong>−' +
+      ((baseline[2]-method[2])/baseline[2]*100).toFixed(1) + '%</strong><p>' + bi(T("wMAPE 相对下降", "Relative wMAPE reduction")) +
+      '</p><div class="paper-coverage-gain">WSC +' + ((method[4]-baseline[4])*100).toFixed(1) + ' ' +
+      bi(T("个百分点", "pp"),true) + '</div></div>';
+  }).join('') + '</div><p class="table-note">' + bi(T("相对 PatchTST · 论文离线实验；WSC 增益以百分点表示", "Versus PatchTST · Offline paper experiments; WSC gains are percentage points")) +
+    '</p><div class="paper-metric-key"><p>' + bi(T("MAPE / wMAPE：误差越低越好；SC：达标样本占比；WSC：销量加权的达标样本占比", "MAPE / wMAPE: lower error is better. SC: accepted-sample coverage. WSC: sales-weighted accepted-sample coverage")) +
+    '</p><p>' + bi(T("论文以样本 wMAPE ≤ 0.4 判定达标。下表的 SC / WSC 保留论文的 0–1 数值", "The paper uses sample wMAPE ≤ 0.4 as its acceptance criterion. SC / WSC below retain the paper’s 0–1 values")) +
+    '</p></div><p class="paper-scroll-hint">' + bi(T("表格可横向滑动，查看全部指标", "Scroll tables horizontally to see all metrics")) + '</p>' +
+    study.datasets.map(dataset => '<section class="paper-dataset"><h5>' + dataset.name + ' · ' +
+      bi(T("约 " + dataset.items.toLocaleString("en") + " 件商品", "~" + dataset.items.toLocaleString("en") + " products"),true) + '</h5>' +
+      renderPaperTable(dataset.comparison,T("Table 2 · 完整模型对照", "Table 2 · Full model comparison")) +
+      '<details class="paper-ablation"><summary>' + bi(T("Table 1 · 查看模块消融", "Table 1 · View module ablations"),true) + toggle() + '</summary><div class="paper-disclosure-body">' +
+      renderPaperTable(dataset.ablation,T("Table 1 · 模块消融", "Table 1 · Module ablations")) + '<p class="table-note">' +
+      bi(T("De-corr：去相关 Tokenization；De-auto：去自回归目标与多任务训练；移除两者即 PatchTST", "De-corr: decorrelative tokenization. De-auto: de-autoregressive targets and multi-task training. Removing both gives PatchTST")) +
+      '</p></div></details></section>').join('') + '<details class="paper-evidence"><summary>' +
+    bi(T("查看表征机制实验 · Figures 1、5–7", "Representation experiments · Figures 1, 5–7"),true) + toggle() +
+    '</summary><div class="paper-disclosure-body">' + ["diagnosis","rank","similarity","acf"].map(key => renderPaperFigure(study.figures[key])).join('') +
+    '</div></details></div>';
   const paperResult = (venue, year, authorship) => '<div class="paper-result"><span class="paper-result-year">' + year +
     '</span><div><strong>' + escapeHTML(venue) + '</strong><span>' + bi(authorship) + '</span></div></div>';
   const visualStories = {
@@ -104,21 +137,16 @@
       takeaway: T("标签任务的提升，最终要在真实预测任务中成立", "A better label task must translate into better forecasting")
     },
     "ali-deformer": {
-      tab: T("机制研究", "DEFormer"), title: T("诊断秩坍缩，验证去相关编码", "Diagnose collapse, validate decorrelation"),
-      challenge: T("强自相关 → 注意力退化与 token 表征趋同", "Strong autocorrelation can degrade attention and make tokens converge"),
+      tab: T("机制研究", "DEFormer"), title: T("两个模块，连接输入与训练目标", "Two modules connect inputs and training targets"),
+      challenge: T("De-correlative Tokenization + De-autoregressive Multi-task Training", "De-correlative Tokenization + De-autoregressive Multi-task Training"),
       render: () => diagramFlow([
-        ["graph",T("表征诊断", "Diagnose"),T("稳定秩 / 相似度", "Rank / similarity")],
-        ["scope",T("去相关编码", "Decorrelate"),T("原序列 + 差分", "Raw + differences")],
-        ["execute",T("多任务验证", "Validate"),T("消融 / 业务指标", "Ablations / metrics")]
-      ]) + '<figure class="comparison-chart"><figcaption>' + bi(T("真实零售数据 · wMAPE 越低越好", "Retail datasets · lower wMAPE is better")) +
-        '</figcaption><div class="chart-legend"><span><i class="legend-baseline"></i>PatchTST</span><span><i class="legend-method"></i>DEFormer</span></div>' +
-        [[4500,.292,.255,"12.7","3.5"],[9000,.266,.251,"5.6","1.2"]].map(([size,before,after,reduction,coverage]) =>
-          '<div class="comparison-dataset"><div class="dataset-heading"><strong>' + bi(T("约 " + size.toLocaleString("en") + " 件商品", "~" + size.toLocaleString("en") + " products")) +
-          '</strong><span>↓ ' + reduction + '%</span></div><div class="comparison-bars">' + [["baseline",before],["method",after]].map(([kind,value]) =>
-            '<div class="comparison-row"><div class="comparison-track"><span class="bar-' + kind + '" style="width:' + (value/.32*100) + '%"></span></div><b>' + value.toFixed(3) + '</b></div>'
-          ).join('') + '</div><div class="coverage-note">' + bi(T("销量加权覆盖率 +" + coverage + "%", "Sales-weighted coverage +" + coverage + "%")) + '</div></div>'
-        ).join('') + '<div class="comparison-axis" aria-hidden="true"><span>0</span><span>0.16</span><span>0.32</span></div></figure>' +
-        visualNote(T("两组柱形共用 0–0.32 刻度。DEFormer 论文已于 2026 年投稿", "Both datasets use the same 0–0.32 scale. DEFormer was submitted in 2026")),
+        ["scope",T("去相关输入", "Decorrelative inputs"),T("原序列 + 一阶差分", "Raw values + first differences")],
+        ["graph",T("Patch-wise Transformer", "Patch-wise Transformer"),T("表征与注意力", "Representations & attention")],
+        ["decision",T("去自回归训练", "De-autoregressive training"),T("Log-return · MMoE · 双任务", "Log-return · MMoE · Dual tasks")]
+      ]) + '<div class="paper-methods">' + renderPaperFigure(deformerStudy.figures.tokenization) +
+        '<div class="paper-equation" aria-label="Raw and difference tokenization">Z = φ(X)W + φ(ΔX)W<sub>d</sub></div>' +
+        renderPaperFigure(deformerStudy.figures.multitask) + '<div class="paper-equation">Y<sub>ln</sub> = ln(1 + Y / X<sub>L</sub>)' +
+        '<span>L = L<sub>reg</sub> + βL<sub>cla</sub></span></div></div>',
       takeaway: T("从机制假设走到消融实验，再回到业务评估", "Link the mechanism to ablations and business-oriented evaluation")
     },
     "innox-definition": {
@@ -293,7 +321,7 @@
       '<div class="decision"><span class="number">0' + (i+1) + '</span><div><h4>' + bi(d.title) + '</h4><p>' +
       bi(d.body) + '</p></div></div>').join('') + '</div>' +
     '<h4 class="small-label">' + bi(ui.result) +
-    '</h4>' + (project.table && !project.visualStory ? renderTable(project.table) : '') +
+    '</h4>' + (project.paperStudy ? renderPaperResults(project.paperStudy) : project.table && !project.visualStory ? renderTable(project.table) : '') +
     (project.metrics ? renderMetrics(project.metrics) : '') + '<p class="project-outcome">' + bi(project.outcome) + '</p>' +
     '<div class="learning-box"><h4 class="small-label">' + bi(ui.learnings) +
     '</h4><p>' + bi(project.learning) +

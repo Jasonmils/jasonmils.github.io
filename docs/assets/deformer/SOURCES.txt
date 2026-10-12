@@ -1,0 +1,10 @@
+DEFormer project figures and experiment tables
+Source: AAAI_Paper.pdf supplied by the website owner on 2026-10-12
+Source SHA-256: 1965db2a7ac2d39f868b3ed3ef242d6aac4fb73c2a21d7103db28853a2970370
+
+Figures 1, 2, 3, 5, 6 and 7 are the original embedded raster images,
+decoded from PDF pages 4, 5, 6 and 7 without altering their artwork.
+The website captions are bilingual summaries with original figure numbers.
+Tables 1 and 2 on PDF page 7 are transcribed as accessible HTML tables.
+Derived error reductions are relative; WSC changes are percentage points.
+The entire anonymous manuscript is not bundled with the website.

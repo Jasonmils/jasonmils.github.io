@@ -1,7 +1,56 @@
 /* Bilingual content. Measured claims are grounded in the supplied v4 CVs.
+   DEFormer details, figures and experimental tables use the supplied AAAI paper.
    The Alibaba two-stage narrative incorporates Jason's October 12 clarification.
    The 14-day horizon is an example; no new measured results are inferred. */
 const T = (zh, en) => ({ zh, en });
+// Figures and exact Table 1 / Table 2 values from the supplied AAAI manuscript.
+const deformerStudy = {
+  figures: {
+    diagnosis:{number:1,src:"assets/deformer/figure-1-rank-diagnosis.png",width:848,height:714,
+      title:T("浅层诊断：初始化与高 / 低 ACF", "Shallow-layer diagnosis: initialization and high / low ACF"),
+      note:T("论文图 1 · 对照 point-wise Transformer 与 PatchTST 的三层表征；高、低 ACF 按预测窗内平均 ACF 的 0.5 阈值划分", "Paper Figure 1 · Three-layer diagnostics for point-wise Transformer and PatchTST; high / low ACF is split at a mean ACF of 0.5 over the forecast horizon")},
+    tokenization:{number:2,src:"assets/deformer/figure-2-tokenization.png",width:634,height:243,
+      title:T("De-correlative Tokenization", "De-correlative Tokenization"),
+      note:T("论文图 2 · 原始输入与一阶差分分别缩放、进行带符号的对数变换，再经两组线性投影相加", "Paper Figure 2 · Raw inputs and first differences are scaled, transformed with signed logarithms, then combined through separate linear projections")},
+    multitask:{number:3,src:"assets/deformer/figure-3-multitask.png",width:522,height:350,
+      title:T("De-autoregressive Multi-task Training", "De-autoregressive Multi-task Training"),
+      note:T("论文图 3 · Transformer 后接 MMoE；回归与分类分支分别使用 MSE 和 Focal Loss，共同参与反向传播", "Paper Figure 3 · MMoE follows the Transformer; regression and classification use MSE and Focal Loss and jointly contribute to back-propagation")},
+    rank:{number:5,src:"assets/deformer/figure-5-stable-rank.png",width:855,height:419,
+      title:T("注意力稳定秩：分层、分 ACF 比较", "Attention stable rank by layer and ACF condition"),
+      note:T("论文图 5 · DEFormer 与 PatchTST 在高 / 低 ACF 条件下的稳定秩分布；更高的稳定秩反映更丰富的注意力模式", "Paper Figure 5 · Stable-rank distributions for DEFormer and PatchTST under high / low ACF; higher stable rank reflects more diverse attention patterns")},
+    similarity:{number:6,src:"assets/deformer/figure-6-token-similarity.png",width:862,height:419,
+      title:T("Token 相似度：检查表征同质化", "Token similarity: checking representation homogenization"),
+      note:T("论文图 6 · 比较各层 token 余弦相似度分布；更低的相似度表示 token 表征更易区分", "Paper Figure 6 · Layer-wise token cosine-similarity distributions; lower similarity indicates more distinguishable representations")},
+    acf:{number:7,src:"assets/deformer/figure-7-acf-distance.png",width:778,height:378,
+      title:T("高 / 低 ACF 的分布差异", "Distribution differences between high / low ACF"),
+      note:T("论文图 7 · 用 Kolmogorov–Smirnov 距离比较两种 ACF 条件下的稳定秩与 token 相似度；DEFormer 的分布差异更小", "Paper Figure 7 · Kolmogorov–Smirnov distances compare rank and token-similarity distributions across ACF conditions; DEFormer shows smaller differences")},
+  },
+  // Row order: model, MAPE, wMAPE, sample coverage, weighted sample coverage.
+  datasets:[
+    {id:"small",name:"Small",items:4500,
+      comparison:[
+        ["DEFormer",.375,.255,.813,.808],["PatchTST",.401,.292,.794,.773],
+        ["Transformer",.433,.308,.768,.742],["iTransformer",.433,.307,.764,.743],
+        ["HDMixer",.452,.321,.766,.735],["DLinear",.458,.319,.742,.724],["Naive",.896,.542,.480,.455]
+      ],
+      ablation:[
+        ["DEFormer",.375,.255,.813,.808],["w/o De-corr",.395,.275,.798,.783],
+        ["w/o De-auto",.397,.284,.800,.783],["w/o Both (PatchTST)",.401,.292,.794,.773],
+        ["Naive",.896,.542,.480,.455]
+      ]},
+    {id:"large",name:"Large",items:9000,
+      comparison:[
+        ["DEFormer",.383,.251,.811,.816],["PatchTST",.392,.266,.806,.804],
+        ["Transformer",.458,.295,.759,.756],["iTransformer",.432,.295,.772,.760],
+        ["HDMixer",.440,.325,.739,.720],["DLinear",.447,.322,.741,.714],["Naive",.897,.541,.483,.455]
+      ],
+      ablation:[
+        ["DEFormer",.383,.251,.811,.816],["w/o De-corr",.391,.260,.807,.808],
+        ["w/o De-auto",.397,.264,.805,.807],["w/o Both (PatchTST)",.392,.266,.806,.804],
+        ["Naive",.897,.541,.483,.455]
+      ]},
+  ],
+};
 const portfolio = {
   name: T("丁逸洲", "Yizhou Ding"),
   alias: "Jason",
@@ -148,7 +197,7 @@ const portfolio = {
             T("主导问题诊断与成因分析，结合注意力矩阵稳定秩和 token 余弦相似度，分析不同层深与输入自相关强度下的退化，发现浅层也可能发生秩坍缩", "I led diagnosis and root-cause analysis using attention stable rank and token cosine similarity across depths and autocorrelation levels, finding that collapse can emerge even in shallow layers"),
             T("提出 DEFormer：用原始序列与一阶差分构建去相关编码，结合对数比值目标变换及回归、分类多任务训练，并通过逐模块消融和跨层分析验证表征变化", "I proposed DEFormer: a decorrelation encoder combining raw histories and first-order differences, with a log-ratio target transformation and joint regression/classification training. Component ablations and cross-layer analysis checked how the representations changed"),
           ],
-          result:T("在约 4,500 与 9,000 件商品的两个真实零售数据集上，相较 PatchTST，wMAPE 分别从 0.292 降至 0.255、从 0.266 降至 0.251，相对下降 12.7% 与 5.6%；销量加权覆盖率提升 3.5% 与 1.2%。研究形成 DEFormer 论文，已于 2026 年投稿", "On two real-world retail datasets with approximately 4,500 and 9,000 products, wMAPE fell from 0.292 to 0.255 and from 0.266 to 0.251 versus PatchTST: relative reductions of 12.7% and 5.6%. Sales-volume-weighted coverage increased by 3.5% and 1.2%. The work resulted in the DEFormer manuscript, submitted in 2026"),
+          result:T("在约 4,500 与 9,000 件商品的两个真实零售数据集上，相较 PatchTST，wMAPE 分别从 0.292 降至 0.255、从 0.266 降至 0.251，相对下降 12.7% 与 5.6%；销量加权覆盖率分别从 77.3% 升至 80.8%、从 80.4% 升至 81.6%，提升 3.5 与 1.2 个百分点。研究形成 DEFormer 论文，已于 2026 年投稿", "On two real-world retail datasets with approximately 4,500 and 9,000 products, wMAPE fell from 0.292 to 0.255 and from 0.266 to 0.251 versus PatchTST: relative reductions of 12.7% and 5.6%. Weighted sample coverage rose from 77.3% to 80.8% and from 80.4% to 81.6%, gains of 3.5 and 1.2 percentage points. The work resulted in the DEFormer manuscript, submitted in 2026"),
           takeaway:T("机制研究需要形成可检验的链条：输入性质 → 注意力与表征诊断 → 方法设计 → 消融验证 → 预测与业务指标", "A mechanism claim needs a testable chain: input properties, attention and representation diagnostics, method design, ablations, and forecasting and business-oriented metrics"),
           stack:["Transformer","Stable Rank",T("一阶差分","First-order Differences"),T("多任务学习","Multitask Learning"),"PatchTST"],
           project:"project-deformer",
@@ -433,36 +482,33 @@ const portfolio = {
     {
       id:"project-deformer",index:"R1",category:T("机制研究 · 已投稿", "Mechanism research · Submitted"),
       title:T("DEFormer：缓解时序 Transformer 秩坍缩", "DEFormer: mitigating Transformer rank collapse"),
-      description:T("用表征诊断、去相关编码与消融实验，解释预测改善", "Representation diagnostics, decorrelation and ablations that explain forecasting improvements"),
+      description:T("从浅层秩坍缩诊断，到去相关 Tokenization 与去自回归多任务训练", "From shallow-layer rank diagnostics to decorrelative tokenization and de-autoregressive multi-task training"),
       role:T("研究主导 · 阿里营销算法团队 · 2025.07 — 2026.07", "Research lead · Alibaba Marketing Algorithms Team · 2025.07 — 2026.07"),
-      context:T("短期增长的业务目标，是在未来营销周期（如 14 天）中预估不同价格下的销量，支持 GMV 最大化。为改善以 PatchTST 为基线的预测泛化，我从输入自相关、注意力退化与 token 同质化入手，提出 DEFormer，并在真实零售数据上验证", "The short-term business objective was to forecast sales at different prices over a future marketing cycle, such as 14 days, to support GMV maximization. To improve forecasting generalization from a PatchTST baseline, I studied input autocorrelation, attention degradation and token homogenization, proposed DEFormer, and evaluated it on real retail data"),
-      challenge:T("需要证明问题存在于表征层面，并判断与输入结构和网络深度的关系；方法改动还必须通过消融与跨层分析验证，不能只凭最终误差下降解释机制", "The work needed to establish a representation-level problem and examine its relationship with input structure and depth. Method changes also needed ablations and cross-layer checks to support a mechanism explanation"),
+      context:T("面向电商促销定价的销量预测，论文使用 Small（约 4,500 件商品）与 Large（约 9,000 件商品）两个真实零售数据集。每个数据集覆盖三年、按天记录，预测窗固定为未来 14 天；输入包含历史销量、价格、点击 UV、预先确定的未来价格，以及序列化的商品、类目与品牌标识", "For sales forecasting that supports retail promotional pricing, the paper evaluates Small (~4,500 products) and Large (~9,000 products). Each contains three years of daily data with a fixed 14-day forecast horizon. Features include historical sales, prices, click UV, predetermined future prices, and serialized product, group and brand identifiers"),
+      challenge:T("销量序列的强自相关与严格自回归任务形态，可能使注意力模式与 token 表征趋同。论文对 point-wise Transformer 与 PatchTST 的初始化和训练后状态进行分层诊断，说明浅层同样值得检查；改进还需同时接受预测误差、覆盖率与模块消融的验证", "Strong input autocorrelation and a strictly autoregressive task can encourage similar attention patterns and token representations. Layer-wise analysis compares point-wise Transformer and PatchTST at initialization and after training, showing why shallow layers also need diagnosis. Changes are then evaluated through forecast error, coverage and module ablations"),
       flow:[T("自相关与层深分析","Autocorrelation & depth"),T("稳定秩 / token 相似度","Rank / token similarity"),T("去相关与多任务","Decorrelation & multitask"),T("消融与零售评估","Ablations & retail evaluation")],
       decisions:[
         {
           title:T("使用可观测表征指标进行诊断", "Diagnose with observable representation measures"),
-          body:T("使用注意力矩阵稳定秩和 token 余弦相似度，系统分析不同层深和自相关条件。结果显示浅层也会出现秩坍缩，较强输入自相关与更显著的注意力退化、表征趋同关联", "I used attention stable rank and token cosine similarity across depths and autocorrelation conditions. Collapse emerged even in shallow layers, with stronger input autocorrelation associated with greater attention degradation and representation similarity"),
+          body:T("使用注意力矩阵的稳定秩 ρsr 与 token 平均余弦相似度 ρca，比较三层网络在初始化、训练后高 ACF 和低 ACF 条件下的表现。高 / 低 ACF 以预测窗内平均 ACF 的 0.5 阈值划分；论文观察到训练可以缓解初始化坍缩，但高 ACF 输入仍更容易出现低稳定秩和高 token 相似度", "I used attention stable rank ρsr and mean token cosine similarity ρca across three layers, comparing initialization with trained high- and low-ACF conditions. The split uses a mean ACF threshold of 0.5 over the forecast horizon. Training can escape initialization collapse, while high-ACF inputs still tend toward lower rank and more similar tokens"),
         },
         {
-          title:T("让输入、目标与训练任务共同缓解依赖", "Address input, target and training-task design"),
-          body:T("去相关编码融合原始时序与一阶差分，同时引入对数比值目标变换，以及回归和分类多任务训练，缓解对自回归模式的过度依赖", "The decorrelation encoder combined raw histories with first-order differences, alongside a log-ratio target transformation and joint regression/classification training to reduce excessive reliance on autoregressive patterns"),
+          title:T("输入端：原序列与差分的双路 Tokenization", "Input: dual-path tokenization of raw values and differences"),
+          body:T("保留原始序列 X，同时构造一阶差分 ΔX；对两路输入进行缩放与带符号的对数变换 φ，再通过独立的线性投影 W 和 Wd 相加，得到 Z = φ(X)W + φ(ΔX)Wd。原序列保留水平信息，差分支路减轻自相关依赖", "Keep the raw sequence X and compute first differences ΔX. Apply scaling and the signed-log transform φ to both paths, then combine independent projections W and Wd: Z = φ(X)W + φ(ΔX)Wd. Raw values retain level information while the differenced path reduces autocorrelation dependence"),
         },
         {
-          title:T("分别检查机制与业务指标", "Check the mechanism and forecasting outcomes"),
-          body:T("通过逐模块消融和跨层表征分析，验证注意力稳定秩提升及 token 相似度降低；在两个真实零售数据集上，与最强对照基线 PatchTST 比较 wMAPE 和销量加权覆盖率", "Component ablations and cross-layer analysis checked increases in attention stable rank and reductions in token similarity. Two retail datasets were used to compare wMAPE and sales-volume-weighted coverage against the strongest baseline, PatchTST"),
+          title:T("目标与训练端：log-return、MMoE 与双任务监督", "Targets and training: log-return, MMoE and dual-task supervision"),
+          body:T("以最后一个历史值 XL 为参照，把回归目标变换为 ln(1 + Y / XL)。Transformer 后接 MMoE，分别输出连续预测和辅助分类结果；回归分支使用 MSE，分类分支使用 Focal Loss，以 L = Lreg + βLcla 共同训练", "Transform the regression target to ln(1 + Y / XL), relative to the final historical value XL. MMoE follows the Transformer and feeds continuous regression and auxiliary classification heads. MSE and Focal Loss are combined as L = Lreg + βLcla"),
+        },
+        {
+          title:T("验证：完整基线对照、逐模块消融与跨层分布", "Validation: full baselines, module ablations and layer-wise distributions"),
+          body:T("Table 2 比较 PatchTST、Transformer、iTransformer、HDMixer、DLinear 与 Naive；Table 1 分别移除 De-corr、De-auto 和两者。除了 MAPE、wMAPE、SC、WSC，还用图 5–7 检查稳定秩、token 相似度及高 / 低 ACF 之间的 KS 距离，使预测改进与表征变化形成对应证据", "Table 2 compares PatchTST, Transformer, iTransformer, HDMixer, DLinear and Naive. Table 1 removes De-corr, De-auto and both. Alongside MAPE, wMAPE, SC and WSC, Figures 5–7 examine stable rank, token similarity and KS distances between ACF conditions, connecting prediction gains with representation evidence"),
         },
       ],
-      table:{
-        headers:[T("零售数据集规模","Retail dataset size"),T("wMAPE：基线 → DEFormer","wMAPE: baseline → DEFormer"),T("误差相对下降 / 覆盖提升","Relative error reduction / coverage gain")],
-        rows:[
-          [T("约 4,500 件商品","Approximately 4,500 products"),"0.292 → 0.255","12.7% / +3.5%"],
-          [T("约 9,000 件商品","Approximately 9,000 products"),"0.266 → 0.251","5.6% / +1.2%"],
-        ],
-        note:T("比较基线为 PatchTST；覆盖指标为销量加权覆盖率。结果为两个数据集上的实验评估", "Baseline: PatchTST. Coverage refers to sales-volume-weighted coverage. These are experimental results on the two datasets"),
-      },
-      outcome:T("完成问题诊断、成因分析、方法设计与实验验证，形成 DEFormer 研究论文（2026，已投稿）。实验同时覆盖表征机制、预测误差和销量加权覆盖率", "The work completed diagnosis, root-cause analysis, method design and experimental validation, resulting in the DEFormer manuscript, submitted in 2026. Evaluation covered representations, prediction error and sales-volume-weighted coverage"),
-      learning:T("我希望研究结果不仅说明“更好”，也说明改动影响了什么。把表征指标、消融和业务评估放在一起，可以更清楚地讨论方法适用于什么输入，以及证据支持到哪一步", "I want research to explain what a change affects as well as whether it improves performance. Representation metrics, ablations and business-oriented evaluation make applicability and the strength of evidence easier to discuss"),
-      tags:["Transformer","Stable Rank","Decorrelation","Log-ratio Targets",T("多任务学习","Multitask Learning")],
+      paperStudy:deformerStudy,
+      outcome:T("在论文的两个零售数据集上，DEFormer 在四项指标中均优于所列对照。相较 PatchTST，Small / Large 的 wMAPE 相对下降 12.7% / 5.6%，WSC 提升 3.5 / 1.2 个百分点；这是离线预测与覆盖评估，不对应项目整体 GMV 的单模块归因。论文保持已投稿状态", "On both retail datasets in the paper, DEFormer leads the listed comparators on all four metrics. Relative to PatchTST, Small / Large wMAPE falls by 12.7% / 5.6%, and WSC rises by 3.5 / 1.2 percentage points. These are offline forecasting and coverage results, with no isolated attribution to overall project GMV. The manuscript remains submitted"),
+      learning:T("方法设计与证据需要一起组织：输入端降低依赖、目标与监督端改变任务形态，再通过基线对照、模块消融和表征分布检查它们是否形成一致的改善。结论的适用范围是论文中的两个零售数据集与 14 天预测任务", "Method design and evidence belong together: reduce input dependence, change targets and supervision, then check whether baselines, ablations and representation distributions tell a consistent story. The reported findings apply to the paper’s two retail datasets and 14-day forecasting task"),
+      tags:["PatchTST","Decorrelation","MMoE","Log-return","Focal Loss","Stable Rank"],
       visualStory:"ali-deformer",related:"ali-short-term",
     },
     {
