@@ -22,3 +22,10 @@ PSL University official website header logo
 https://psl.eu/themes/custom/oooooo/assets/images/Header-150x61.svg
 https://psl.eu/
 Downloaded on 2026-10-12. Original colors and proportions preserved.
+
+psl-icon.svg
+PSL University official website compact crest (favicon)
+https://psl.eu/sites/default/files/Flavicon_48x48_0.svg
+https://psl.eu/
+Used for the square experience icon instead of reducing the full wordmark.
+Downloaded on 2026-10-12. Original artwork, colors and proportions preserved.

@@ -209,7 +209,7 @@
   const experienceLogos = {
     alibaba: [{id:"alibaba",src:"assets/logos/alibaba.ico"}],
     innox: [{id:"innox",src:"assets/logos/innox.png"}],
-    hust: [{id:"hust",src:"assets/logos/hust.png"},{id:"psl",src:"assets/logos/psl.svg"}]
+    hust: [{id:"hust",src:"assets/logos/hust.png"},{id:"psl",src:"assets/logos/psl-icon.svg"}]
   };
   const renderStrategy = strategy => '<div class="experience-strategy"><h4 class="strategy-title">' + bi(strategy.title) +
     '</h4><div class="strategy-phases">' + strategy.phases.map((phase, i) =>
@@ -231,7 +231,8 @@
   const renderExperience = exp => '<article class="experience-card" id="' + exp.id + '">' +
     '<div class="experience-timeline"><span class="date">' + exp.date.replace(' — ', '<span class="date-dash">—</span>') +
     '</span><span class="kind">' + bi(ui[exp.kind], true) + '</span></div><div class="experience-content">' +
-    '<header class="experience-header"><span class="experience-logos">' + experienceLogos[exp.id].map(logo =>
+    '<header class="experience-header' + (experienceLogos[exp.id].length > 1 ? ' experience-header--joint' : '') +
+    '"><span class="experience-logos">' + experienceLogos[exp.id].map(logo =>
     '<span class="experience-logo experience-logo--' + logo.id + '"><img src="' + logo.src +
     '" alt="" width="48" height="48" decoding="async"></span>').join('') + '</span>' +
     '<div class="experience-heading"><h3>' + bi(exp.company) + '</h3><div class="experience-role">' + bi(exp.role) +
