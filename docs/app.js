@@ -415,10 +415,9 @@
   let previewPagePosition = {x:0,y:0};
   let previewReturnAnchor = null;
   let previewReturnOffset = 0;
-  let previewAnimation = null;
-  let previewClosing = false;
   let previewFramePending = false;
-  let comparisonAnimation = null;
+  const previewMotion = {transition:null,animations:[],pending:null,cleanup:null,version:0};
+  const previewTiming = {duration:500,easing:"cubic-bezier(.22,1,.36,1)"};
   const previewNames = {
     "project-deformer": T("DEFormer", "DEFormer"),
     "project-qwen": T("预测优化", "Forecasting"),
@@ -467,12 +466,84 @@
     return Array.from(document.querySelectorAll(".contribution-link")).find(link =>
       link.dataset.openProject === preview.dataset.project && (link.dataset.projectView || "") === (preview.dataset.view || ""));
   }
-  function animateComparisonContent() {
-    if (reducedMotion.matches) return;
-    comparisonAnimation?.cancel();
-    comparisonAnimation = document.querySelector(".main-content").animate([
-      {opacity:.5,transform:"translateY(8px)"},{opacity:1,transform:"translateY(0)"}
-    ],{duration:360,easing:"cubic-bezier(.16,1,.3,1)"});
+  function settlePreviewMotion() {
+    // Commit the latest destination before starting another interaction.
+    previewMotion.transition?.skipTransition();
+    previewMotion.pending?.();
+    previewMotion.animations.forEach(animation => animation.cancel());
+    previewMotion.cleanup?.();
+    previewMotion.animations = [];
+    previewMotion.transition = null;
+  }
+  function runPreviewMotion(change, kind, immediate = false) {
+    const version = ++previewMotion.version;
+    const root = document.documentElement;
+    const source = desktopComparison.matches ? previewReturnAnchor : null;
+    document.querySelector(".preview-motion-source")?.classList.remove("preview-motion-source");
+    source?.classList.add("preview-motion-source");
+    root.dataset.previewMotion = kind;
+    root.dataset.previewMotionLayout = desktopComparison.matches ? "split" : "sheet";
+    let changed = false;
+    const update = () => {
+      if (changed) return;
+      changed = true;
+      previewMotion.pending = null;
+      change();
+    };
+    const cleanup = () => {
+      if (version !== previewMotion.version) return;
+      source?.classList.remove("preview-motion-source");
+      delete root.dataset.previewMotion;
+      delete root.dataset.previewMotionLayout;
+      previewMotion.transition = null;
+      previewMotion.animations = [];
+      previewMotion.cleanup = null;
+    };
+    previewMotion.cleanup = cleanup;
+    previewMotion.pending = update;
+    if (immediate || reducedMotion.matches) { update(); cleanup(); return; }
+    if (document.startViewTransition) {
+      // Capture both layouts so the selected experience keeps its visual identity.
+      const transition = document.startViewTransition(update);
+      previewMotion.transition = transition;
+      // An interrupted snapshot is expected when people click again quickly.
+      transition.ready.catch(() => {});
+      transition.finished.then(cleanup,cleanup);
+      return;
+    }
+    // Older browsers use the same timing, with a geometry-based fallback.
+    const animate = (element,frames,duration = previewTiming.duration) => {
+      const animation = element.animate(frames,{...previewTiming,duration});
+      previewMotion.animations.push(animation);
+      return animation;
+    };
+    const offset = desktopComparison.matches ? "translateX(28px) scale(.985)" : "translateY(22px) scale(.965)";
+    const before = source?.getBoundingClientRect();
+    const moveSource = () => {
+      const after = source?.getBoundingClientRect();
+      if (!before || !after?.width || !after.height) return;
+      return animate(source,[
+        {transformOrigin:"top left",transform:"translate(" + (before.left-after.left) + "px," +
+          (before.top-after.top) + "px) scale(" + before.width/after.width + "," + before.height/after.height + ")"},
+        {transformOrigin:"top left",transform:"none"}
+      ]);
+    };
+    if (kind === "close") {
+      const animation = animate(preview,[{opacity:1,transform:"none"},{opacity:0,transform:offset}],300);
+      animation.finished.then(() => {
+        update();
+        const returning = moveSource();
+        if (returning) returning.finished.then(cleanup,cleanup);
+        else cleanup();
+      },() => {});
+      return;
+    }
+    update();
+    if (kind === "open") moveSource();
+    animate(kind === "switch" ? preview.querySelector(".preview-detail") : preview,
+      [{opacity:kind === "switch" ? .25 : 0,transform:kind === "switch" ? "translateY(8px)" : offset},
+       {opacity:1,transform:"none"}],kind === "switch" ? 260 : 500);
+    Promise.allSettled(previewMotion.animations.map(animation => animation.finished)).then(cleanup);
   }
   function alignComparisonSource() {
     const source = currentContribution() || previewOrigin;
@@ -510,10 +581,11 @@
   }
   function openProjectPreview(id, origin, requestedView = "") {
     const project = projectCatalog.find(item => item.id === id);
-    if (!project || previewClosing) return;
+    if (!project) return;
     const view = origin?.dataset.projectView || requestedView;
     const viewInfo = project.views?.[view];
     if (view && !viewInfo) return;
+    settlePreviewMotion();
     const wasOpen = preview.open;
     if (wasOpen && preview.dataset.project === id && (preview.dataset.view || "") === view) {
       preview.querySelector(".preview-scroll").focus({preventScroll:true});
@@ -526,12 +598,6 @@
       previewReturnAnchor = origin?.closest(".strategy-phase") || origin?.closest(".story-panel") || origin;
       previewReturnOffset = previewReturnAnchor?.getBoundingClientRect().top || 0;
     }
-    preview.dataset.project = id;
-    preview.dataset.view = view;
-    renderPreviewContext(project);
-    preview.querySelector("#preview-project-category").innerHTML = bi(project.category);
-    preview.querySelector("#preview-project-title").innerHTML = bi(viewInfo?.title || project.title);
-    preview.querySelector("#preview-project-description").innerHTML = bi(viewInfo?.description || project.description);
     // A contribution can select a specific chapter of a shared project.
     let body;
     if (viewInfo) {
@@ -555,58 +621,46 @@
       returnLink.dataset.previewClose = "";
       returnLink.innerHTML = bi(T("关闭项目 · 恢复布局", "Close project · Restore layout"),true) + arrow;
     }
-    previewContent.replaceChildren(body);
-    previewScroll.scrollTop = 0;
-    setLanguage(document.documentElement.lang === "en" ? "en" : "zh", false);
-    if (!wasOpen) {
-      setPreviewLayout();
-      animateComparisonContent();
-      if (!reducedMotion.matches) previewAnimation = preview.animate([
-        {transform:"translateX(12px)",opacity:0},{transform:"translateX(0)",opacity:1}
-      ],{duration:420,easing:"cubic-bezier(.16,1,.3,1)"});
-    } else {
+    runPreviewMotion(() => {
+      preview.dataset.project = id;
+      preview.dataset.view = view;
+      renderPreviewContext(project);
+      preview.querySelector("#preview-project-category").innerHTML = bi(project.category);
+      preview.querySelector("#preview-project-title").innerHTML = bi(viewInfo?.title || project.title);
+      preview.querySelector("#preview-project-description").innerHTML = bi(viewInfo?.description || project.description);
+      previewContent.replaceChildren(body);
+      previewScroll.scrollTop = 0;
+      setLanguage(document.documentElement.lang === "en" ? "en" : "zh", false);
+      if (!wasOpen) setPreviewLayout();
       if (fromProjectSwitcher) preview.querySelector('[data-preview-project="' + id + '"][data-preview-view="' + view + '"]')?.focus({preventScroll:true});
-      if (!reducedMotion.matches) {
-        previewContent.getAnimations().forEach(animation => animation.cancel());
-        previewContent.animate([{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"translateY(0)"}],
-          {duration:240,easing:"cubic-bezier(.22,1,.36,1)"});
-      }
-    }
-    // A hidden scroll container can retain its old offset until it is displayed.
-    previewScroll.scrollTop = 0;
-    updatePreviewSection();
+      // A hidden scroll container can retain its old offset until it is displayed.
+      previewScroll.scrollTop = 0;
+      updatePreviewSection();
+    },wasOpen ? "switch" : "open");
   }
   function closeProjectPreview(immediate = false) {
-    if (!preview.open || previewClosing) return;
-    previewClosing = true;
-    const startStyle = getComputedStyle(preview);
-    const start = {transform:startStyle.transform,opacity:startStyle.opacity};
-    previewAnimation?.cancel();
-    const finish = () => {
+    settlePreviewMotion();
+    if (!preview.open) return;
+    runPreviewMotion(() => {
       preview.close();
       document.body.classList.remove("project-preview-open","project-compare-open");
-      preview.classList.remove("is-closing");
-      previewClosing = false;
       document.querySelectorAll("[data-open-project]").forEach(link => {
         link.setAttribute("aria-expanded","false");
         link.removeAttribute("aria-current");
       });
       previewOrigin?.focus({preventScroll:true});
       restoreExperiencePosition();
-      if (!immediate) animateComparisonContent();
-    };
-    if (immediate || reducedMotion.matches) { finish(); return; }
-    preview.classList.add("is-closing");
-    previewAnimation = preview.animate([start,{transform:"translateX(12px)",opacity:0}],
-      {duration:240,easing:"cubic-bezier(.4,0,.2,1)"});
-    previewAnimation.onfinish = finish;
+    },"close",immediate);
   }
   preview.addEventListener("cancel",event => { event.preventDefault(); closeProjectPreview(); });
   desktopComparison.addEventListener("change",() => {
-    if (!preview.open || previewClosing) return;
-    previewAnimation?.cancel();
+    settlePreviewMotion();
+    if (!preview.open) return;
     setPreviewLayout();
     updatePreviewSection();
+  });
+  reducedMotion.addEventListener("change",() => {
+    if (reducedMotion.matches) settlePreviewMotion();
   });
   preview.addEventListener("click",event => {
     if (event.target !== preview) return;
@@ -667,7 +721,7 @@
       return;
     }
     const languageButton = event.target.closest("[data-language]");
-    if (languageButton) setLanguage(languageButton.dataset.language);
+    if (languageButton) { settlePreviewMotion(); setLanguage(languageButton.dataset.language); }
     const storyTab = event.target.closest("[data-story-tab]");
     if (storyTab) selectStory(storyTab.dataset.storyTab);
     const control = event.target.closest("[data-expand-all],[data-collapse-all]");
@@ -699,7 +753,7 @@
     }
   });
   document.addEventListener("keydown", event => {
-    if (preview.open && event.key === "Escape") {
+    if ((preview.open || previewMotion.pending) && event.key === "Escape") {
       event.preventDefault(); closeProjectPreview(); return;
     }
     if (preview.open && preview.dataset.layout === "sheet" && event.key === "Tab") {
@@ -723,6 +777,7 @@
     selectStory(tabs[index].dataset.storyTab, true);
   });
   function openHashTarget() {
+    settlePreviewMotion();
     if (preview.open) closeProjectPreview(true);
     const id = decodeURIComponent(location.hash.slice(1));
     const target = document.getElementById(id);
@@ -762,6 +817,7 @@
   updateReadingState();
   let printState = [];
   window.addEventListener("beforeprint",() => {
+    settlePreviewMotion();
     if (preview.open) closeProjectPreview(true);
     printState = Array.from(document.querySelectorAll("details")).map(d => [d,d.open]);
     printState.forEach(([d]) => setDisclosure(d, true));
