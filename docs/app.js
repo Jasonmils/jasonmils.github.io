@@ -66,7 +66,7 @@
   const visualStories = {
     "ali-agent": {
       tab: T("Agent 闭环", "Agent loop"), title: T("从预测到运营闭环", "From forecasts to an operating loop"),
-      challenge: T("让商品状态、运营建议与执行反馈连起来。", "Connect product signals, recommendations and operating feedback."),
+      challenge: T("让商品状态、运营建议与执行反馈连起来", "Connect product signals, recommendations and operating feedback"),
       render: () => diagramFlow([
         ["forecast", T("预测工具", "Forecast"), T("价量模型", "Price–sales tools")],
         ["decision", T("评估建议", "Assess & plan"), T("潜力 / 保层", "Growth / retention")],
@@ -80,12 +80,12 @@
           bi(T("建议采纳率", "Recommendation adoption")) + '</div><div class="adoption-track" aria-hidden="true"><span style="width:' +
           adoption + '%"></span></div><div class="gmv-result"><strong>+' + growth + '%</strong><span>' +
           bi(T("GMV 增幅较对照组高", "GMV growth above control")) + '</span></div></div>'
-        ).join('') + '</div>' + visualNote(T("项目整体效果；两期分别对照，不叠加，也不归因于单个 Agent 模块。", "Project-level results. Each phase uses its own control; effects are not additive or attributed to an individual agent module.")),
-      takeaway: T("把模型输出接入可追踪、可迭代的业务流程。", "Turn model outputs into a traceable, repeatable workflow.")
+        ).join('') + '</div>' + visualNote(T("项目整体效果；两期分别对照，不叠加，也不归因于单个 Agent 模块", "Project-level results. Each phase uses its own control; effects are not additive or attributed to an individual agent module")),
+      takeaway: T("把模型输出接入可追踪、可迭代的业务流程", "Turn model outputs into a traceable, repeatable workflow")
     },
     "ali-forecast": {
       tab: T("预测优化", "Forecasting"), title: T("表征 → 后训练 → 稳定推理", "Representations, post-training & stability"),
-      challenge: T("误差与稳定性分别衡量；后训练回到下游预测验证。", "Evaluate accuracy and stability separately, then validate post-training downstream."),
+      challenge: T("误差与稳定性分别衡量；后训练回到下游预测验证", "Evaluate accuracy and stability separately, then validate post-training downstream"),
       render: () => '<div class="visual-section-label">' + bi(T("wMAPE 相对下降 · 越低越好", "Relative wMAPE reduction · lower is better")) +
         '</div><div class="training-tree"><div class="training-node"><div><strong>' + bi(T("冻结 Qwen3 表征", "Frozen Qwen3 features")) +
         '</strong><span>' + bi(T("对比：同配置、无 Qwen", "vs. same setup without Qwen")) + '</span></div><b>↓ 2.1%</b></div>' +
@@ -96,16 +96,16 @@
         '<div class="training-branches"><div class="training-branch"><strong>RLVR / GRPO</strong><b>↓ 2.9%</b><span>' +
         bi(T("标签正确性奖励", "Verifiable label reward")) + '</span></div><div class="training-branch"><strong>OPD</strong><b>↓ 3.1%</b><span>' +
         bi(T("任务教师概率指导", "Task-adapted teacher")) + '</span></div></div></div>' +
-        visualNote(T("每条后训练路线均重训下游预测器；各阶段降幅不相加。", "Retrain the downstream forecaster for each post-training route. Reductions are not additive.")) +
+        visualNote(T("每条后训练路线均重训下游预测器；各阶段降幅不相加", "Retrain the downstream forecaster for each post-training route. Reductions are not additive")) +
         '<div class="stability-results"><div class="stability-heading"><strong>Monte Carlo Dropout</strong><span>' +
         bi(T("多次采样 → 均值输出", "Repeated samples → mean output")) + '</span></div><div><b>↓ 11%</b><span>' +
         bi(T("跨批次 CV", "Cross-batch CV")) + '</span></div><div><b>↓ 10%</b><span>' + bi(T("输入扰动敏感性", "Input sensitivity")) +
-        '</span></div></div>' + visualNote(T("下方两项衡量输出稳定性，不是预测准确率。", "The two Monte Carlo measures capture output stability, not accuracy.")),
-      takeaway: T("标签任务的提升，最终要在真实预测任务中成立。", "A better label task must translate into better forecasting.")
+        '</span></div></div>' + visualNote(T("下方两项衡量输出稳定性，不是预测准确率", "The two Monte Carlo measures capture output stability, not accuracy")),
+      takeaway: T("标签任务的提升，最终要在真实预测任务中成立", "A better label task must translate into better forecasting")
     },
     "ali-deformer": {
       tab: T("机制研究", "DEFormer"), title: T("诊断秩坍缩，验证去相关编码", "Diagnose collapse, validate decorrelation"),
-      challenge: T("强自相关 → 注意力退化与 token 表征趋同。", "Strong autocorrelation can degrade attention and make tokens converge."),
+      challenge: T("强自相关 → 注意力退化与 token 表征趋同", "Strong autocorrelation can degrade attention and make tokens converge"),
       render: () => diagramFlow([
         ["graph",T("表征诊断", "Diagnose"),T("稳定秩 / 相似度", "Rank / similarity")],
         ["scope",T("去相关编码", "Decorrelate"),T("原序列 + 差分", "Raw + differences")],
@@ -118,12 +118,12 @@
             '<div class="comparison-row"><div class="comparison-track"><span class="bar-' + kind + '" style="width:' + (value/.32*100) + '%"></span></div><b>' + value.toFixed(3) + '</b></div>'
           ).join('') + '</div><div class="coverage-note">' + bi(T("销量加权覆盖率 +" + coverage + "%", "Sales-weighted coverage +" + coverage + "%")) + '</div></div>'
         ).join('') + '<div class="comparison-axis" aria-hidden="true"><span>0</span><span>0.16</span><span>0.32</span></div></figure>' +
-        visualNote(T("两组柱形共用 0–0.32 刻度。DEFormer 论文已于 2026 年投稿。", "Both datasets use the same 0–0.32 scale. DEFormer was submitted in 2026.")),
-      takeaway: T("从机制假设走到消融实验，再回到业务评估。", "Link the mechanism to ablations and business-oriented evaluation.")
+        visualNote(T("两组柱形共用 0–0.32 刻度。DEFormer 论文已于 2026 年投稿", "Both datasets use the same 0–0.32 scale. DEFormer was submitted in 2026")),
+      takeaway: T("从机制假设走到消融实验，再回到业务评估", "Link the mechanism to ablations and business-oriented evaluation")
     },
     "innox-definition": {
       tab:T("需求定义", "Discovery"),title:T("把用户声音转成首代产品范围", "From user needs to a first product scope"),
-      challenge:T("让需求优先级与工程可行性共同决定先做什么。", "Set priorities using both user needs and engineering feasibility."),
+      challenge:T("让需求优先级与工程可行性共同决定先做什么", "Set priorities using both user needs and engineering feasibility"),
       render: () => '<div class="discovery-metric"><strong>200<span>+</span></strong><div>' + bi(T("用户访谈", "User interviews")) +
         '<span>' + bi(T("健康监测场景与需求", "Health-monitoring needs")) + '</span></div></div>' + diagramFlow([
         ["people",T("用户研究", "Research"),T("场景与痛点", "Contexts / needs")],
@@ -131,11 +131,11 @@
         ["prototype",T("原型方案", "Prototype"),T("首代功能范围", "First-gen scope")]
       ]) + '<div class="outcome-strip">' + diagramIcon("prototype") + '<div><strong>' + bi(T("推进首代智能戒指样机开发", "Advanced the first smart-ring prototype")) +
         '</strong><span>' + bi(T("我的工作：调研、需求定义、原型规划与可行性协作", "My work: research, requirements, prototype planning and feasibility")) + '</span></div></div>',
-      takeaway:T("将用户语言转成工程团队可以讨论与验证的选择。", "Translate user language into choices engineers can discuss and test.")
+      takeaway:T("将用户语言转成工程团队可以讨论与验证的选择", "Translate user language into choices engineers can discuss and test")
     },
     "innox-delivery": {
       tab:T("反馈交付", "Delivery"),title:T("让用户反馈进入下一轮迭代", "Keep user feedback inside the iteration loop"),
-      challenge:T("对齐天使用户、软硬件研发与外部运营。", "Align early adopters, engineering and external operations."),
+      challenge:T("对齐天使用户、软硬件研发与外部运营", "Align early adopters, engineering and external operations"),
       render: () => diagramFlow([
         ["people",T("天使用户", "Early adopters"),T("200+ 人社群", "200+ members")],
         ["prototype",T("样机测试", "Test"),T("组织与收集反馈", "Gather feedback")],
@@ -144,12 +144,12 @@
         '<div class="milestone-results"><div><b>6</b><span>' + bi(T("个月内完成核心里程碑", "months or less to core milestones")) +
         '</span></div><div>' + diagramIcon("energy") + '<strong>' + bi(T("种子轮投资", "Seed investment")) + '</strong><span>' +
         bi(T("项目获得孵化器投资", "From the incubator")) + '</span></div></div>' +
-        visualNote(T("团队交付与项目融资成果；我的贡献是反馈渠道、测试组织与资源协调。", "Team delivery and project funding outcomes; my contribution was feedback channels, testing and coordination.")),
-      takeaway:T("产品定义、工程讨论与用户验证，需要持续连接。", "Keep definition, engineering and user validation connected.")
+        visualNote(T("团队交付与项目融资成果；我的贡献是反馈渠道、测试组织与资源协调", "Team delivery and project funding outcomes; my contribution was feedback channels, testing and coordination")),
+      takeaway:T("产品定义、工程讨论与用户验证，需要持续连接", "Keep definition, engineering and user validation connected")
     },
     "hust-wind": {
       tab:T("联邦预测", "Federated"),title:T("数据留在本地，学习跨场站联系", "Learn across farms while keeping data local"),
-      challenge:T("共享空间联系，同时保留各场站的时间差异。", "Share spatial relationships while preserving local temporal differences."),
+      challenge:T("共享空间联系，同时保留各场站的时间差异", "Share spatial relationships while preserving local temporal differences"),
       render: () => diagramFlow([
         ["local",T("本地数据", "Local data"),T("原始数据不出域", "Raw data stays local")],
         ["people",T("个性化联邦", "Personalize"),T("跨场站协同", "Federated learning")],
@@ -157,11 +157,11 @@
       ]) + '<div class="qualitative-results"><span>' + bi(T("跨场站预测", "Cross-farm forecasting")) + '</span><span>' +
         bi(T("降低通信开销", "Lower communication cost")) + '</span><span>' + bi(T("降低逆向工程风险", "Lower reverse-engineering risk")) +
         '</span></div>' + paperResult("IEEE Transactions on Network Science and Engineering", "2025", T("共同第一作者", "Co-first author")),
-      takeaway:T("预测表现、隐私与通信开销，需要共同权衡。", "Balance forecasting, privacy and communication together.")
+      takeaway:T("预测表现、隐私与通信开销，需要共同权衡", "Balance forecasting, privacy and communication together")
     },
     "hust-price": {
       tab:T("电价区间", "Intervals"),title:T("既预测数值，也表达不确定性", "Predict the value and express uncertainty"),
-      challenge:T("应对日前电价的时间与特征动态变化。", "Model the temporal and feature dynamics of day-ahead prices."),
+      challenge:T("应对日前电价的时间与特征动态变化", "Model the temporal and feature dynamics of day-ahead prices"),
       render: () => '<div class="prediction-diagram"><div class="prediction-input">' + bi(T("时序与动态特征", "Temporal & dynamic features")) +
         '</div><span class="tree-arrow" aria-hidden="true">↓</span><div class="prediction-model"><strong>' + bi(T("端到端预测框架", "End-to-end forecasting")) +
         '</strong><div>' + bi(T("非共享卷积 · GRU · 稠密跳跃注意力", "Non-shared convolution · GRU · Dense skip attention")) +
@@ -170,11 +170,11 @@
         '</span></div><div><svg viewBox="0 0 120 32" aria-hidden="true"><path d="M12 16h96"/><path class="interval-range" d="M32 16h56"/><path d="M32 10v12m56-12v12"/><circle cx="60" cy="16" r="4"/></svg><strong>' +
         bi(T("区间预测", "Interval forecast")) + '</strong><span>' + bi(T("可能的波动范围", "The plausible range")) +
         '</span></div></div></div>' + paperResult("IEEE Transactions on Power Systems", "2023", T("第二作者", "Second author")),
-      takeaway:T("将不确定性纳入输出与评估。", "Bring uncertainty into both the output and the evaluation.")
+      takeaway:T("将不确定性纳入输出与评估", "Bring uncertainty into both the output and the evaluation")
     },
     "hust-review": {
       tab:T("系统综述", "Review"),title:T("把 AI 方法放回电力运行场景", "Place AI methods in their operating context"),
-      challenge:T("沿着预测对象与用途组织研究方法。", "Organize methods around forecasting targets and their uses."),
+      challenge:T("沿着预测对象与用途组织研究方法", "Organize methods around forecasting targets and their uses"),
       render: () => diagramFlow([
         ["energy",T("源", "Generation"),T("发电侧", "Power generation")],
         ["home",T("荷", "Demand"),T("负荷侧", "Electricity demand")],
@@ -182,7 +182,7 @@
       ],null,true) + '<div class="review-synthesis"><span aria-hidden="true">↓</span><strong>' + bi(T("方法 × 预测对象 × 应用场景", "Methods × targets × operating contexts")) +
         '</strong><span>' + bi(T("文献研究 → 相关章节英文写作与修订", "Literature research → writing and revising the relevant sections")) + '</span></div>' +
         paperResult("Nature Reviews Electrical Engineering", "2024", T("第二作者", "Second author")),
-      takeaway:T("先解释问题与用途，再讨论方法的条件与局限。", "Explain the problem and use, then the method’s conditions and limits.")
+      takeaway:T("先解释问题与用途，再讨论方法的条件与局限", "Explain the problem and use, then the method’s conditions and limits")
     }
   };
   const renderStory = (story, i) => {
@@ -323,7 +323,7 @@
     '<section class="section" id="experience">' + heading(1,ui.workTitle,ui.workDesc) + data.experience.map(renderExperience).join('') + '</section>' +
     '<section class="section" id="projects">' + heading(2,ui.projectTitle,ui.projectDesc,true,true) +
     data.projects.map(renderProject).join('') + '<div class="research-collection" id="research-projects"><div class="research-collection-heading"><div class="eyebrow">RESEARCH / ' + String(researchProjects.length).padStart(2,'0') + '</div><h3>' +
-    bi(T("相关研究详解", "Research deep dives")) + '</h3><p>' + bi(T("从 Transformer 机制研究，到电力系统预测与 AI 应用。", "From Transformer mechanisms to power-system forecasting and AI applications.")) +
+    bi(T("相关研究详解", "Research deep dives")) + '</h3><p>' + bi(T("从 Transformer 机制研究，到电力系统预测与 AI 应用", "From Transformer mechanisms to power-system forecasting and AI applications")) +
     '</p></div>' + researchProjects.map(renderProject).join('') + '</div></section>' +
     '<section class="section" id="skills">' + heading(3,ui.skillsTitle,ui.skillsDesc) +
     '<div class="skill-grid">' + data.skills.map(group => '<div class="skill-group"><h3>' + bi(group.title) + '</h3>' + tags(group.items) + '</div>').join('') +
@@ -370,8 +370,8 @@
     document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
     document.title = lang === "zh" ? "丁逸洲 Jason · AI 工程与应用研究" : "Jason Ding · AI Engineering & Applied Research";
     document.querySelector('meta[name="description"]').content = lang === "zh" ?
-      "丁逸洲 Jason 的双语个人网站：AI 算法、Agent 工作流、时序预测研究与产品实践。" :
-      "Jason Ding’s bilingual portfolio of applied AI, agent workflows, forecasting research and product development.";
+      "丁逸洲 Jason 的双语个人网站：AI 算法、Agent 工作流、时序预测研究与产品实践" :
+      "Jason Ding’s bilingual portfolio of applied AI, agent workflows, forecasting research and product development";
     document.querySelectorAll(".bi").forEach(el => {
       el.querySelector(":scope > .zh").setAttribute("aria-hidden", lang === "zh" ? "false" : "true");
       el.querySelector(":scope > .en").setAttribute("aria-hidden", lang === "en" ? "false" : "true");
