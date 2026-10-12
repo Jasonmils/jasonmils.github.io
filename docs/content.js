@@ -1,5 +1,5 @@
 /* Bilingual content. Measured claims are grounded in the supplied v4 CVs.
-   DEFormer details, figures and experimental tables use the supplied AAAI paper.
+   DEFormer and research details use the owner-supplied manuscripts.
    The Alibaba two-stage narrative incorporates Jason's October 12 clarification.
    The 14-day horizon is an example; no new measured results are inferred. */
 const T = (zh, en) => ({ zh, en });
@@ -49,6 +49,90 @@ const deformerStudy = {
         ["w/o De-auto",.397,.264,.805,.807],["w/o Both (PatchTST)",.392,.266,.806,.804],
         ["Naive",.897,.541,.483,.455]
       ]},
+  ],
+};
+// Research tables preserve the supplied manuscript versions and metric definitions.
+const windResearchStudy = {
+  sourceNote:T("实验数据来自所提供的 2023 年修订稿（Tables II–IV）；下表选列 MAPE，文中比率换算为百分比显示", "Experiments use the supplied 2023 revision (Tables II–IV). Tables below select MAPE, converting the paper’s ratios to percentages"),
+  figures:[
+    {redrawn:true,src:"assets/research/fedgin-cplf.svg",width:720,height:452,
+      title:T("CPLF：共享空间模块，时间模型保留本地", "CPLF: shared spatial modules, local temporal models"),
+      note:T("依据修订稿 Fig. 1–2 与 Section III 重绘。各场站本地训练 GIN，仅上传加密的空间模块参数；Encoder–Decoder 保留本地，末轮再进行本地微调", "Redrawn from revision Figures 1–2 and Section III. Farms train GIN locally, exchange encrypted spatial-module parameters, retain local Encoder–Decoders, and fine-tune locally in the final round")},
+    {redrawn:true,src:"assets/research/fedgin-sidgi.svg",width:720,height:372,
+      title:T("SiDGI：先学习结构，再校准边权", "SiDGI: learn the structure, then calibrate edge weights"),
+      note:T("依据修订稿 Fig. 3 重绘。图节点是功率与气象特征；两组可学习嵌入生成有向邻接矩阵，经 top-k 稀疏化后，由多头 GAT 校准边权", "Redrawn from revision Figure 3. Nodes are power and meteorological features. Two learnable embeddings form a directed adjacency matrix, top-k selection sparsifies it, and multi-head GAT calibrates edge weights")},
+  ],
+  summary:[
+    {label:T("NW · 1 小时预测", "NW · 1-hour forecast"),value:"−12.4%",note:T("相对 Standalone 的 MAPE 下降", "Relative MAPE reduction vs Standalone")},
+    {label:T("SE · 1 小时预测", "SE · 1-hour forecast"),value:"−9.1%",note:T("相对 Standalone 的 MAPE 下降", "Relative MAPE reduction vs Standalone")},
+  ],
+  tables:[
+    {title:T("Table II · 模型对照 · MAPE ↓", "Table II · Model comparison · MAPE ↓"),format:"ratio",headers:[T("模型", "Model"),"30 min","1 h","2 h"],
+      groups:[
+        {label:T("NW · 8 个风电场", "NW · 8 wind farms"),rows:[
+          ["GIN",.0342,.05,.0712],["Informer",.0382,.0528,.0794],["CNN",.0455,.0769,.0961],
+          ["GRU",.0647,.0572,.077],["GAT",.035,.0505,.0783],["Autoformer",.241,.435,null],["Transformer",.0391,.0544,.0751]]},
+        {label:T("SE · 19 个风电场", "SE · 19 wind farms"),rows:[
+          ["GIN",.032,.0487,.0719],["Informer",.0344,.0511,.0737],["CNN",.0646,.0828,.0929],
+          ["GRU",.0422,.0558,.0769],["GAT",.0438,.0582,.0751],["Autoformer",.1464,.4947,null],["Transformer",.0337,.0511,.0722]]},
+      ],note:T("低 MAPE 更好；Autoformer 的 2 小时结果为显存不足（OOM）。各模型作为联邦实验的本地模型，参数传输方式按修订稿中的模型配置执行", "Lower MAPE is better. Autoformer’s 2-hour runs ran out of memory (OOM). Comparators are local models in federated experiments, with parameter transmission following each model’s configuration in the revision")},
+    {title:T("Table III · CPLF 与独立本地训练", "Table III · CPLF versus Standalone"),collapsed:true,format:"ratio",headers:[T("训练方式", "Training setup"),"30 min","1 h","2 h"],
+      groups:[
+        {label:"NW",rows:[["GIN (CPLF)",.0342,.05,.0712],["GIN (Standalone)",.0394,.0571,.07534]]},
+        {label:"SE",rows:[["GIN (CPLF)",.032,.0487,.0719],["GIN (Standalone)",.0369,.0536,.0788]]},
+      ],note:T("选列 MAPE；Standalone 使用各场站独立训练，CPLF 通过空间参数聚合协作。上方降幅依据此表的 1 小时结果计算", "MAPE selected. Standalone trains each farm independently; CPLF collaborates through spatial-parameter aggregation. The summary reductions use the 1-hour results here")},
+    {title:T("Table IV · SiDGI 模块消融", "Table IV · SiDGI ablations"),collapsed:true,format:"ratio",headers:[T("配置", "Configuration"),"30 min","1 h","2 h"],
+      groups:[
+        {label:"NW",rows:[["GIN",.0342,.05,.0712],["GIN ⋊",.0391,.0544,.0751],["GIN ⋇",.0415,.0591,.0738],["GIN †",.0561,.0578,.077]]},
+        {label:"SE",rows:[["GIN",.032,.0487,.0719],["GIN ⋊",.0337,.0511,.0722],["GIN ⋇",.0352,.051,.0727],["GIN †",.0449,.0545,.0791]]},
+      ],note:T("选列 MAPE。⋊：以一维卷积替换 SiDGI；⋇：以图卷积替换 GAT 边权校准；†：以全连接图替换初始动态图生成", "MAPE selected. ⋊: replace SiDGI with 1D convolutions. ⋇: replace GAT calibration with graph convolutions. †: replace learned graph generation with a fully connected graph")},
+  ],
+};
+const priceResearchStudy = {
+  sourceNote:T("实验数据来自所提供的作者接收稿：点预测为 Table VIII，区间预测为 Table X，资源评估为 Table IX", "Results use the supplied accepted author manuscript: point forecasts from Table VIII, intervals from Table X, and resources from Table IX"),
+  figures:[
+    {redrawn:true,src:"assets/research/price-framework.svg",width:720,height:494,
+      title:T("从时间特征提取，到两种预测模式", "From temporal features to two forecasting modes"),
+      note:T("依据 Fig. 2、6 重绘。ARUCNN 与 GRU 处理短期和长期依赖，Dense Skip Attention 对特征加权；按点预测或区间预测任务选择相应回归损失", "Redrawn from Figures 2 and 6. ARUCNN and GRU extract short- and long-term dependencies; Dense Skip Attention weights features. The regression loss is selected for point or interval forecasting")},
+    {redrawn:true,src:"assets/research/price-dense-skip.svg",width:720,height:444,
+      title:T("Dense Skip Attention 的两条路径", "The two paths in Dense Skip Attention"),
+      note:T("依据 Fig. 4 与 Eq. 12–14 重绘。主路经 Seq2Seq GRU 与维度置换，在特征轴上计算注意力；旁路经另一 GRU、Dense 与 PReLU，两路输出相加后进入全连接层", "Redrawn from Figure 4 and Equations 12–14. The main path uses Seq2Seq GRU and permutation for feature-axis attention. A second GRU, Dense and PReLU form the skip path; outputs are summed before the final fully connected layer")},
+  ],
+  summary:[
+    {label:T("瑞典", "Sweden"),value:"5.24%",note:T("Proposed · 点预测 MAPE", "Proposed · Point-forecast MAPE")},
+    {label:T("挪威", "Norway"),value:"1.01%",note:T("Proposed · 点预测 MAPE", "Proposed · Point-forecast MAPE")},
+    {label:T("丹麦", "Denmark"),value:"4.64%",note:T("Proposed · 点预测 MAPE", "Proposed · Point-forecast MAPE")},
+    {label:T("芬兰", "Finland"),value:"7.91%",note:T("Proposed · 点预测 MAPE", "Proposed · Point-forecast MAPE")},
+  ],
+  tables:[
+    {title:T("Table VIII · 点预测 MAPE ↓", "Table VIII · Point-forecast MAPE ↓"),format:"percent",headers:[T("模型", "Model"),T("瑞典", "Sweden"),T("挪威", "Norway"),T("丹麦", "Denmark"),T("芬兰", "Finland")],
+      groups:[{rows:[
+        ["Proposed",5.24,1.01,4.64,7.91],["GRU",6.79,1.15,5.28,9.40],["UCNN",6.93,1.45,5.55,10.76],
+        ["UCNN+GRU",6.12,1.14,5.17,9.13],["UResnet",5.78,1.34,4.93,9.72],["BPNN",10.37,2.86,9.72,12.06],
+        ["S2S-Attn",6.99,1.27,5.10,9.34],["Transformer",6.86,1.20,5.18,8.79]]}],
+      note:T("选列 MAPE；结果对应 2018–2019 年四国小时数据的实验。特征使用 Pearson 系数 ≥ 0.5 的筛选条件；按时间前 70% 训练、后 30% 测试", "MAPE selected for experiments on four countries’ hourly 2018–2019 data. Features are selected with Pearson coefficient ≥ 0.5; the first 70% trains the model and the final 30% tests it")},
+    {title:T("Table X · 区间预测 RWS ↓", "Table X · Interval-forecast RWS ↓"),format:"decimal",headers:[T("模型", "Model"),T("瑞典", "Sweden"),T("挪威", "Norway"),T("丹麦", "Denmark"),T("芬兰", "Finland")],
+      groups:[{rows:[
+        ["Proposed",.125,.089,.111,.203],["GRU",.197,.175,.264,.419],["UCNN",.198,.150,.166,.216],
+        ["UCNN+GRU",.147,.091,.112,.230],["UResnet",.177,.122,.166,.210],["BPNN",.292,.276,.338,.558],
+        ["S2S-Attn",.135,.164,.191,.258],["Transformer",.137,.094,.130,.227]]}],
+      note:T("RWS 为相对 Winkler Score，综合衡量区间宽度与区间外误差，越低越好。论文展示名义 90% 区间，并报告 α = 0.05 / 0.95 的两组 MPL", "RWS is the relative Winkler Score, combining interval width and out-of-interval error; lower is better. The paper shows nominal 90% intervals and reports MPL at α = 0.05 / 0.95")},
+    {title:T("Table X · MPL（α = 0.95）↓", "Table X · MPL (α = 0.95) ↓"),collapsed:true,format:"decimal",headers:[T("模型", "Model"),T("瑞典", "Sweden"),T("挪威", "Norway"),T("丹麦", "Denmark"),T("芬兰", "Finland")],
+      groups:[{rows:[
+        ["Proposed",.137,.109,.594,.374],["GRU",.176,.125,.675,.552],["UCNN",.179,.163,.710,.549],
+        ["UCNN+GRU",.159,.119,.651,.517],["UResnet",.158,.148,.661,.475],["BPNN",.289,.366,1.306,.693],
+        ["S2S-Attn",.179,.148,1.113,.415],["Transformer",.172,.130,.684,.416]]}],
+      note:T("对应原表的 MPL*；与 α = 0.05 的 MPL** 分开展示", "Corresponds to MPL* in the source, shown separately from MPL** at α = 0.05")},
+    {title:T("Table X · MPL（α = 0.05）↓", "Table X · MPL (α = 0.05) ↓"),collapsed:true,format:"decimal",headers:[T("模型", "Model"),T("瑞典", "Sweden"),T("挪威", "Norway"),T("丹麦", "Denmark"),T("芬兰", "Finland")],
+      groups:[{rows:[
+        ["Proposed",.126,.104,.536,.372],["GRU",.175,.127,.608,.544],["UCNN",.199,.156,.635,.438],
+        ["UCNN+GRU",.147,.120,.607,.408],["UResnet",.149,.144,.621,.455],["BPNN",.330,.292,1.399,.690],
+        ["S2S-Attn",.159,.130,1.012,.386],["Transformer",.169,.133,.785,.408]]}],
+      note:T("对应原表的 MPL**。MPL 为平均 Pinball Loss，越低越好；两组分位指标分别评估", "Corresponds to MPL** in the source. MPL is mean Pinball Loss; lower is better. The two quantile metrics are evaluated separately")},
+    {title:T("Table IX · 精度与计算资源的取舍", "Table IX · Accuracy and resource trade-offs"),collapsed:true,format:"plain",highlight:false,
+      headers:[T("模型", "Model"),T("参数量", "Parameters"),T("训练 + 验证（秒）", "Train + validation (s)"),"MAPE"],
+      groups:[{rows:[["Proposed",248421,1026.22,"5.24%"],["GRU",179989,772.93138,"6.79%"]]}],
+      note:T("瑞典数据集上的资源评估；时间为训练与验证合计。对照 GRU 为七层、各层后接 PReLU；这些数值不代表线上推理延迟", "Resource evaluation on Sweden. Time sums training and validation; the GRU comparator has seven layers, each followed by PReLU. These figures are not inference latency")},
   ],
 };
 const portfolio = {
@@ -285,8 +369,8 @@ const portfolio = {
           title:T("让建模方法回应电力系统的具体问题", "Ground modeling methods in power-system problems"),
           goal:T("面向数据分散、场站差异和电价不确定性开展预测研究，并把具体方法放回源–荷–网的运行场景", "Address distributed data, site differences and price uncertainty, while placing forecasting methods in generation, demand and grid operations"),
           links:[
-            {target:"project-hust-wind",label:T("多风电场联邦预测", "Federated wind-power forecasting"),action:T("构建个性化联邦学习与可学习动态图，在数据不出域的条件下刻画跨场站联系", "Developed personalized federated learning and dynamic graphs to learn cross-farm relationships with raw data kept local.")},
-            {target:"project-hust-price",label:T("日前电价点预测与区间预测", "Point & interval price forecasting"),action:T("融合非共享卷积、GRU 与稠密跳跃注意力，同时表达预测数值与不确定性", "Combined non-shared convolutions, GRUs and dense skip attention for point forecasts and uncertainty intervals")},
+            {target:"project-hust-wind",label:T("多风电场联邦预测", "Federated wind-power forecasting"),action:T("用 SiDGI 学习特征图，通过 CPLF 共享空间参数、保留本地时间模型，在数据留在场站的条件下开展协作", "Learned feature graphs with SiDGI and collaborated through CPLF, sharing spatial parameters while retaining local temporal models and raw data")},
+            {target:"project-hust-price",label:T("日前电价点预测与区间预测", "Point & interval price forecasting"),action:T("以 ARUCNN–GRU 提取时间依赖，用 Dense Skip Attention 学习特征权重，通过 MAE 与平滑分位损失支持两种预测模式", "Extracted temporal dependencies with ARUCNN–GRU, learned feature weights through Dense Skip Attention, and supported two forecast modes through MAE and smooth quantile losses")},
             {target:"project-hust-review",label:T("新能源系统 AI 方法综述", "AI for renewable power operations"),action:T("梳理源–荷–网三侧预测方法，独立完成相关章节的文献研究、英文写作与修订", "Reviewed forecasting across generation, demand and grids, independently researching, writing and revising the relevant sections")},
           ],
           result:T("3 篇相关论文 · 连接方法与应用", "Three publications · Methods & applications"),
@@ -298,27 +382,31 @@ const portfolio = {
       stories:[
         {
           id:"hust-wind",title:T("在数据不出域的前提下，学习跨风电场联系", "Learning cross-farm relationships while keeping data local"),
-          brief:T("个性化联邦学习 × 可学习动态图", "Personalized federated learning × Learnable dynamic graphs"),
-          problem:T("多个风电场之间存在空间依赖，但原始数据分散在不同场站，且各场站具有异构时间规律。协同建模需要同时处理数据孤岛、共享关系和本地差异", "Wind farms are spatially related, but their raw data is distributed across sites and their temporal patterns differ. Collaborative forecasting must address data silos, shared relationships and local heterogeneity together"),
+          brief:T("CPLF 部分参数联邦 × SiDGI 特征图 × 本地时间建模", "CPLF partial-parameter federation × SiDGI feature graphs × Local temporal models"),
+          problem:T("风电场需要利用共同的风电与气象规律，却又需要保留原始数据和本地异构时间模式。固定图结构难以充分表达特征关系，而全模型参数聚合可能削弱本地差异、增加通信负担；因此研究同时设计本地 GIN 与参数分区协作机制", "Farms benefit from shared power and meteorological patterns while needing to retain raw data and heterogeneous local temporal behavior. Fixed graphs can limit feature modeling, while full-model aggregation can weaken local differences and increase communication. The study therefore co-designs a local GIN and partitioned parameter collaboration"),
           actions:[
-            T("构建个性化联邦学习框架，支持原始数据留在本地的跨场站协同建模；结合可学习动态图推理模型，刻画场站间空间联系与异构时间依赖", "I developed a personalized federated learning framework for collaborative forecasting with raw data kept local, together with a learnable dynamic graph inference model for spatial relationships and heterogeneous temporal dependencies"),
-            T("参与算法实现、实验分析以及英文论文写作与修订，围绕预测、通信开销与逆向工程风险评估方法价值", "I contributed implementation, experimental analysis and English manuscript development, examining forecasting, communication overhead and reverse-engineering risk"),
+            T("设计 GIN 的本地模型结构：SiDGI 提取功率、风速、风向、温度与空气密度等特征之间的关系，PE / TE 注入位置与时间信息，Encoder–Decoder 建模时间依赖并输出多步预测", "Designed the local GIN structure: SiDGI extracts relationships among power, wind speed, direction, temperature and density; PE / TE supply position and time information; an Encoder–Decoder models temporal dependencies and produces multi-step forecasts"),
+            T("SiDGI 用两组可学习的节点嵌入生成有向邻接矩阵，通过 top-k 筛选稀疏边，再用多头 GAT 依据输入序列校准边权。这里的图节点是特征，跨场站协作则由联邦参数聚合实现", "SiDGI forms a directed adjacency matrix from two learnable node embeddings, sparsifies edges with top-k selection, and calibrates their weights through multi-head GAT using input sequences. Graph nodes are features; cross-farm collaboration occurs through federated parameter aggregation"),
+            T("在 CPLF 中，各场站用本地数据训练 GIN，仅上传加密的空间模块参数进行聚合；时间模块保留本地，最后一轮在本地微调。该分区让空间模块协作学习，同时保留各场站的本地时间规律，并缩小每轮传输的参数范围", "Within CPLF, farms train GIN on local data and aggregate encrypted spatial-module parameters. Temporal modules remain local, followed by final-round local fine-tuning. This partition shares spatial learning, preserves each farm’s temporal behavior and reduces the parameter scope transmitted each round"),
+            T("参与实现、实验分析与英文论文修订。修订稿使用 NREL 2013–2014 年、5 分钟粒度的 NW 8 场站与 SE 19 场站数据，评估 30 分钟、1 小时与 2 小时预测；分别对照联邦本地模型、独立训练和 SiDGI 的三个替代配置", "Contributed implementation, experiments and English manuscript revision. The supplied revision uses NREL’s 2013–2014 five-minute data from 8 NW and 19 SE farms, testing 30-minute, 1-hour and 2-hour forecasts against local-model baselines, Standalone training and three SiDGI alternatives"),
           ],
-          result:T("相关工作发表于 IEEE Transactions on Network Science and Engineering（2025），我是共同第一作者。方法在数据不出域的条件下支持跨场站协同，并降低通信开销与逆向工程风险", "The work appeared in IEEE Transactions on Network Science and Engineering in 2025, with me as co-first author. It supported cross-site collaboration with raw data kept local and reduced communication overhead and reverse-engineering risk"),
-          takeaway:T("共享建模与本地差异需要同时保留；隐私、通信与预测表现也是同一个建模问题中的约束", "Collaboration should preserve local differences. Privacy, communication and predictive performance are joint constraints in the modeling problem"),
-          stack:[T("个性化联邦学习","Personalized Federated Learning"),T("动态图","Dynamic Graphs"),T("多场站预测","Multi-site Forecasting")],
+          result:T("所给 2023 修订稿的 Table III 中，1 小时预测的 NW MAPE 从 Standalone 的 0.0571 降至 CPLF 的 0.0500，SE 从 0.0536 降至 0.0487，相对下降约 12.4% 与 9.1%。Table IV 单独检验图生成与边权校准的作用。相关研究发表于 IEEE Transactions on Network Science and Engineering（2025），我是共同第一作者；本页实验数值标注为所给修订稿版本", "In Table III of the supplied 2023 revision, 1-hour NW MAPE falls from Standalone’s 0.0571 to CPLF’s 0.0500, and SE from 0.0536 to 0.0487: relative reductions of about 12.4% and 9.1%. Table IV tests graph generation and edge calibration separately. The related work was published in IEEE TNSE (2025), with me as co-first author; experimental values here are labeled as the supplied revision") ,
+          takeaway:T("协作不必共享全部模型：先区分能共同学习的特征关系与需要保留的本地时间规律，再用独立训练、参数聚合与模块消融检查收益来自哪里", "Collaboration need not share the whole model. Separate transferable feature relations from local temporal patterns, then use Standalone, aggregation and ablation comparisons to locate the gains"),
+          stack:["CPLF","GIN","SiDGI","Top-k","GAT",T("个性化联邦学习","Personalized Federated Learning")],
         },
         {
           id:"hust-price",title:T("让电价预测同时表达数值与不确定性", "Forecasting electricity prices and their uncertainty"),
-          brief:T("点预测与区间预测共用端到端框架", "Point and interval forecasts in an end-to-end framework"),
-          problem:T("日前电价具有时间与特征动态性。预测既需要给出数值，也需要表达可能波动的范围，因此模型设计要同时关注动态特征、鲁棒性与泛化", "Day-ahead electricity prices have temporal and feature dynamics. Forecasting must provide a value and characterize a plausible range, motivating a model that addresses dynamic features, robustness and generalization"),
+          brief:T("ARUCNN–GRU 时间建模 × 特征轴注意力 × 平滑分位回归", "ARUCNN–GRU temporal modeling × Feature-axis attention × Smooth quantile regression"),
+          problem:T("日前电价同时存在短期变化、长期时间依赖和特征重要性的动态变化。更深的模型还需要处理退化与过拟合；点预测需要关注数值误差，区间预测则需要同时考虑宽度与区间外误差", "Day-ahead prices combine short-term changes, longer temporal dependencies and changing feature importance. Deeper models must also address degradation and overfitting. Point forecasts focus on value errors, while intervals must account for both width and errors outside the range"),
           actions:[
-            T("构建同时支持点预测与区间预测的端到端深度学习框架，融合非权重共享卷积、门控循环单元和稠密跳跃注意力机制", "I developed an end-to-end deep learning framework supporting point and interval forecasts, combining non-weight-sharing convolutions, gated recurrent units and dense skip attention"),
-            T("参与方法设计、代码实现、实验分析及英文稿件撰写与修订，围绕时序与特征动态变化检验模型表现", "I contributed method design, implementation, experimental analysis and English manuscript writing and revision, evaluating the model against temporal and feature dynamics"),
+            T("参与构建 Drop-connected UCNN–GRU：四个 ARUCNN block 使用非共享卷积、残差映射与 PReLU，通道为 15 / 30 / 60 / 120、核大小为 3；在进入五层、每层 50 单元的 GRU 前使用 0.5 dropout，分别提取短期和长期依赖", "Contributed to Drop-connected UCNN–GRU: four ARUCNN blocks use unshared convolutions, residual mappings and PReLU, with 15 / 30 / 60 / 120 channels and kernel size 3. Dropout 0.5 precedes five GRU layers with 50 units each, combining short- and long-term feature extraction"),
+            T("Dense Skip Attention 先置换时间轴与特征轴，在特征维度上学习注意力权重；同时以另一条 GRU–Dense–PReLU 路径形成旁路，通过 φ(g) + ρ(g) 汇合，保留特征加权与跳跃映射两种表达路径", "Dense Skip Attention permutes time and feature axes to learn feature-wise weights. A parallel GRU–Dense–PReLU route provides a skip path; φ(g) + ρ(g) combines weighted features with the alternate mapping"),
+            T("同一模型框架按任务选择回归损失：点预测使用 MAE；区间模式使用平滑分位损失，训练 α = 0.05 / 0.95 两种设置并展示名义 90% 区间。区间实验使用 RWS 与两组 MPL 指标评估", "The framework selects its regression loss by task: MAE for point forecasts and smooth quantile loss for intervals, training α = 0.05 / 0.95 settings and showing nominal 90% intervals. RWS and two MPL metrics evaluate interval performance"),
+            T("参与代码实现、实验分析与英文稿件写作及修订。在瑞典、挪威、丹麦、芬兰 2018–2019 年小时数据上，按前 70% / 后 30% 的时间顺序划分训练与测试；结合点预测对照、区间指标、消融及参数量和训练验证时间，评估精度与资源取舍", "Contributed implementation, experiments and English manuscript writing and revision. Hourly 2018–2019 data from Sweden, Norway, Denmark and Finland is split chronologically 70% / 30% for training and testing. Point comparisons, interval metrics, ablations, parameter counts and training/validation time assess accuracy and resource trade-offs"),
           ],
-          result:T("相关工作发表于 IEEE Transactions on Power Systems（2023），我是第二作者。研究形成了同时支持点预测和区间预测的框架，改善模型鲁棒性与泛化", "The work was published in IEEE Transactions on Power Systems in 2023, with me as second author. It produced a framework for both point and interval forecasting with improved model robustness and generalization"),
-          takeaway:T("区间预测把不确定性引入最终输出，让评估从“预测了多少”扩展到“预测的范围如何”", "Interval forecasts bring uncertainty into the output, expanding evaluation from the predicted value to the range around it"),
-          stack:[T("非共享卷积","Non-shared Convolutions"),"GRU","Dense Skip Attention",T("区间预测","Interval Forecasting")],
+          result:T("Table VIII 中，Proposed 在瑞典 / 挪威 / 丹麦 / 芬兰的点预测 MAPE 为 5.24% / 1.01% / 4.64% / 7.91%；Table X 的 RWS 为 0.125 / 0.089 / 0.111 / 0.203。论文比较了所列深度学习基线，并报告平稳与剧烈波动市场的区间表现差异。相关工作发表于 IEEE Transactions on Power Systems（2023），我是第二作者", "Table VIII reports Proposed point-forecast MAPE of 5.24% / 1.01% / 4.64% / 7.91% for Sweden / Norway / Denmark / Finland; Table X reports RWS of 0.125 / 0.089 / 0.111 / 0.203. The study compares listed deep-learning baselines and notes interval-performance differences between steadier and more volatile markets. Published in IEEE TPWRS (2023), with me as second author"),
+          takeaway:T("时间依赖、特征权重和预测输出需要分别设计与验证；点预测误差、区间质量和计算资源是不同评估轴，不能用一个指标替代所有表现", "Temporal dependencies, feature weights and forecast outputs need separate design and validation. Point error, interval quality and computation are distinct evaluation axes; one metric cannot substitute for all three"),
+          stack:["ARUCNN","GRU","Dense Skip Attention","PReLU",T("平滑分位回归","Smooth Quantile Regression")],
         },
         {
           id:"hust-review",title:T("以系统综述连接模型方法与电力运行场景", "Connecting AI methods with power-system operations"),
@@ -514,18 +602,20 @@ const portfolio = {
     {
       id:"project-hust-wind",index:"R2",sourceStory:"hust-wind",
       category:T("研究详解 · 联邦学习与动态图", "Research · Federated learning & dynamic graphs"),
-      title:T("多风电场协同预测：个性化联邦与动态图", "Federated forecasting across wind farms"),
+      title:T("FedGIN / CPLF：个性化联邦与可学习特征图", "FedGIN / CPLF: personalized federation and learned feature graphs"),
       role:T("主要研究成员 · 方法设计、实现与实验分析 · 共同第一作者", "Core research contributor · Method design, implementation and analysis · Co-first author"),
-      context:T("风电场之间存在空间联系，但原始数据分散在各场站，本地时间规律也不相同。研究需要在数据留在本地的前提下，利用跨场站信息改善协同预测", "Wind farms share spatial relationships while their data and temporal patterns remain local. The research explored collaborative forecasting that uses cross-farm information without moving raw data out of each site"),
-      decisionTitles:[T("共享空间联系，保留本地差异", "Share relationships, preserve local differences"),T("结合预测、通信与隐私约束验证", "Evaluate prediction, communication and privacy constraints")],
+      context:T("多风电场预测需要协同学习，又受原始数据本地保存与各场站时间模式异构的约束。GIN 在本地学习特征图和时间表征，CPLF 只聚合空间模块参数；所给修订稿用加州 NW 8 场站、SE 19 场站的 NREL 数据开展 30 分钟至 2 小时预测实验", "Multi-farm forecasts need collaboration under raw-data locality and heterogeneous temporal behavior. GIN learns feature graphs and temporal representations locally; CPLF aggregates spatial-module parameters. The supplied revision evaluates 30-minute to 2-hour forecasts using NREL data from 8 NW and 19 SE California farms"),
+      researchStudy:windResearchStudy,
+      decisionTitles:[T("本地 GIN：图表征与时间建模", "Local GIN: graph and temporal representations"),T("SiDGI：生成有向结构并校准边权", "SiDGI: directed graph generation and edge calibration"),T("CPLF：空间共享、时间个性化", "CPLF: shared spatial modules and temporal personalization"),T("分开检验协作与图模块的收益", "Test collaboration and graph components separately")],
     },
     {
       id:"project-hust-price",index:"R3",sourceStory:"hust-price",
       category:T("研究详解 · 点预测与区间预测", "Research · Point & interval forecasting"),
-      title:T("日前电价预测：从预测数值到不确定性", "Day-ahead prices: values and uncertainty"),
+      title:T("Dense Skip Attention：日前电价点预测与区间预测", "Dense Skip Attention: point and interval day-ahead prices"),
       role:T("主要研究成员 · 方法设计、代码实现与实验分析 · 第二作者", "Core research contributor · Method design, implementation and analysis · Second author"),
-      context:T("日前电价随时间与输入特征动态变化。研究在同一端到端框架中提供数值预测与区间预测，使输出同时表达预期值和可能的波动范围", "Day-ahead prices evolve with temporal and feature dynamics. The study used an end-to-end framework for both point and interval forecasts, expressing a predicted value and its plausible range"),
-      decisionTitles:[T("在同一框架中建模数值与区间", "Model values and intervals in one framework"),T("围绕动态特征开展实验验证", "Evaluate temporal and feature dynamics")],
+      context:T("面向日前市场中的报价、购售电与风险评估需求，研究使用瑞典、挪威、丹麦、芬兰 2018–2019 年小时数据。输入涵盖价格、功率交换、发电与用电、容量，以及丹麦、芬兰的风电特征；时间建模与特征加权共同服务于点预测和区间预测", "For day-ahead market bidding, energy purchases/sales and risk assessment, the study uses hourly 2018–2019 data from Sweden, Norway, Denmark and Finland. Inputs cover prices, power exchanges, generation and consumption, capacity, and wind features in Denmark and Finland. Temporal modeling and feature weighting support point and interval forecasts"),
+      researchStudy:priceResearchStudy,
+      decisionTitles:[T("ARUCNN–GRU：时间建模与正则化", "ARUCNN–GRU: temporal modeling and regularization"),T("Dense Skip Attention：特征轴加权与旁路", "Dense Skip Attention: feature-axis weighting and skip path"),T("按输出任务选择损失与评估指标", "Select losses and metrics for the output task"),T("验证精度、区间质量与计算取舍", "Validate accuracy, interval quality and computation")],
     },
     {
       id:"project-hust-review",index:"R4",sourceStory:"hust-review",

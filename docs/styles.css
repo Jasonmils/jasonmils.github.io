@@ -328,6 +328,10 @@ details[open]>summary .toggle-plus:before{content:none}
 .paper-disclosure-body{padding:0 16px 16px}
 .paper-disclosure-body>.paper-figure+.paper-figure{margin-top:16px}
 .paper-disclosure-body>.table-note{margin-top:13px}
+.research-source-note{margin:18px 0;padding:13px 16px;border-left:3px solid #cad4f6;background:#f3f6ff80;border-radius:0 10px 10px 0}
+.research-table-section{margin:24px 0 30px}
+.research-table-section>.table-note{margin-top:14px}
+.research-results .paper-evidence{margin-top:20px}
 @media(max-width:600px){
  .paper-figure{padding:14px}.paper-figure figcaption strong{font-size:14px}.paper-figure>p{font-size:11px}
  .paper-equation{font-size:12px;padding:12px}.paper-result-summary{gap:9px}

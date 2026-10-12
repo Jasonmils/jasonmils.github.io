@@ -61,13 +61,37 @@
       '<li>' + diagramIcon(step[0]) + '<strong>' + bi(step[1]) + '</strong><span class="step-caption">' + bi(step[2]) + '</span></li>'
     ).join('') + '</ol>' + (loop ? '<div class="diagram-return"><span aria-hidden="true">↶</span>' + bi(loop) + '</div>' : '') + '</div>';
   const visualNote = value => '<p class="visual-note">' + bi(value) + '</p>';
-  const renderPaperFigure = figure => '<figure class="paper-figure"><figcaption><span class="paper-figure-number">FIGURE ' +
-    figure.number + '</span><strong>' + bi(figure.title) + '</strong></figcaption><a class="paper-figure-image" href="' +
-    escapeHTML(figure.src) + '" target="_blank" rel="noopener noreferrer" aria-label="Open original figure ' + figure.number + '">' +
-    '<img src="' + escapeHTML(figure.src) + '" alt="DEFormer paper Figure ' + figure.number + ': ' + escapeHTML(figure.title.en) +
-    '" width="' + figure.width + '" height="' + figure.height + '" loading="lazy" decoding="async"></a><p>' + bi(figure.note) +
-    '</p><a class="paper-zoom" href="' + escapeHTML(figure.src) + '" target="_blank" rel="noopener noreferrer">' +
-    bi(T("查看原图", "View original figure"),true) + diagonal + '</a></figure>';
+  const renderPaperFigure = figure => {
+    const label = figure.redrawn ? "METHOD SCHEMATIC" : "FIGURE " + figure.number;
+    return '<figure class="paper-figure"><figcaption><span class="paper-figure-number">' + label +
+      '</span><strong>' + bi(figure.title) + '</strong></figcaption><a class="paper-figure-image" href="' +
+      escapeHTML(figure.src) + '" target="_blank" rel="noopener noreferrer" aria-label="Enlarge ' + escapeHTML(figure.title.en) + '">' +
+      '<img src="' + escapeHTML(figure.src) + '" alt="' + label + ': ' + escapeHTML(figure.title.en) +
+      '" width="' + figure.width + '" height="' + figure.height + '" loading="lazy" decoding="async"></a><p>' + bi(figure.note) +
+      '</p><a class="paper-zoom" href="' + escapeHTML(figure.src) + '" target="_blank" rel="noopener noreferrer">' +
+      bi(figure.redrawn ? T("放大结构图", "Enlarge schematic") : T("查看原图", "View original figure"),true) + diagonal + '</a></figure>';
+  };
+  const renderResearchTable = (table,group) => {
+    const cell = value => value === null ? "OOM" : typeof value !== "number" ? bi(value,true) :
+      table.format === "ratio" ? (value*100).toFixed(3) + "%" : table.format === "percent" ? value.toFixed(2) + "%" :
+      table.format === "decimal" ? value.toFixed(3) : String(value);
+    return '<div class="paper-table-scroll" role="region" tabindex="0" aria-label="' + escapeHTML(table.title.en) + '">' +
+      '<table class="paper-result-table"><caption>' + bi(table.title) + '</caption><thead><tr>' +
+      table.headers.map(header => '<th scope="col">' + bi(header,true) + '</th>').join('') + '</tr></thead><tbody>' +
+      group.rows.map((row,i) => '<tr' + (!i && table.highlight !== false ? ' class="paper-best-row"' : '') +
+        '><th scope="row">' + bi(row[0],true) + '</th>' + row.slice(1).map(value => '<td>' + cell(value) + '</td>').join('') +
+        '</tr>').join('') + '</tbody></table></div>';
+  };
+  const renderResearchResults = study => '<div class="research-results"><div class="paper-result-summary">' +
+    study.summary.map(item => '<div><span>' + bi(item.label,true) + '</span><strong>' + item.value + '</strong><p>' + bi(item.note) + '</p></div>').join('') +
+    '</div><p class="table-note research-source-note">' + bi(study.sourceNote) + '</p><p class="paper-scroll-hint">' +
+    bi(T("表格可横向滑动，查看全部条件", "Scroll tables horizontally to see every condition")) + '</p>' +
+    study.tables.map(table => {
+      const body = table.groups.map(group => '<section class="paper-dataset">' + (group.label ? '<h5>' + bi(group.label,true) + '</h5>' : '') +
+        renderResearchTable(table,group) + '</section>').join('') + '<p class="table-note">' + bi(table.note) + '</p>';
+      return table.collapsed ? '<details class="paper-evidence"><summary>' + bi(table.title,true) + toggle() +
+        '</summary><div class="paper-disclosure-body">' + body + '</div></details>' : '<section class="research-table-section">' + body + '</section>';
+    }).join('') + '</div>';
   const renderPaperTable = (rows, title) => '<div class="paper-table-scroll" tabindex="0" role="region" aria-label="' +
     escapeHTML(title.en) + '"><table class="paper-result-table"><caption>' + bi(title) + '</caption><thead><tr><th scope="col">' +
     bi(T("模型 / 配置", "Model / setup"),true) + '</th><th scope="col">wMAPE ↓</th><th scope="col">MAPE ↓</th>' +
@@ -176,20 +200,19 @@
       takeaway:T("产品定义、工程讨论与用户验证，需要持续连接", "Keep definition, engineering and user validation connected")
     },
     "hust-wind": {
-      tab:T("联邦预测", "Federated"),title:T("数据留在本地，学习跨场站联系", "Learn across farms while keeping data local"),
-      challenge:T("共享空间联系，同时保留各场站的时间差异", "Share spatial relationships while preserving local temporal differences"),
+      tab:T("联邦预测", "Federated"),title:T("图特征协作，时间模型个性化", "Collaborative graph features, personalized temporal models"),
+      challenge:T("本地 GIN + SiDGI + 部分参数联邦 CPLF", "Local GIN + SiDGI + Partial-parameter CPLF"),
       render: () => diagramFlow([
         ["local",T("本地数据", "Local data"),T("原始数据不出域", "Raw data stays local")],
-        ["people",T("个性化联邦", "Personalize"),T("跨场站协同", "Federated learning")],
-        ["graph",T("可学习动态图", "Dynamic graph"),T("空间与时间依赖", "Spatial / temporal")]
-      ]) + '<div class="qualitative-results"><span>' + bi(T("跨场站预测", "Cross-farm forecasting")) + '</span><span>' +
-        bi(T("降低通信开销", "Lower communication cost")) + '</span><span>' + bi(T("降低逆向工程风险", "Lower reverse-engineering risk")) +
-        '</span></div>' + paperResult("IEEE Transactions on Network Science and Engineering", "2025", T("共同第一作者", "Co-first author")),
+        ["graph",T("SiDGI 特征图", "SiDGI feature graph"),T("学结构 · 校准边权", "Learn edges · Calibrate weights")],
+        ["people",T("CPLF 聚合", "CPLF aggregation"),T("共享空间 · 保留时间", "Share spatial · Retain temporal")]
+      ]) + '<div class="paper-methods">' + windResearchStudy.figures.map(renderPaperFigure).join('') + '</div>' +
+        paperResult("IEEE Transactions on Network Science and Engineering", "2025", T("共同第一作者", "Co-first author")),
       takeaway:T("预测表现、隐私与通信开销，需要共同权衡", "Balance forecasting, privacy and communication together")
     },
     "hust-price": {
       tab:T("电价区间", "Intervals"),title:T("既预测数值，也表达不确定性", "Predict the value and express uncertainty"),
-      challenge:T("应对日前电价的时间与特征动态变化", "Model the temporal and feature dynamics of day-ahead prices"),
+      challenge:T("时间依赖、特征权重与回归损失分别设计", "Design temporal features, feature weights and regression losses separately"),
       render: () => '<div class="prediction-diagram"><div class="prediction-input">' + bi(T("时序与动态特征", "Temporal & dynamic features")) +
         '</div><span class="tree-arrow" aria-hidden="true">↓</span><div class="prediction-model"><strong>' + bi(T("端到端预测框架", "End-to-end forecasting")) +
         '</strong><div>' + bi(T("非共享卷积 · GRU · 稠密跳跃注意力", "Non-shared convolution · GRU · Dense skip attention")) +
@@ -197,7 +220,8 @@
         bi(T("点预测", "Point forecast")) + '</strong><span>' + bi(T("预测了多少", "The predicted value")) +
         '</span></div><div><svg viewBox="0 0 120 32" aria-hidden="true"><path d="M12 16h96"/><path class="interval-range" d="M32 16h56"/><path d="M32 10v12m56-12v12"/><circle cx="60" cy="16" r="4"/></svg><strong>' +
         bi(T("区间预测", "Interval forecast")) + '</strong><span>' + bi(T("可能的波动范围", "The plausible range")) +
-        '</span></div></div></div>' + paperResult("IEEE Transactions on Power Systems", "2023", T("第二作者", "Second author")),
+        '</span></div></div></div><div class="paper-methods">' + priceResearchStudy.figures.map(renderPaperFigure).join('') + '</div>' +
+        paperResult("IEEE Transactions on Power Systems", "2023", T("第二作者", "Second author")),
       takeaway:T("将不确定性纳入输出与评估", "Bring uncertainty into both the output and the evaluation")
     },
     "hust-review": {
@@ -321,7 +345,7 @@
       '<div class="decision"><span class="number">0' + (i+1) + '</span><div><h4>' + bi(d.title) + '</h4><p>' +
       bi(d.body) + '</p></div></div>').join('') + '</div>' +
     '<h4 class="small-label">' + bi(ui.result) +
-    '</h4>' + (project.paperStudy ? renderPaperResults(project.paperStudy) : project.table && !project.visualStory ? renderTable(project.table) : '') +
+    '</h4>' + (project.researchStudy ? renderResearchResults(project.researchStudy) : project.paperStudy ? renderPaperResults(project.paperStudy) : project.table && !project.visualStory ? renderTable(project.table) : '') +
     (project.metrics ? renderMetrics(project.metrics) : '') + '<p class="project-outcome">' + bi(project.outcome) + '</p>' +
     '<div class="learning-box"><h4 class="small-label">' + bi(ui.learnings) +
     '</h4><p>' + bi(project.learning) +
