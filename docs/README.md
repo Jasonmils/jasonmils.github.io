@@ -6,7 +6,7 @@ A bilingual interview portfolio with three experience overviews, four featured p
 
 ## Publication
 
-Static files are published from the root of the `master` branch. `.nojekyll` disables the previous Jekyll build. Historical academic website sources remain in the repository and Git history. The new homepage does not link to the old CV files.
+GitHub Pages publishes only the `/docs` directory of the `master` branch. `.nojekyll` serves this site as static files. The complete previous academic website is archived separately in `../legacy/` and is not part of the Pages output. The public URL remains https://jasonmils.github.io/.
 
 ## Editing
 
