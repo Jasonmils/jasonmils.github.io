@@ -1,0 +1,18 @@
+Institution logos used to identify the corresponding experience.
+Downloaded on 2026-10-12. Images retain their original colors and proportions.
+
+alibaba.ico
+Alibaba Group official website favicon
+https://static.alibabagroup.com/static/favicon.ico
+https://www.alibabagroup.com/
+
+innox.png
+Shenzhen InnoX Academy official website compact logo
+https://www.innoxsz.com/class/template/images/logo-min.png
+https://www.innoxsz.com/
+
+hust.png
+Huazhong University of Science and Technology emblem, public preview
+https://www.urongda.com/images/normal/medium/huazhong-university-of-science-and-technology-logo-1024px.png
+https://www.urongda.com/logos/4142010487
+Official identity reference: https://vi.hust.edu.cn/jcbf/bzgf/xhgf.htm

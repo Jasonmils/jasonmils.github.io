@@ -1,0 +1,14 @@
+Locally bundled Google Fonts, SIL Open Font License 1.1.
+Visual design reference: https://monid.ai/brand/
+
+Inter
+https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2
+https://raw.githubusercontent.com/google/fonts/main/ofl/inter/OFL.txt
+
+Outfit
+https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtq.woff2
+https://raw.githubusercontent.com/google/fonts/main/ofl/outfit/OFL.txt
+
+JetBrains Mono
+https://fonts.gstatic.com/s/jetbrainsmono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2
+https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/OFL.txt
