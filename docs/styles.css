@@ -523,6 +523,55 @@ body.project-preview-open{overflow:hidden}
 .bridge-arrow{display:grid;place-items:center;align-self:stretch;position:relative;font-size:22px;color:#b0b5c9}
 .strategy-bridge strong{display:block;font-size:14px;font-weight:600;line-height:1.5;color:#41434b}
 .strategy-bridge p{font-size:13px;line-height:1.75;color:#6e6e73;margin-top:5px}
+/* A compact overview keeps both horizons visible before the longer details. */
+.growth-journey{margin:0 0 30px}
+.growth-journey-label{font-size:11px;line-height:1.7;color:#737b8d;margin-bottom:12px}
+.growth-journey-route{position:relative}
+.growth-journey-stages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;margin:0;padding:0;list-style:none}
+.growth-journey-stages li{position:relative;min-width:0;display:flex}
+.growth-journey-stage{display:flex;flex-direction:column;min-width:0;width:100%;padding:18px 16px;border:1px solid #ffffffdd;border-radius:18px;background:linear-gradient(145deg,#f7faff,#eaf0ffb3);box-shadow:inset 0 1px 0 #fff,0 5px 16px #354d8b08;transition:border-color .2s,background-color .2s,box-shadow .2s}
+.growth-journey-stage--long{background:linear-gradient(145deg,#fcfaff,#efeafbb3)}
+.growth-journey-stage:hover{border-color:#b6c5f3;box-shadow:inset 0 1px 0 #fff,0 5px 16px #354d8b16}
+.growth-journey-stage:focus-visible{outline-offset:4px;border-radius:18px}
+.growth-journey-top{display:flex;align-items:center;gap:8px;min-width:0}
+.growth-journey-number{display:grid;place-items:center;flex:0 0 26px;height:26px;border-radius:50%;font:500 10px/1 var(--font-mono);color:#2b4aca;background:#ffffffba;border:1px solid #fff}
+.growth-journey-stage--long .growth-journey-number{color:#7358a6}
+.growth-journey-horizon{font-size:10px;line-height:1.6;color:#727c93;min-width:0}
+.growth-journey-stage>strong{font-size:17px;line-height:1.5;font-weight:600;letter-spacing:-.02em;color:#23385f;margin-top:13px}
+.growth-journey-stage--long>strong{color:#574270}
+.growth-journey-action{font-size:11px;line-height:1.75;color:#66718a;margin-top:8px;margin-bottom:14px}
+.growth-journey-link{display:flex;gap:5px;align-items:center;margin-top:auto;font-size:10px;line-height:1.6;color:#4662b7}
+.growth-journey-link .icon{width:12px;height:12px}
+.growth-journey-stage--long .growth-journey-link{color:#795f9c}
+.growth-journey-direction{position:absolute;top:50%;left:-16px;display:grid;place-items:center;width:28px;height:28px;transform:translate(-50%,-50%);border:1px solid #ffffffdf;border-radius:50%;color:#8797bc;background:#ffffffb3}
+.growth-journey-direction .icon{width:16px;height:16px}
+.growth-journey-foundation{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;align-items:start;margin-top:14px;padding:14px 16px;border:1px solid #ffffffb3;border-radius:14px;background:#ffffff73}
+.growth-journey-foundation>.icon{color:#7787ac;margin-top:2px}
+.growth-journey-foundation strong{display:block;font-size:12px;line-height:1.6;font-weight:600;color:#4d5e80}
+.growth-journey-foundation p{font-size:11px;line-height:1.8;color:#737b8d;margin-top:4px}
+.growth-detail .strategy-phases{position:relative;padding-left:20px}
+.growth-detail .strategy-phases:before{content:"";position:absolute;left:4px;top:39px;bottom:39px;width:1px;background:linear-gradient(#b8c9f2,#d1c2e9)}
+.growth-detail .strategy-phase{position:relative}
+.growth-detail .strategy-phase:before{content:"";position:absolute;left:-21px;top:33px;width:10px;height:10px;border-radius:50%;background:#afc1ef;border:2px solid #f6f8ff;box-shadow:0 0 0 3px #edf2ff}
+.growth-detail #ali-long-term:before{background:#c5b3df;box-shadow:0 0 0 3px #f5f0fc}
+.growth-detail #ali-long-term .strategy-number{color:#7358a6;background:linear-gradient(145deg,#fff,#efeafa)}
+.growth-detail #ali-long-term h5{color:#574270}
+.growth-detail .strategy-phase:target{border-color:#b0c1ec;box-shadow:0 0 0 3px #2b4aca0b,var(--glass-shadow)}
+.growth-detail #ali-long-term:target{border-color:#c6b1e0;box-shadow:0 0 0 3px #795f9c0b,var(--glass-shadow)}
+.growth-detail .strategy-bridge{margin:0 8px;padding:20px 0}
+.growth-detail .bridge-arrow{color:#91a0c0}
+@media(min-width:601px) and (max-width:1000px){.growth-detail .strategy-phase{scroll-margin-top:72px}}
+@media(max-width:480px){
+ .growth-journey-stages{grid-template-columns:1fr;gap:28px}
+ .growth-journey-stage{padding:16px 18px}
+ .growth-journey-stage>strong{margin-top:9px}
+ .growth-journey-action{margin-top:5px;margin-bottom:9px}
+ .growth-journey-direction{top:-14px;left:50%;transform:translate(-50%,-50%) rotate(90deg)}
+ .growth-journey-foundation{padding:13px 14px}
+ .growth-detail .strategy-phases{padding-left:14px}
+ .growth-detail .strategy-phases:before{left:2px}
+ .growth-detail .strategy-phase:before{left:-17px}
+}
 .project-study{margin:32px 0;padding:26px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);scroll-margin-top:20px}
 @media(max-width:600px){
  .experience-strategy{margin-top:26px}.strategy-title{font-size:19px;margin-bottom:17px}

@@ -359,6 +359,15 @@ const portfolio = {
       focus:[T("价量预测", "Price–sales forecasting"), T("短期增长", "Near-term growth"), T("长期商品成长", "Long-term product growth")],
       strategy:{
         title:T("从短期交易增长，到长期商品成长", "From near-term GMV to long-term product growth"),
+        journey:{
+          label:T("时间跨度与决策范围的延伸", "A wider time horizon and decision scope"),
+          stages:[
+            {target:"ali-short-term",number:"01",horizon:T("单个周期 · 14 天示例", "One cycle · e.g. 14 days"),title:T("短期交易增长", "Near-term GMV"),action:T("价量预测 → 促销定价", "Forecast → Promotional pricing")},
+            {target:"ali-long-term",number:"02",horizon:T("跨营销周期 · 持续迭代", "Across cycles · Ongoing iteration"),title:T("长期商品成长", "Long-term product growth"),action:T("高潜孵化 · 成长层级防滑落", "Incubation · Growth-tier retention")}
+          ],
+          connection:T("预测能力复用", "Reuse the forecasting capability"),
+          detail:T("优化后的价量预测模型，成为长期成长项目的 baseline", "The improved price–sales forecaster becomes the baseline for longer-term growth planning")
+        },
         goalLabel:T("业务目标", "Objective"),
         contributionLabel:T("我的贡献", "My contribution"),
         phases:[
@@ -386,7 +395,7 @@ const portfolio = {
             links:[{target:"project-agent",label:T("高潜商品孵化与防滑落", "Product growth & retention"), action:T("复用预测 baseline，结合商品状态与历史反馈，串联评估、运营建议与持续迭代", "Reused the forecasting baseline with product state and feedback in an ongoing assessment and recommendation workflow")}],
           },
         ],
-        bridgeLabel:T("两阶段如何承接", "How the stages connect"),
+        bridgeLabel:T("复用预测能力，扩大决策跨度", "Reuse forecasting across a wider horizon"),
         bridge:T("优化后的价量预测模型，成为长期成长项目的 baseline", "The improved price–sales forecaster becomes the baseline for longer-term growth planning"),
       },
       background:T("团队的工作围绕电商营销中的商品增长、促销定价与补贴资源配置展开。销量预测在这里需要进入运营决策：判断哪些商品值得投入、如何配置价格与资源，以及怎样用反馈修正下一轮方案", "The team worked on product growth, promotional pricing and subsidy allocation in e-commerce marketing. Forecasts fed into operating decisions: which products merit support, how prices and resources should be configured, and how feedback should inform the next round"),

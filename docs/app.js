@@ -335,8 +335,18 @@
     innox: [{id:"innox",src:"assets/logos/innox.png"}],
     hust: [institutionLogos.hust,institutionLogos.psl]
   };
-  const renderStrategy = strategy => '<div class="experience-strategy"><h4 class="strategy-title">' + bi(strategy.title) +
-    '</h4><div class="strategy-phases">' + strategy.phases.map((phase, i) =>
+  const renderGrowthJourney = journey => '<nav class="growth-journey" aria-labelledby="' + escapeHTML(journey.stages[0].target) +
+    '-journey-label"><p class="growth-journey-label" id="' + escapeHTML(journey.stages[0].target) + '-journey-label">' + bi(journey.label) + '</p><div class="growth-journey-route"><ol class="growth-journey-stages">' +
+    journey.stages.map((stage,i) => '<li>' + (i ? '<span class="growth-journey-direction" aria-hidden="true">' + arrow + '</span>' : '') + '<a class="growth-journey-stage growth-journey-stage--' + (i ? 'long' : 'short') + '" href="#' +
+      escapeHTML(stage.target) + '"><span class="growth-journey-top"><span class="growth-journey-number" aria-hidden="true">' + stage.number +
+      '</span><span class="growth-journey-horizon">' + bi(stage.horizon) + '</span></span><strong>' + bi(stage.title) +
+      '</strong><span class="growth-journey-action">' + bi(stage.action) + '</span><span class="growth-journey-link">' +
+      bi(T("查看阶段", "Explore stage"),true) + arrow + '</span></a></li>').join('') +
+    '</ol></div><div class="growth-journey-foundation">' +
+    '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h11l-3-3M19 16H8l3 3M19 8v4M5 16v-4"/></svg><div><strong>' +
+    bi(journey.connection) + '</strong><p>' + bi(journey.detail) + '</p></div></div></nav>';
+  const renderStrategy = strategy => '<div class="experience-strategy' + (strategy.journey ? ' growth-detail' : '') + '"><h4 class="strategy-title">' + bi(strategy.title) +
+    '</h4>' + (strategy.journey ? renderGrowthJourney(strategy.journey) : '') + '<div class="strategy-phases">' + strategy.phases.map((phase, i) =>
       (i ? '<div class="strategy-bridge"><span class="bridge-arrow" aria-hidden="true">↓</span><div><strong>' +
         bi(strategy.bridgeLabel) + '</strong><p>' + bi(strategy.bridge) + '</p></div></div>' : '') +
       '<section class="strategy-phase" id="' + phase.id + '" aria-labelledby="' + phase.id + '-title"><header class="strategy-phase-header">' +
