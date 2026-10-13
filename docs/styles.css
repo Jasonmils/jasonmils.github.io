@@ -20,7 +20,8 @@ ul{margin:0;padding:0;list-style:none}
 h1 .zh,h2 .zh,.experience-header h3 .zh{font-family:var(--font-display);font-weight:600}
 h3 .zh,h4 .zh,.profile-role .zh{font-family:var(--font-display)}
 h3 .zh,h4 .zh,.profile-role .zh,.experience-role .zh,.section-nav .zh,.mobile-index .zh,.small-label .zh,.eyebrow .zh,.context-summary .zh,.quiet-button .zh,.text-link .zh{font-weight:500}
-.lang-zh .bi>.en,.lang-en .bi>.zh{visibility:hidden;pointer-events:none}
+/* Only the active translation contributes to text height and item spacing. */
+.lang-zh .bi>.en,.lang-en .bi>.zh{display:none}
 .bi-inline{display:inline-grid;vertical-align:baseline}
 .icon{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .ambient-light{position:fixed;inset:0;z-index:-1;pointer-events:none;background:none;display:none}
@@ -393,7 +394,6 @@ details[open]>summary .toggle-plus:before{content:none}
 .education-school{display:flex;align-items:flex-start;gap:18px;min-width:0}
 .education-copy{min-width:0}
 .education-copy .bi{display:block}
-.lang-zh .education-copy .bi>.en,.lang-en .education-copy .bi>.zh{display:none}
 .education-logo{margin-top:3px}
 .education-row h3{font-size:20px;line-height:1.7;font-weight:500;color:var(--ink);font-family:var(--font-display);letter-spacing:-.02em}
 .education-row p{font-size:13px;line-height:1.9;color:var(--muted);margin-top:7px}
