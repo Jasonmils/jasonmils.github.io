@@ -542,7 +542,29 @@ body.project-preview-open{overflow:hidden}
 .growth-journey-stage>strong{font-size:17px;line-height:1.5;font-weight:600;letter-spacing:-.02em;color:#23385f;margin-top:13px}
 .growth-journey-stage--long>strong{color:#574270}
 .growth-journey-action{font-size:11px;line-height:1.75;color:#66718a;margin-top:8px;margin-bottom:14px}
+.growth-journey-diagram{display:block;width:100%;max-width:300px;margin:auto auto 12px}
+.journey-chart{display:block;width:100%;height:auto;overflow:visible;font-family:var(--font)}
+.journey-chart .journey-chart-axis{fill:none;stroke:#acb8d0;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.journey-chart-axis-label{font-size:14px;fill:#71809b;font-weight:500}
+.journey-chart-curve,.journey-chart-history,.journey-chart-incubation,.journey-chart-retention{fill:none;stroke-width:3;stroke-linecap:round}
+.journey-chart-curve{stroke:#5278d8}
+.journey-chart-guide{fill:none;stroke:#9db2e6;stroke-width:1.3;stroke-dasharray:3 4}
+.journey-chart-halo{fill:#5278d821}.journey-chart-point{fill:#4169cd;stroke:#fff;stroke-width:2}
+.journey-chart-optimum{font-size:16px;font-weight:600;fill:#3d63bc}
+.journey-chart-price-label,.journey-chart-current-label{font-size:12px;fill:#7385a9}
+.journey-chart-history{stroke:#b7a6d2}
+.journey-chart-incubation{stroke:#8a65b8}
+.journey-chart-retention{stroke:#688da4}
+.journey-chart-risk{fill:none;stroke:#b6b4c5;stroke-width:1.8;stroke-linecap:round;stroke-dasharray:4 5}
+.journey-chart-history-point{fill:#b7a6d2}
+.journey-chart-current,.journey-chart-growth-point{fill:#8a65b8;stroke:#fff;stroke-width:2}
+.journey-chart-retention-point{fill:#688da4;stroke:#fff;stroke-width:2}
+.journey-chart-incubation-label,.journey-chart-retention-label{font-size:14px;font-weight:500;fill:#79539f}
+.journey-chart-retention-label{fill:#537c92}
+.journey-chart-risk-label{font-size:12px;fill:#8f8c9f}
+.journey-chart-note{display:block;font-size:9px;line-height:1.7;text-align:center;color:#8990a2;margin-top:4px}
 .growth-journey-link{display:flex;gap:5px;align-items:center;margin-top:auto;font-size:10px;line-height:1.6;color:#4662b7}
+.growth-journey-diagram~.growth-journey-link{margin-top:0}
 .growth-journey-link .icon{width:12px;height:12px}
 .growth-journey-stage--long .growth-journey-link{color:#795f9c}
 .growth-journey-direction{position:absolute;top:50%;left:-16px;display:grid;place-items:center;width:28px;height:28px;transform:translate(-50%,-50%);border:1px solid #ffffffdf;border-radius:50%;color:#8797bc;background:#ffffffb3}

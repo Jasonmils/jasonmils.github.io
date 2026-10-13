@@ -335,12 +335,45 @@
     innox: [{id:"innox",src:"assets/logos/innox.png"}],
     hust: [institutionLogos.hust,institutionLogos.psl]
   };
+  const renderGrowthDiagram = kind => {
+    const title = kind === "price" ? T("GMV 与价格曲线：峰值对应最优价格", "GMV versus price: the peak identifies the optimal price") :
+      T("跨档期商品成长：高潜孵化与成长层级防滑落", "Product growth across campaigns: incubation and growth-tier retention");
+    const description = kind === "price" ? T("概念示意。横轴为价格，纵轴为预测 GMV；在候选价格范围内选择预测 GMV 最高的价格。图中无实际业务数据", "Conceptual illustration. Price is on the horizontal axis and predicted GMV on the vertical axis. Select the price with the highest predicted GMV in the candidate range. No actual business data is plotted") :
+      T("策略示意。横轴为档期，纵轴为成长层级；从当前商品状态出发，高潜商品进行孵化，有滑落风险的商品进行层级维持。虚线表示滑落风险，图中无实际业务数据", "Strategy illustration. Campaigns are on the horizontal axis and growth tier on the vertical axis. Incubate products with growth potential and retain the tier of products at risk. The dashed path denotes decline risk; no actual business data is plotted");
+    const svg = lang => {
+      const id = "journey-" + kind + "-" + lang;
+      const label = (x,y,value,cls,anchor = "start") => '<text x="' + x + '" y="' + y + '" class="' + cls +
+        '" text-anchor="' + anchor + '">' + escapeHTML(value[lang] || value) + '</text>';
+      return '<svg class="journey-chart journey-chart--' + kind + '" viewBox="0 0 300 186" width="300" height="186" role="img" aria-labelledby="' +
+        id + '-title ' + id + '-desc"><title id="' + id + '-title">' + escapeHTML(title[lang]) + '</title><desc id="' + id + '-desc">' +
+        escapeHTML(description[lang]) + '</desc><path class="journey-chart-axis" d="M34 32V154H278M30 38l4-6 4 6M272 150l6 4-6 4"/>' +
+        (kind === "price" ? '<defs><linearGradient id="' + id + '-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6587e8" stop-opacity=".19"/><stop offset="1" stop-color="#6587e8" stop-opacity=".01"/></linearGradient></defs>' +
+          '<path d="M48 139Q152 -27 256 139V154H48Z" fill="url(#' + id + '-fill)"/>' +
+          '<path class="journey-chart-guide" d="M152 56V154"/><path class="journey-chart-curve" data-curve="gmv" d="M48 139Q152 -27 256 139"/>' +
+          '<circle class="journey-chart-halo" cx="152" cy="56" r="10"/><circle class="journey-chart-point" data-optimum="true" cx="152" cy="56" r="4"/>' +
+          label(34,20,"GMV","journey-chart-axis-label") + label(278,178,"Price","journey-chart-axis-label","end") +
+          label(152,35,T("最优", "Optimal"),"journey-chart-optimum","middle") + label(152,176,T("最优价格", "Optimal price"),"journey-chart-price-label","middle") :
+          '<path class="journey-chart-history" d="M48 125C75 120 100 95 134 94"/>' +
+          '<path class="journey-chart-risk" data-path="risk" d="M134 94C176 102 214 128 252 132"/>' +
+          '<path class="journey-chart-incubation" data-path="incubation" d="M134 94C176 85 213 56 252 42"/>' +
+          '<path class="journey-chart-retention" data-path="retention" d="M134 94C176 91 213 90 252 94"/>' +
+          '<circle class="journey-chart-history-point" cx="48" cy="125" r="3"/><circle class="journey-chart-current" cx="134" cy="94" r="4"/>' +
+          '<circle class="journey-chart-growth-point" cx="252" cy="42" r="4"/><circle class="journey-chart-retention-point" cx="252" cy="94" r="4"/>' +
+          label(34,20,T("成长层级", "Growth tier"),"journey-chart-axis-label") + label(278,178,T("档期", "Campaigns"),"journey-chart-axis-label","end") +
+          label(134,176,T("当前", "Now"),"journey-chart-current-label","middle") + label(170,30,T("高潜孵化", "Incubation"),"journey-chart-incubation-label") +
+          label(225,79,T("防滑落", "Retain tier"),"journey-chart-retention-label") + label(252,147,T("滑落风险", "Decline risk"),"journey-chart-risk-label","end")) + '</svg>';
+    };
+    const note = kind === "price" ? T("GMV = 价格 × 销量 · 示意", "GMV = Price × Units · Illustration") :
+      T("评估 → 运营 → 反馈 · 示意", "Assess → Act → Review · Illustration");
+    return '<span class="growth-journey-diagram"><span class="bi journey-chart-translations"><span class="zh" lang="zh-CN">' + svg("zh") +
+      '</span><span class="en" lang="en">' + svg("en") + '</span></span><span class="journey-chart-note">' + bi(note) + '</span></span>';
+  };
   const renderGrowthJourney = journey => '<nav class="growth-journey" aria-labelledby="' + escapeHTML(journey.stages[0].target) +
     '-journey-label"><p class="growth-journey-label" id="' + escapeHTML(journey.stages[0].target) + '-journey-label">' + bi(journey.label) + '</p><div class="growth-journey-route"><ol class="growth-journey-stages">' +
     journey.stages.map((stage,i) => '<li>' + (i ? '<span class="growth-journey-direction" aria-hidden="true">' + arrow + '</span>' : '') + '<a class="growth-journey-stage growth-journey-stage--' + (i ? 'long' : 'short') + '" href="#' +
       escapeHTML(stage.target) + '"><span class="growth-journey-top"><span class="growth-journey-number" aria-hidden="true">' + stage.number +
       '</span><span class="growth-journey-horizon">' + bi(stage.horizon) + '</span></span><strong>' + bi(stage.title) +
-      '</strong><span class="growth-journey-action">' + bi(stage.action) + '</span><span class="growth-journey-link">' +
+      '</strong><span class="growth-journey-action">' + bi(stage.action) + '</span>' + (stage.diagram ? renderGrowthDiagram(stage.diagram) : '') + '<span class="growth-journey-link">' +
       bi(T("查看阶段", "Explore stage"),true) + arrow + '</span></a></li>').join('') +
     '</ol></div><div class="growth-journey-foundation">' +
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h11l-3-3M19 16H8l3 3M19 8v4M5 16v-4"/></svg><div><strong>' +
