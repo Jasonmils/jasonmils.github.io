@@ -204,6 +204,35 @@ const reviewResearchStudy = {
   ]
 };
 
+// Public architecture summaries; no private research pages or runtime artifacts are embedded.
+const wikiStudy = {
+  figures:[
+    {label:"SYSTEM ARCHITECTURE",src:T("assets/wiki/architecture-zh.svg","assets/wiki/architecture-en.svg"),width:960,height:540,
+      title:T("证据、派生产物与正式知识页分层", "Separate evidence, derived artifacts and Canonical knowledge"),
+      note:T("Codex 按任务调用 Skills 与 Python 工具；原始文档和视频保留来源身份，预处理产物留在派生层。论断、覆盖状态和页面草稿经过具名审批与独立验收，再形成可检索的六类知识页", "Codex invokes Skills and Python tools by task. Source documents and videos retain their identities, while preprocessing outputs remain derived artifacts. Claims, coverage and page drafts pass exact-page approval and independent verification before entering six queryable page types")},
+    {label:"VIDEO EVIDENCE",src:T("assets/wiki/video-zh.svg","assets/wiki/video-en.svg"),width:960,height:720,
+      title:T("视频链路：音频、画面与证据状态分别处理", "Video: process audio, visuals and evidence status separately"),
+      note:T("集成 Video2Skill_Invest：转录与视觉处理分路执行，WhisperX 提供本地时间对齐，PPT/OCR 与页面身份解决画面证据定位。DeepSeek 仅接收经授权的文字；必需截图在本地复核，文字和视觉覆盖各有回执", "Integrated with Video2Skill_Invest: transcription and visual work use separate routes. WhisperX aligns timestamps locally, while slide OCR and page identity locate visual evidence. DeepSeek receives authorized text only; required screenshots are reviewed locally, with separate text and visual receipts")},
+    {label:"WRITE VERIFICATION",src:T("assets/wiki/verification-zh.svg","assets/wiki/verification-en.svg"),width:960,height:460,
+      title:T("页面批准、并发保护与写后验收", "Page approval, concurrency checks and post-write verification"),
+      note:T("批准绑定精确页面 ID、草稿和基线。写入者在共享锁内检查当前版本及 expected-old hash；独立验证器核对实际页面、唯一索引登记、追加日志和原始来源，并生成不可覆盖的回执", "Approval binds exact page IDs, drafts and baseline. The writer checks live state and expected-old hashes under a shared lock. A separate verifier checks actual pages, unique index registration, appended logs and original sources, then emits a non-overwriting receipt")}
+  ],
+  outputs:[
+    {title:T("可追溯上下文", "Traceable context"),body:T("来源定位、证据等级和覆盖状态随检索包交付", "Retrieval packages carry source locators, evidence classes and coverage")},
+    {title:T("多模态派生产物", "Multimodal artifacts"),body:T("文档结构、视频时间线、PPT/OCR 与视觉复核记录", "Document structure, video timeline, slide OCR and visual-review records")},
+    {title:T("可核对的完成条件", "Checkable completion"),body:T("批准范围、实际文件及独立回执共同确认更新", "Approved scope, actual files and an independent receipt confirm updates")}
+  ],
+  table:{title:T("各层产物与验收条件", "Artifacts and acceptance conditions by layer"),highlight:false,
+    headers:[T("检查维度", "Check"),T("产物", "Artifact"),T("完成条件", "Acceptance condition")],groups:[{rows:[
+      [T("来源完整性", "Source integrity"),T("来源审计与媒体 / 文档信息", "Source audit and media/document metadata"),T("原始字节与哈希保持一致，所有派生定位回到同一来源", "Original bytes and hashes remain consistent; all derived locators refer to the same source")],
+      [T("文字与时间对齐", "Text and time alignment"),"timeline.json / ASR receipts",T("保留原始片段、字词时间戳、实际转录与对齐提供方，以及需复核的边界", "Preserve original segments, word times, actual text/alignment providers and flagged boundaries")],
+      [T("画面与视觉覆盖", "Visual coverage"),"visual_review.json / screenshot receipts",T("每个必需截图都有哈希绑定的本地复核记录，partial 与 unavailable 按实际状态保留", "Every required screenshot has a hash-bound local review record; retain actual partial/unavailable states")],
+      [T("论断与证据归属", "Claims and attribution"),T("原子论断 ledger、核验 receipts 与覆盖 manifest", "Atomic-claim ledger, verification receipts and coverage manifest"),T("核对原始陈述、外部支持、冲突与证据等级，明确未覆盖范围", "Check source statements, external support, contradictions and evidence classes; identify coverage gaps")],
+      [T("正式页面写入", "Canonical writes"),T("基线、获批页面、索引 / 日志与 Phase 2 回执", "Baseline, approved pages, index/log and Phase 2 receipt"),T("最终文件匹配获批草稿，无额外页面改动；索引唯一、日志只追加、原始来源不变", "Live files match approved drafts with no extra page edits; unique index entries, append-only logs and unchanged sources")]
+    ]}]},
+  evidenceNote:T("实现说明依据所指定仓库的技术文档与脚本核对。页面展示流程、产物和检查条件；具体视频与文档的处理覆盖状态以各次运行回执为准", "Implementation descriptions were checked against the specified repository’s documentation and scripts. This page presents workflows, artifacts and acceptance conditions; per-source coverage is recorded in each run’s receipts")
+};
+
 // Project covers use the corresponding detail diagram or original paper figure.
 const projectCovers = {
   "project-agent": {
@@ -215,12 +244,8 @@ const projectCovers = {
     "height": 302
   },
   "project-wiki": {
-    "src": {
-      "zh": "assets/project-covers/project-wiki-zh.png",
-      "en": "assets/project-covers/project-wiki-en.png"
-    },
-    "width": 1230,
-    "height": 212
+    "src": {"zh":"assets/wiki/architecture-zh.svg","en":"assets/wiki/architecture-en.svg"},
+    "width":960,"height":540
   },
   "project-qwen": {
     "src": {
@@ -584,30 +609,37 @@ const portfolio = {
       visualStory:"ali-agent",related:"ali-long-term",
     },
     {
-      id:"project-wiki",index:"02",category:T("个人项目 · 知识工程", "Independent project · Knowledge engineering"),
+      id:"project-wiki",index:"02",category:T("个人项目 · 多模态知识工程", "Independent project · Multimodal knowledge engineering"),
       title:T("AITradingWiki", "AITradingWiki"),
-      description:T("一个保留证据来源、不确定性与审批边界的投研知识工作流", "An investment-research workflow that preserves provenance, uncertainty and approval boundaries"),
-      role:T("独立开发者 · 需求定义、工作流开发与验证机制", "Independent developer · Requirements, workflow development and verification"),
-      context:T("投资研究资料分散在文档、视频和已有研究页面中。真正可复用的研究上下文，需要保留观点来自哪里、对应哪一段材料、证据状态是什么，以及更新经过了哪些审核。项目以 Codex 辅助的知识系统组织这些环节，并结合投资研究经理反馈迭代", "Investment research spans documents, videos and existing research pages. Reusable context needs to preserve where a claim came from, its source location, evidence status and the review history of an update. I organized these steps in a Codex-assisted knowledge system, refined through investment research managers’ feedback"),
-      challenge:T("大量资料不能一次性全部放入上下文；可读文本也不足以替代证据定位。研究页面更新还需要保证只写入获批范围，并在写入后核对页面、索引与日志是否一致", "Large collections cannot all fit into context, and readable text alone does not provide source provenance. Page updates must stay within approved scope, then be checked against the pages, index and logs after writing"),
-      flow:[T("文档 / 视频","Documents / video"),T("证据与来源定位","Evidence & provenance"),T("受限检索与审批","Retrieve & approve"),T("独立验证与回执","Verify & receipt")],
+      description:T("将文档与视频转为带来源定位的研究页面，串联多模态摄入、有界检索、具名审批与写后验证", "Turn documents and videos into locator-bound research pages through multimodal ingestion, bounded retrieval, exact-page approval and post-write verification"),
+      role:T("独立开发者 · 需求定义、Codex Skills 与 Python 工具编排、视频桥接、完整性验证", "Independent developer · Requirements, Codex Skills and Python orchestration, video integration and integrity checks"),
+      context:T("投资研究资料分散在 PDF、Office 文档、长视频和历史研究页面中。项目以 Codex 调用 Skills 和确定性 Python 工具组织证据处理，并以 Obsidian 浏览 Markdown 知识页、链接和图谱，让后续研究能够追溯到原文、视频时间点与画面，同时保留观点归属和未覆盖范围", "Investment research spans PDFs, Office files, long videos and existing research pages. Codex invokes Skills and deterministic Python tools to process evidence, while Obsidian browses Markdown pages, links and graphs. Subsequent research can trace claims to source text, video times and visuals while retaining attribution and coverage gaps"),
+      challenge:T("文档结构、音频转录与幻灯片需要不同的预处理和定位方式；ASR、OCR 和模型整理的证据状态也需要分别记录。视频涉及音频和派生文字的独立传输授权，知识更新涉及精确批准范围、并发编辑与写入完成验证。资料规模增长时，还需要控制每次检索进入上下文的内容量", "Document structure, audio transcripts and slides need different preprocessing and locators, with separate evidence states for ASR, OCR and model refinement. Video introduces independent authorization for audio and derived-text transfers; knowledge updates require exact approval scope, concurrency checks and completion verification. Retrieval must also control context size as the collection grows"),
+      visualStory:"wiki-system",wikiStudy:wikiStudy,
       decisions:[
-        {
-          title:T("先筛选，再按需读取", "Select first, retrieve precisely"),
-          body:T("以元数据和页面链接筛选候选资料，再在限定上下文预算内读取目标章节。这样让上下文由当前研究问题决定，并保留源定位信息、内容哈希与证据状态标签", "I selected candidates through metadata and page links, then retrieved targeted sections within bounded context budgets. Context stayed tied to the research question while retaining source locators, content hashes and evidence-status labels"),
-        },
-        {
-          title:T("把证据属性保留在研究链中", "Keep evidence attributes in the workflow"),
-          body:T("文档与视频入库、证据分类、来源追溯和研究页面关联被组织在同一工作流中。检索结果继续保留不确定性，避免在上下文传递时丢失原材料的证据状态", "The workflow integrated document and video ingestion, evidence classification, provenance and linked research pages. Retrieved context retained uncertainty and evidence status as it moved through the research process"),
-        },
-        {
-          title:T("审批与完成验证分成两个环节", "Separate approval from completion checks"),
-          body:T("知识库更新采用页面级人工审批。写入后进行独立验证，检查来源完整性、获批范围、页面和索引一致性、仅追加日志，并在生成验证回执后才把更新标记为完成", "Page-level human approval governed updates. Independent post-write checks examined source integrity, approved scope, page/index consistency and append-only logs. An update was treated as complete only after a verification receipt was produced"),
-        },
+        {title:T("Codex 原生编排与分层存储", "Codex-native orchestration and layered storage"),
+          body:T("以 AGENTS、按任务加载的 Skills 和 Python 脚本组织摄入、查询、核验和研究工作流。raw 保存原始证据，output 保存可重建的报告、时间线和审计产物，wiki 保存 Source、Entity、Concept、Event、Model、Synthesis 六类正式页面；来源、解释、日期变化与模型假设分别归属，Obsidian 提供反链和图谱浏览", "AGENTS, task-loaded Skills and Python scripts organize ingestion, queries, checks and research. raw holds original evidence, output holds rebuildable reports, timelines and audit artifacts, and wiki holds six Canonical page types: Source, Entity, Concept, Event, Model and Synthesis. Source statements, interpretation, dated changes and model assumptions have separate roles; Obsidian provides backlinks and graph browsing")},
+        {title:T("原生文档按对象定位与覆盖核对", "Locate native-document objects and check coverage"),
+          body:T("本地预处理器支持 PDF、PPTX、DOCX 和 XLSX：PDF 保留页与图片 / 向量区域，PPTX 保留 slide、shape 与表格 / 图表对象，DOCX 使用 part / block 定位，XLSX 保留 sheet / cell 结构。预处理只读原文件，生成结构化 JSON、Markdown 和派生资产；文本提取、OCR 需求、视觉复核与转换覆盖分别标记，待复核对象保留定位信息", "Local preprocessing supports PDF, PPTX, DOCX and XLSX: page and image/vector regions for PDFs; slides, shapes and table/chart objects for PPTX; part/block locators for DOCX; and sheet/cell structure for XLSX. It reads sources without altering them and emits structured JSON, Markdown and derived assets. Text extraction, OCR needs, visual review and conversion coverage are recorded separately, with locators retained for pending objects")},
+        {title:T("视频音频路由：Gemini / Qwen3-ASR + WhisperX", "Video audio routing: Gemini / Qwen3-ASR + WhisperX"),
+          body:T("通过 Video2Skill_Invest 桥接单视频生产任务，预检源哈希、媒体信息、依赖和锁定配置。用户选择经授权的 Gemini 3.5 Transcribe 音频分块或本地 Qwen3-ASR；Gemini 提供转录文字，本地 WhisperX 从 PCM 音频生成字词时间戳。Gemini 文字对齐采用最长 120 秒的非重叠窗口与有界声学计算，另行处理本地说话人分段，并保留实际提供方、模型身份及需复核的文字 / 时间边界", "A Video2Skill_Invest bridge runs one-video production jobs after checking source hash, media metadata, dependencies and pinned configuration. The user selects authorized Gemini 3.5 Transcribe audio chunks or local Qwen3-ASR. Gemini supplies text; local WhisperX generates word times from PCM audio. Gemini text alignment uses non-overlapping windows of at most 120 seconds with bounded acoustic computation, alongside separate local speaker processing. Actual providers, model identity and flagged text/time boundaries are retained")},
+        {title:T("失败分类、远端清理与完整音频回退", "Failure classification, remote cleanup and full-audio fallback"),
+          body:T("鉴权、限额、服务、网络中断、无效响应和对齐失败使用明确 reason code。普通 Gemini 失败后，先确认每个远端音频对象已删除，再以本地 Qwen3-ASR 重转完整原始音频，不拼接成功的 Gemini 分块；转录 POST 不自动重试。上传或清理结果不明时保持 upload_uncertain 并停止回退，留下可审计的失败与清理记录", "Authentication, quota, service, network, response-validation and alignment failures have explicit reason codes. After ordinary Gemini failures, remote audio deletion must be confirmed before Qwen3-ASR retranscribes the complete original audio; successful Gemini chunks are not spliced into fallback. Transcription POSTs are not retried automatically. Ambiguous upload/cleanup remains upload_uncertain and blocks fallback, retaining failure and cleanup records")},
+        {title:T("PPT 身份、OCR 与本地截图复核", "Slide identity, OCR and local screenshot review"),
+          body:T("视觉链路检测 PPT 变化、选择关键帧并解析页面身份；每个主关键帧执行通用 OCR，规范页面去重后只对其代表执行 PP-Structure / ChartParsing。重复页和回访帧保留通用 OCR 及显式结构处理状态。高召回分类器将图表、公式、复杂视觉与不确定页面加入必需截图队列，按 canonical page、出现次数、时间点和图像哈希进行本地复核，并单独记录 reviewed、partial 或 unavailable", "The visual route detects slide changes, selects keyframes and resolves page identity. General OCR covers each primary keyframe; PP-Structure/ChartParsing runs on representatives after canonical-page deduplication. Duplicate and revisit frames retain general OCR and explicit structure-processing states. A high-recall classifier queues charts, formulas, complex visuals and uncertain pages for local review, bound to page identity, occurrences, timestamps and image hashes, with reviewed, partial or unavailable recorded separately")},
+        {title:T("文字整理保持时间线与原始证据可追溯", "Refine text while retaining timeline provenance"),
+          body:T("DeepSeek 在独立文字传输授权后，仅接收转录和相关 PPT OCR 文字。相邻片段按说话人、视觉上下文、停顿、时长与字符预算安全组合，使用 OpenCC 规范派生显示为简体中文；原始 ASR / OCR JSON、source segment 和字词时间戳保持不变。时间线 JSON、原始及整理后的 HTML、视觉报告和 manifest 分别保留，模型整理继续作为派生证据", "After separate text-transfer authorization, DeepSeek receives only transcripts and related slide OCR text. Adjacent fragments are grouped under speaker, visual-context, pause, duration and character-budget gates; OpenCC normalizes derived display to Simplified Chinese. Raw ASR/OCR JSON, source segments and word times remain unchanged. Timeline JSON, original/refined HTML, visual reports and manifest are retained separately, and model refinement remains derived evidence")},
+        {title:T("有界检索：先候选，再目录与章节", "Bounded retrieval: candidates, outlines and sections"),
+          body:T("标准库检索器按唯一身份、元数据、别名、标题和页面类型筛选候选，再读取目录与目标章节。默认每轮最多 20 个候选、manifest 不超过 64 KiB；每批最多 6 页或章节、总计 36,000 字符，超过 12,000 字符的大页先读结构。索引缓存绑定内容快照，next_offset 续读必须保持查询与快照身份，证据包继续携带来源定位、不确定性、反证和缺口", "A standard-library retriever selects candidates through resolved identity, metadata, aliases, titles and page type, then reads outlines and relevant sections. Defaults are at most 20 candidates and a 64 KiB manifest; each batch reads up to 6 pages/sections and 36,000 characters, with structure first for pages over 12,000 characters. Cache identity binds the content snapshot; next_offset continuation preserves query and snapshot identity. Evidence packages retain provenance, uncertainty, counter-evidence and gaps")},
+        {title:T("原子论断、证据分类与外部核验分开记录", "Record atomic claims, evidence classes and external checks"),
+          body:T("Phase 1 将重要论断绑定到来源文件、页面或时间点，并记录事实、公司陈述、观点、模型假设与推断等证据类型。原始来源陈述与外部核验分别归属，ledger、逐条 receipt 和覆盖 manifest 记录支持、冲突及未覆盖部分。页面草稿和依赖闭包以具名 ID 提交预览，证据不足的对象保持 partial 或 unavailable，来源可读与事实核验分别检查", "Phase 1 binds material claims to source files, pages or times and records evidence classes such as facts, company statements, opinions, model assumptions and inferences. Source statements and external checks have separate attribution; a ledger, per-claim receipts and coverage manifest record support, contradictions and gaps. Named page IDs and dependency closure are previewed, while insufficiently covered objects remain partial or unavailable. Source readability and factual verification have separate checks")},
+        {title:T("精确批准、共享锁与独立写后回执", "Exact approval, shared lock and independent write receipt"),
+          body:T("Phase 2 准备绑定来源、当前 Wiki、草稿和依赖的基线，批准仅覆盖精确页面 ID 与对应正文。写入者在共享锁内重新检查基线和 expected-old hash，逐文件原子写入获批页面、更新唯一索引登记并追加日志。独立验证器再核对实际文件与获批草稿、无额外页面改动、日志历史和原始来源，生成单独回执；发生冲突或多文件中途失败时报告实际进度并保留已完成的独立写入", "Phase 2 prepares a baseline binding sources, current Wiki, drafts and dependencies; approval covers exact page IDs and their text. Under a shared lock, the writer rechecks baseline and expected-old hashes, atomically writes approved files, updates unique index entries and appends the log. A separate verifier checks actual files against drafts, extra edits, log history and source integrity before emitting a receipt. Conflicts or mid-run multi-file failures report actual progress and preserve completed independent writes")},
+        {title:T("可复现部署与私有知识核心共享", "Reproducible setup and private knowledge-core sharing"),
+          body:T("团队仓库共享 Canonical Markdown、Skills、模板、脚本和测试；raw、output、密钥、模型权重和本地缓存保持独立。幂等 setup 保留已有证据与页面，视频工具和本地模型按固定版本配置，隔离运行环境避免污染核心依赖。私有推送检查、干净克隆验收与视频回退、视觉复核、检索和 Phase 2 等测试入口覆盖对应边界，团队可获得一致的知识核心与工具定义", "The team repository shares Canonical Markdown, Skills, templates, scripts and tests; raw evidence, outputs, secrets, model weights and caches remain separate. Idempotent setup preserves evidence and pages, video tools/models use pinned configurations, and isolated environments protect core dependencies. Private-push checks, clean-clone acceptance and tests for fallback, visual review, retrieval and Phase 2 cover those boundaries, giving teammates a consistent knowledge core and tool definitions")}
       ],
-      outcome:T("独立实现了集成入库、受限检索、证据追溯、页面审批和独立写后验证的研究工作流。成果体现为可追溯上下文与明确的更新完成条件，并通过投资研究经理反馈持续完善需求", "I independently implemented a workflow integrating ingestion, bounded retrieval, provenance, page approval and independent post-write checks. The engineering outcome is traceable context and explicit completion criteria for updates, with requirements refined through research-manager feedback"),
-      learning:T("知识系统的可信度依赖于证据在每个环节是否被保留。对我而言，来源定位、审批范围和验证回执是研究流程的一部分，也决定了内容是否可以被后续研究可靠复用", "A knowledge system’s credibility depends on preserving evidence throughout the workflow. Source locations, approval scope and verification receipts are part of the research process and determine how reliably the material can be reused"),
-      tags:["Codex",T("来源追溯","Provenance"),T("受限检索","Bounded Retrieval"),T("页面审批","Page Approval"),T("独立验证","Independent Verification")],
+      outcome:T("独立构建了从文档与视频到研究页面的可追溯工作流：集成原生文档预处理和 Video2Skill 多模态链路，用有界检索交付问题相关上下文，以原子论断和证据分类保留来源归属，并将知识更新完成条件落实为精确批准范围、实际文件核对与独立写后回执。项目继续结合投资研究经理反馈完善需求", "I built a traceable workflow from documents and videos to research pages: native-document preprocessing and Video2Skill integration, bounded context retrieval, atomic claims and evidence classes, and explicit completion criteria tied to exact approval scope, actual files and an independent post-write receipt. Requirements continue to be refined through investment research managers’ feedback"),
+      tags:["Codex","Python","Video2Skill","Qwen3-ASR","WhisperX","Gemini","DeepSeek","PPT / OCR",T("有界检索","Bounded Retrieval"),T("页面审批","Page Approval"),T("写后验证","Post-write Verification")],
     },
     {
       id:"project-qwen",index:"03",category:T("大模型 × 时序预测", "LLMs × Time-series forecasting"),

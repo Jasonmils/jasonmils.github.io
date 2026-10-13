@@ -1,0 +1,5 @@
+Original bilingual architecture schematics, authored for this portfolio.
+Technical descriptions checked against the user-specified repository https://github.com/Jasonmils/AITradingWiki_private on 2026-10-13.
+Reviewed: README.md; document_preprocess.py; video_to_html.py; gemini_transcribe_compare.py; gemini_local_alignment.py; claim_verification.py; phase2_write_verification.py; bounded_wiki_retrieval.py; video-ingest.md; phase2-write-verification.md; bounded-wiki-retrieval.md; wiki-schema.md.
+The page summarizes interfaces and implementation mechanisms. No private Canonical content, source documents, source identifiers, positions, credentials, private run logs or runtime outputs are included.
+Model/tool names describe the repository configuration. No transcription-accuracy or investment-return claim is made.

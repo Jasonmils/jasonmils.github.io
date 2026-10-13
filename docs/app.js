@@ -44,7 +44,8 @@
   const dot = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>';
   const tagLogos = {
     Python:"python",PyTorch:"pytorch",TensorFlow:"tensorflow",Transformers:"huggingface",
-    Qwen3:"qwen","Qwen3-4B":"qwen",Codex:"openai"
+    Qwen3:"qwen","Qwen3-4B":"qwen","Qwen3-ASR":"qwen",Codex:"openai",
+    Gemini:"googlegemini",DeepSeek:"deepseek"
   };
   const tags = values => '<div class="tag-list">' + values.map(v => {
     const logo = tagLogos[typeof v === "object" ? v.en : v];
@@ -98,6 +99,14 @@
       '</p><a class="paper-zoom" href="' + escapeHTML(figure.src) + '" target="_blank" rel="noopener noreferrer">' +
       bi(figure.redrawn ? T("放大结构图", "Enlarge schematic") : T("查看原图", "View original figure"),true) + diagonal + '</a></figure>';
   };
+  const renderWikiFigure = figure => '<figure class="paper-figure system-figure"><figcaption><span class="paper-figure-number">' +
+    figure.label + '</span><strong>' + bi(figure.title) + '</strong></figcaption><div class="bi system-figure-translations">' +
+    ["zh","en"].map(lang => '<span class="' + lang + '" lang="' + (lang === "zh" ? "zh-CN" : "en") + '"><a class="paper-figure-image" href="' +
+      escapeHTML(figure.src[lang]) + '" target="_blank" rel="noopener noreferrer"><img src="' + escapeHTML(figure.src[lang]) +
+      '" alt="' + escapeHTML(figure.title[lang]) + '" width="' + figure.width + '" height="' + figure.height +
+      '" loading="lazy" decoding="async"></a><a class="paper-zoom" href="' + escapeHTML(figure.src[lang]) +
+      '" target="_blank" rel="noopener noreferrer">' + (lang === "zh" ? "放大流程图" : "Enlarge diagram") + diagonal + '</a></span>').join('') +
+    '</div><p>' + bi(figure.note) + '</p></figure>';
   const renderResearchTable = (table,group) => {
     const cell = value => value === null ? "OOM" : typeof value !== "number" ? bi(value,true) :
       table.format === "ratio" ? (value*100).toFixed(3) + "%" : table.format === "percent" ? value.toFixed(2) + "%" :
@@ -124,6 +133,10 @@
       bi(T("论文研究展望", "Research outlook")) + '</h4><div class="review-outlook-grid">' +
       study.outlook.map(item => '<article><h5>' + bi(item.title) + '</h5><p>' + bi(item.body) + '</p></article>').join('') +
       '</div></section>' : '') + '</div>';
+  const renderWikiResults = study => '<div class="wiki-results"><div class="wiki-output-grid">' +
+    study.outputs.map(item => '<article><h5>' + bi(item.title) + '</h5><p>' + bi(item.body) + '</p></article>').join('') +
+    '</div><p class="paper-scroll-hint">' + bi(T("表格可横向滑动，查看完整验收条件", "Scroll horizontally to read every acceptance condition")) + '</p>' +
+    renderResearchTable(study.table,study.table.groups[0]) + '<p class="table-note research-source-note">' + bi(study.evidenceNote) + '</p></div>';
   const renderPaperTable = (rows, title) => '<div class="paper-table-scroll" tabindex="0" role="region" aria-label="' +
     escapeHTML(title.en) + '"><table class="paper-result-table"><caption>' + bi(title) + '</caption><thead><tr><th scope="col">' +
     bi(T("模型 / 配置", "Model / setup"),true) + '</th><th scope="col">wMAPE ↓</th><th scope="col">MAPE ↓</th>' +
@@ -153,6 +166,11 @@
   const paperResult = (venue, year, authorship) => '<div class="paper-result"><span class="paper-result-year">' + year +
     '</span><div><strong>' + escapeHTML(venue) + '</strong><span>' + bi(authorship) + '</span></div></div>';
   const visualStories = {
+    "wiki-system": {
+      tab:T("证据工作流", "Evidence workflow"),title:T("从多模态证据到可核对的知识更新", "From multimodal evidence to checkable knowledge updates"),
+      challenge:T("原始来源 → 派生产物 → 具名批准 → 正式知识页", "Original sources → Derived artifacts → Exact approval → Canonical pages"),
+      render: () => '<div class="paper-methods">' + wikiStudy.figures.map(renderWikiFigure).join('') + '</div>'
+    },
     "ali-agent": {
       tab: T("Agent 闭环", "Agent loop"), title: T("从预测到运营闭环", "From forecasts to an operating loop"),
       challenge: T("让商品状态、运营建议与执行反馈连起来", "Connect product signals, recommendations and operating feedback"),
@@ -385,10 +403,10 @@
     (i+1) + '</span>' + bi(step) + '</li>').join('') + '</ol>') +
     '<h4 class="small-label">' + bi(ui.decisions) +
     '</h4><div class="decision-list">' + project.decisions.map((d,i) =>
-      '<div class="decision"><span class="number">0' + (i+1) + '</span><div><h4>' + bi(d.title) + '</h4><p>' +
+      '<div class="decision"><span class="number">' + String(i+1).padStart(2,"0") + '</span><div><h4>' + bi(d.title) + '</h4><p>' +
       bi(d.body) + '</p></div></div>').join('') + '</div>' +
     '<h4 class="small-label">' + bi(ui.result) +
-    '</h4>' + (project.researchStudy ? renderResearchResults(project.researchStudy) : project.paperStudy ? renderPaperResults(project.paperStudy) : project.table && !project.visualStory ? renderTable(project.table) : '') +
+    '</h4>' + (project.wikiStudy ? renderWikiResults(project.wikiStudy) : project.researchStudy ? renderResearchResults(project.researchStudy) : project.paperStudy ? renderPaperResults(project.paperStudy) : project.table && !project.visualStory ? renderTable(project.table) : '') +
     (project.metrics ? renderMetrics(project.metrics) : '') + '<p class="project-outcome">' + bi(project.outcome) + '</p>' +
     '<div class="project-footer">' + tags(project.tags) + (project.related ?
       '<a class="text-link" href="#' + project.related + '">' + bi(ui.workLink, true) + arrow + '</a>' : '') + '</div></div>';

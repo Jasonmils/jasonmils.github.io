@@ -55,3 +55,8 @@ python: https://www.python.org/community/logos/
 pytorch: https://github.com/pytorch/pytorch.github.io/blob/8f083bd12192ca12d5e1c1f3d236f4831d823d8f/assets/images/logo.svg
 qwen: https://qwen.ai
 tensorflow: https://www.tensorflow.org
+
+Added 2026-10-13 for the AITradingWiki video workflow:
+deepseek: https://www.deepseek.com
+googlegemini: https://gemini.google.com
+Simple Icons 16.35.0 (CC0); brand colors applied, original geometry retained.

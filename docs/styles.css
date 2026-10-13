@@ -357,7 +357,18 @@ details[open]>summary .toggle-plus:before{content:none}
 .review-outlook-grid h5{font-size:14px;line-height:1.7;color:var(--ink);margin:0 0 8px}
 .review-outlook-grid p{font-size:12px;line-height:1.9;color:var(--muted)}
 .paper-disclosure-body>.paper-figure{margin-top:16px}
+.wiki-output-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}
+.wiki-output-grid article{padding:18px 15px;border:1px solid var(--line);border-radius:14px;background:#f4f6fd80}
+.wiki-output-grid h5{font-size:14px;line-height:1.7;color:var(--ink);margin:0 0 8px}
+.wiki-output-grid p{font-size:12px;line-height:1.85;color:var(--muted)}
+.wiki-results .paper-result-table{min-width:620px;text-align:left;table-layout:fixed}
+.wiki-results .paper-result-table th:first-child{width:20%}
+.wiki-results .paper-result-table th:nth-child(2){width:31%}
+.wiki-results .paper-result-table td,.wiki-results .paper-result-table tbody th{vertical-align:top;line-height:1.85;overflow-wrap:anywhere}
+.wiki-results .paper-result-table thead th{white-space:normal}
+.wiki-results .paper-result-table td{color:#515154}
 @media(max-width:600px){
+ .wiki-output-grid{grid-template-columns:1fr}
  .paper-figure{padding:14px}.paper-figure figcaption strong{font-size:14px}.paper-figure>p{font-size:11px}
  .paper-equation{padding:17px 14px;border-radius:15px}.math-scroll{font-size:15px;padding:14px 0}
  .paper-equation>p{font-size:11px}.paper-result-summary{gap:9px}
