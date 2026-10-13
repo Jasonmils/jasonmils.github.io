@@ -1,0 +1,6 @@
+KaTeX 0.19.0
+Official package: https://registry.npmjs.org/katex/-/katex-0.19.0.tgz
+Project: https://github.com/KaTeX/KaTeX
+Documentation: https://katex.org/docs/browser
+License: MIT; see LICENSE.
+Only browser distribution files and fonts are included, unchanged.

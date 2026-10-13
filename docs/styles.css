@@ -301,8 +301,15 @@ details[open]>summary .toggle-plus:before{content:none}
 .paper-figure>p{margin-top:13px;font-size:12px;line-height:1.8;color:var(--muted)}
 .paper-zoom{display:inline-flex;gap:6px;align-items:center;margin-top:12px;font-size:11px;color:var(--accent)}
 .paper-zoom .icon{width:12px;height:12px}
-.paper-equation{padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:#edf1fb9e;font-size:14px;line-height:1.9;text-align:center;overflow-wrap:anywhere}
-.paper-equation>span{display:block;margin-top:6px}
+.katex{font-size:1.06em;letter-spacing:normal;text-indent:0}
+.katex-display{max-width:100%;overflow-x:auto;overflow-y:hidden;padding:8px 0;overscroll-behavior-x:contain}
+.katex-display>.katex{min-width:max-content}
+.paper-equation{min-width:0;margin:0;padding:20px 22px;border:1px solid #dbe2f2;border-radius:18px;background:linear-gradient(145deg,#f4f6fd,#fff);box-shadow:0 4px 18px #253f7610;color:var(--ink)}
+.paper-equation figcaption{font-size:12px;font-weight:600;line-height:1.7;color:var(--accent)}
+.math-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;padding:16px 2px;font-size:17px;scrollbar-width:thin;scrollbar-color:#c5cee4 transparent}
+.math-scroll .katex-display{margin:0;min-width:max-content;overflow:visible;padding:6px 0}
+.paper-equation>p{margin-top:2px;font-size:12px;line-height:1.9;color:var(--muted)}
+.math-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}
 .paper-result-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0 12px}
 .paper-result-summary>div{padding:20px 16px;border:1px solid #ffffffbd;border-radius:16px;background:linear-gradient(145deg,#eef2ff,#ffffffb3)}
 .paper-result-summary>div>span{font:11px/1.6 var(--font-mono);color:var(--muted)}
@@ -334,7 +341,8 @@ details[open]>summary .toggle-plus:before{content:none}
 .research-results .paper-evidence{margin-top:20px}
 @media(max-width:600px){
  .paper-figure{padding:14px}.paper-figure figcaption strong{font-size:14px}.paper-figure>p{font-size:11px}
- .paper-equation{font-size:12px;padding:12px}.paper-result-summary{gap:9px}
+ .paper-equation{padding:17px 14px;border-radius:15px}.math-scroll{font-size:15px;padding:14px 0}
+ .paper-equation>p{font-size:11px}.paper-result-summary{gap:9px}
  .paper-result-summary>div{padding:15px 12px}.paper-result-summary strong{font-size:28px}
  .paper-coverage-gain{font-size:10px}.paper-disclosure-body{padding:0 12px 12px}
  .paper-evidence>summary{font-size:12px}

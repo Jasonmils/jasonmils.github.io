@@ -116,14 +116,14 @@ const priceResearchStudy = {
         ["Proposed",.125,.089,.111,.203],["GRU",.197,.175,.264,.419],["UCNN",.198,.150,.166,.216],
         ["UCNN+GRU",.147,.091,.112,.230],["UResnet",.177,.122,.166,.210],["BPNN",.292,.276,.338,.558],
         ["S2S-Attn",.135,.164,.191,.258],["Transformer",.137,.094,.130,.227]]}],
-      note:T("RWS 为相对 Winkler Score，综合衡量区间宽度与区间外误差，越低越好。论文展示名义 90% 区间，并报告 α = 0.05 / 0.95 的两组 MPL", "RWS is the relative Winkler Score, combining interval width and out-of-interval error; lower is better. The paper shows nominal 90% intervals and reports MPL at α = 0.05 / 0.95")},
-    {title:T("Table X · MPL（α = 0.95）↓", "Table X · MPL (α = 0.95) ↓"),collapsed:true,format:"decimal",headers:[T("模型", "Model"),T("瑞典", "Sweden"),T("挪威", "Norway"),T("丹麦", "Denmark"),T("芬兰", "Finland")],
+      note:T(String.raw`RWS 为相对 Winkler Score，综合衡量区间宽度与区间外误差，越低越好。论文展示名义 90% 区间，并报告 \(\alpha=0.05\) / \(0.95\) 的两组 MPL`, String.raw`RWS is the relative Winkler Score, combining interval width and out-of-interval error; lower is better. The paper shows nominal 90% intervals and reports MPL at \(\alpha=0.05\) / \(0.95\)`)},
+    {title:T(String.raw`Table X · MPL（\(\alpha=0.95\)）↓`, String.raw`Table X · MPL (\(\alpha=0.95\)) ↓`),collapsed:true,format:"decimal",headers:[T("模型", "Model"),T("瑞典", "Sweden"),T("挪威", "Norway"),T("丹麦", "Denmark"),T("芬兰", "Finland")],
       groups:[{rows:[
         ["Proposed",.137,.109,.594,.374],["GRU",.176,.125,.675,.552],["UCNN",.179,.163,.710,.549],
         ["UCNN+GRU",.159,.119,.651,.517],["UResnet",.158,.148,.661,.475],["BPNN",.289,.366,1.306,.693],
         ["S2S-Attn",.179,.148,1.113,.415],["Transformer",.172,.130,.684,.416]]}],
-      note:T("对应原表的 MPL*；与 α = 0.05 的 MPL** 分开展示", "Corresponds to MPL* in the source, shown separately from MPL** at α = 0.05")},
-    {title:T("Table X · MPL（α = 0.05）↓", "Table X · MPL (α = 0.05) ↓"),collapsed:true,format:"decimal",headers:[T("模型", "Model"),T("瑞典", "Sweden"),T("挪威", "Norway"),T("丹麦", "Denmark"),T("芬兰", "Finland")],
+      note:T(String.raw`对应原表的 MPL*；与 \(\alpha=0.05\) 的 MPL** 分开展示`, String.raw`Corresponds to MPL* in the source, shown separately from MPL** at \(\alpha=0.05\)`)},
+    {title:T(String.raw`Table X · MPL（\(\alpha=0.05\)）↓`, String.raw`Table X · MPL (\(\alpha=0.05\)) ↓`),collapsed:true,format:"decimal",headers:[T("模型", "Model"),T("瑞典", "Sweden"),T("挪威", "Norway"),T("丹麦", "Denmark"),T("芬兰", "Finland")],
       groups:[{rows:[
         ["Proposed",.126,.104,.536,.372],["GRU",.175,.127,.608,.544],["UCNN",.199,.156,.635,.438],
         ["UCNN+GRU",.147,.120,.607,.408],["UResnet",.149,.144,.621,.455],["BPNN",.330,.292,1.399,.690],
@@ -400,8 +400,8 @@ const portfolio = {
           problem:T("日前电价同时存在短期变化、长期时间依赖和特征重要性的动态变化。更深的模型还需要处理退化与过拟合；点预测需要关注数值误差，区间预测则需要同时考虑宽度与区间外误差", "Day-ahead prices combine short-term changes, longer temporal dependencies and changing feature importance. Deeper models must also address degradation and overfitting. Point forecasts focus on value errors, while intervals must account for both width and errors outside the range"),
           actions:[
             T("参与构建 Drop-connected UCNN–GRU：四个 ARUCNN block 使用非共享卷积、残差映射与 PReLU，通道为 15 / 30 / 60 / 120、核大小为 3；在进入五层、每层 50 单元的 GRU 前使用 0.5 dropout，分别提取短期和长期依赖", "Contributed to Drop-connected UCNN–GRU: four ARUCNN blocks use unshared convolutions, residual mappings and PReLU, with 15 / 30 / 60 / 120 channels and kernel size 3. Dropout 0.5 precedes five GRU layers with 50 units each, combining short- and long-term feature extraction"),
-            T("Dense Skip Attention 先置换时间轴与特征轴，在特征维度上学习注意力权重；同时以另一条 GRU–Dense–PReLU 路径形成旁路，通过 φ(g) + ρ(g) 汇合，保留特征加权与跳跃映射两种表达路径", "Dense Skip Attention permutes time and feature axes to learn feature-wise weights. A parallel GRU–Dense–PReLU route provides a skip path; φ(g) + ρ(g) combines weighted features with the alternate mapping"),
-            T("同一模型框架按任务选择回归损失：点预测使用 MAE；区间模式使用平滑分位损失，训练 α = 0.05 / 0.95 两种设置并展示名义 90% 区间。区间实验使用 RWS 与两组 MPL 指标评估", "The framework selects its regression loss by task: MAE for point forecasts and smooth quantile loss for intervals, training α = 0.05 / 0.95 settings and showing nominal 90% intervals. RWS and two MPL metrics evaluate interval performance"),
+            T(String.raw`Dense Skip Attention 先置换时间轴与特征轴，在特征维度上学习注意力权重；同时以另一条 GRU–Dense–PReLU 路径形成旁路，通过 \(\phi(g)+\rho(g)\) 汇合，保留特征加权与跳跃映射两种表达路径`, String.raw`Dense Skip Attention permutes time and feature axes to learn feature-wise weights. A parallel GRU–Dense–PReLU route provides a skip path; \(\phi(g)+\rho(g)\) combines weighted features with the alternate mapping`),
+            T(String.raw`同一模型框架按任务选择回归损失：点预测使用 MAE；区间模式使用平滑分位损失，训练 \(\alpha=0.05\) / \(0.95\) 两种设置并展示名义 90% 区间。区间实验使用 RWS 与两组 MPL 指标评估`, String.raw`The framework selects its regression loss by task: MAE for point forecasts and smooth quantile loss for intervals, training \(\alpha=0.05\) / \(0.95\) settings and showing nominal 90% intervals. RWS and two MPL metrics evaluate interval performance`),
             T("参与代码实现、实验分析与英文稿件写作及修订。在瑞典、挪威、丹麦、芬兰 2018–2019 年小时数据上，按前 70% / 后 30% 的时间顺序划分训练与测试；结合点预测对照、区间指标、消融及参数量和训练验证时间，评估精度与资源取舍", "Contributed implementation, experiments and English manuscript writing and revision. Hourly 2018–2019 data from Sweden, Norway, Denmark and Finland is split chronologically 70% / 30% for training and testing. Point comparisons, interval metrics, ablations, parameter counts and training/validation time assess accuracy and resource trade-offs"),
           ],
           result:T("Table VIII 中，Proposed 在瑞典 / 挪威 / 丹麦 / 芬兰的点预测 MAPE 为 5.24% / 1.01% / 4.64% / 7.91%；Table X 的 RWS 为 0.125 / 0.089 / 0.111 / 0.203。论文比较了所列深度学习基线，并报告平稳与剧烈波动市场的区间表现差异。相关工作发表于 IEEE Transactions on Power Systems（2023），我是第二作者", "Table VIII reports Proposed point-forecast MAPE of 5.24% / 1.01% / 4.64% / 7.91% for Sweden / Norway / Denmark / Finland; Table X reports RWS of 0.125 / 0.089 / 0.111 / 0.203. The study compares listed deep-learning baselines and notes interval-performance differences between steadier and more volatile markets. Published in IEEE TPWRS (2023), with me as second author"),
@@ -578,15 +578,15 @@ const portfolio = {
       decisions:[
         {
           title:T("使用可观测表征指标进行诊断", "Diagnose with observable representation measures"),
-          body:T("使用注意力矩阵的稳定秩 ρsr 与 token 平均余弦相似度 ρca，比较三层网络在初始化、训练后高 ACF 和低 ACF 条件下的表现。高 / 低 ACF 以预测窗内平均 ACF 的 0.5 阈值划分；论文观察到训练可以缓解初始化坍缩，但高 ACF 输入仍更容易出现低稳定秩和高 token 相似度", "I used attention stable rank ρsr and mean token cosine similarity ρca across three layers, comparing initialization with trained high- and low-ACF conditions. The split uses a mean ACF threshold of 0.5 over the forecast horizon. Training can escape initialization collapse, while high-ACF inputs still tend toward lower rank and more similar tokens"),
+          body:T(String.raw`使用注意力矩阵的稳定秩 \(\rho_{\mathrm{sr}}\) 与 token 平均余弦相似度 \(\rho_{\mathrm{ca}}\)，比较三层网络在初始化、训练后高 ACF 和低 ACF 条件下的表现。高 / 低 ACF 以预测窗内平均 ACF 的 0.5 阈值划分；论文观察到训练可以缓解初始化坍缩，但高 ACF 输入仍更容易出现低稳定秩和高 token 相似度`, String.raw`I used attention stable rank \(\rho_{\mathrm{sr}}\) and mean token cosine similarity \(\rho_{\mathrm{ca}}\) across three layers, comparing initialization with trained high- and low-ACF conditions. The split uses a mean ACF threshold of 0.5 over the forecast horizon. Training can escape initialization collapse, while high-ACF inputs still tend toward lower rank and more similar tokens`),
         },
         {
           title:T("输入端：原序列与差分的双路 Tokenization", "Input: dual-path tokenization of raw values and differences"),
-          body:T("保留原始序列 X，同时构造一阶差分 ΔX；对两路输入进行缩放与带符号的对数变换 φ，再通过独立的线性投影 W 和 Wd 相加，得到 Z = φ(X)W + φ(ΔX)Wd。原序列保留水平信息，差分支路减轻自相关依赖", "Keep the raw sequence X and compute first differences ΔX. Apply scaling and the signed-log transform φ to both paths, then combine independent projections W and Wd: Z = φ(X)W + φ(ΔX)Wd. Raw values retain level information while the differenced path reduces autocorrelation dependence"),
+          body:T(String.raw`保留原始序列 \(X\)，同时构造一阶差分 \(\Delta X\)；对两路输入进行缩放与带符号的对数变换 \(\phi\)，再通过独立的线性投影 \(W\) 和 \(W_d\) 相加，得到 \(Z = \phi(X)W + \phi(\Delta X)W_d\)。原序列保留水平信息，差分支路减轻自相关依赖`, String.raw`Keep the raw sequence \(X\) and compute first differences \(\Delta X\). Apply scaling and the signed-log transform \(\phi\) to both paths, then combine independent projections \(W\) and \(W_d\): \(Z = \phi(X)W + \phi(\Delta X)W_d\). Raw values retain level information while the differenced path reduces autocorrelation dependence`),
         },
         {
           title:T("目标与训练端：log-return、MMoE 与双任务监督", "Targets and training: log-return, MMoE and dual-task supervision"),
-          body:T("以最后一个历史值 XL 为参照，把回归目标变换为 ln(1 + Y / XL)。Transformer 后接 MMoE，分别输出连续预测和辅助分类结果；回归分支使用 MSE，分类分支使用 Focal Loss，以 L = Lreg + βLcla 共同训练", "Transform the regression target to ln(1 + Y / XL), relative to the final historical value XL. MMoE follows the Transformer and feeds continuous regression and auxiliary classification heads. MSE and Focal Loss are combined as L = Lreg + βLcla"),
+          body:T(String.raw`以最后一个历史值 \(X_L\) 为参照，把回归目标变换为 \(\ln(1+Y/X_L)\)。Transformer 后接 MMoE，分别输出连续预测和辅助分类结果；回归分支使用 MSE，分类分支使用 Focal Loss，以 \(\mathcal{L}=\mathcal{L}_{\mathrm{reg}}+\beta\mathcal{L}_{\mathrm{cla}}\) 共同训练`, String.raw`Transform the regression target to \(\ln(1+Y/X_L)\), relative to the final historical value \(X_L\). MMoE follows the Transformer and feeds continuous regression and auxiliary classification heads. MSE and Focal Loss are combined as \(\mathcal{L}=\mathcal{L}_{\mathrm{reg}}+\beta\mathcal{L}_{\mathrm{cla}}\)`),
         },
         {
           title:T("验证：完整基线对照、逐模块消融与跨层分布", "Validation: full baselines, module ablations and layer-wise distributions"),

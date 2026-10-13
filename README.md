@@ -21,4 +21,17 @@
 
 Pages 配置：**Deploy from a branch → master → /docs**。网址不包含 `/docs`。
 
+## 数学公式
+
+页面使用本地 KaTeX 排版，支持正文中的 `\(...\)` 和独立公式 `\[...\]` / `$$...$$`。中英文和项目详情面板都会自动渲染。库、字体和许可保存在 `docs/assets/vendor/katex/`，无需安装依赖。
+
+在 `docs/content.js` 中使用 `String.raw` 保留公式的反斜杠，例如：
+
+```js
+T(String.raw`目标为 \(Y_{\ln}=\ln(1+Y/X_L)\)`,
+  String.raw`The target is \(Y_{\ln}=\ln(1+Y/X_L)\)`)
+```
+
+`docs/app.js` 中的 `renderEquation(标题, 公式, 说明)` 用于带标题的公式卡片，公式参数直接写 TeX，无需另加定界符。过长公式会在卡片内横向滚动。
+
 如需处理旧网站，请在 `legacy/` 内操作；原有使用说明见 [legacy/README.md](legacy/README.md)。两个版本的资源文件已分开。

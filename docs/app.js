@@ -19,6 +19,25 @@
     return '<span class="bi' + (inline ? ' bi-inline' : '') + '"><span class="zh" lang="zh-CN">' +
       escapeHTML(value.zh) + '</span><span class="en" lang="en">' + escapeHTML(value.en) + '</span></span>';
   };
+  // Typeset both translations before measuring layouts; cloned project bodies
+  // retain their rendered math. Explicit delimiters leave currency text alone.
+  const typesetMath = root => {
+    if (typeof window.renderMathInElement !== "function") return;
+    window.renderMathInElement(root, {
+      delimiters:[
+        {left:"$$",right:"$$",display:true},
+        {left:"\\[",right:"\\]",display:true},
+        {left:"\\(",right:"\\)",display:false}
+      ],
+      ignoredClasses:["katex"],
+      throwOnError:false,
+      trust:false,
+      output:"htmlAndMathml"
+    });
+  };
+  const renderEquation = (title, formula, note) => '<figure class="paper-equation"><figcaption>' +
+    bi(title) + '</figcaption><div class="math-scroll" role="region" tabindex="0" aria-label="' +
+    escapeHTML(title.en) + '">' + escapeHTML("\\[" + formula + "\\]") + '</div><p>' + bi(note) + '</p></figure>';
   const arrow = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   const diagonal = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6h12v12"/></svg>';
   const up = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
@@ -168,9 +187,15 @@
         ["graph",T("Patch-wise Transformer", "Patch-wise Transformer"),T("表征与注意力", "Representations & attention")],
         ["decision",T("去自回归训练", "De-autoregressive training"),T("Log-return · MMoE · 双任务", "Log-return · MMoE · Dual tasks")]
       ]) + '<div class="paper-methods">' + renderPaperFigure(deformerStudy.figures.tokenization) +
-        '<div class="paper-equation" aria-label="Raw and difference tokenization">Z = φ(X)W + φ(ΔX)W<sub>d</sub></div>' +
-        renderPaperFigure(deformerStudy.figures.multitask) + '<div class="paper-equation">Y<sub>ln</sub> = ln(1 + Y / X<sub>L</sub>)' +
-        '<span>L = L<sub>reg</sub> + βL<sub>cla</sub></span></div></div>',
+        renderEquation(T("原序列与差分的双路表达", "Raw and differenced representations"),
+          String.raw`\begin{aligned}\Delta X_t &= X_t-X_{t-1}\\[6pt]Z &= \phi(X)W+\phi(\Delta X)W_d\end{aligned}`,
+          T(String.raw`\(\phi\) 为缩放后的带符号对数变换；\(W\)、\(W_d\) 是两路独立的线性投影`,
+            String.raw`\(\phi\) is the signed-log transform after scaling; \(W\) and \(W_d\) are independent linear projections`)) +
+        renderPaperFigure(deformerStudy.figures.multitask) +
+        renderEquation(T("目标变换与多任务训练", "Target transform and multi-task training"),
+          String.raw`\begin{aligned}Y_{\ln} &= \ln\!\left(1+\frac{Y}{X_L}\right)\\[8pt]\mathcal{L} &= \mathcal{L}_{\mathrm{reg}}+\beta\mathcal{L}_{\mathrm{cla}}\end{aligned}`,
+          T(String.raw`\(X_L\) 是最后一个历史值；\(\beta\) 控制辅助分类损失的权重。回归使用 MSE，分类使用 Focal Loss`,
+            String.raw`\(X_L\) is the final historical value; \(\beta\) weights the auxiliary classification loss. Regression uses MSE and classification uses Focal Loss`)) + '</div>',
       takeaway: T("从机制假设走到消融实验，再回到业务评估", "Link the mechanism to ablations and business-oriented evaluation")
     },
     "innox-definition": {
@@ -206,7 +231,11 @@
         ["local",T("本地数据", "Local data"),T("原始数据不出域", "Raw data stays local")],
         ["graph",T("SiDGI 特征图", "SiDGI feature graph"),T("学结构 · 校准边权", "Learn edges · Calibrate weights")],
         ["people",T("CPLF 聚合", "CPLF aggregation"),T("共享空间 · 保留时间", "Share spatial · Retain temporal")]
-      ]) + '<div class="paper-methods">' + windResearchStudy.figures.map(renderPaperFigure).join('') + '</div>' +
+      ]) + '<div class="paper-methods">' + windResearchStudy.figures.map(renderPaperFigure).join('') +
+        renderEquation(T("从节点嵌入学习有向关系", "Learn directed relations from node embeddings"),
+          String.raw`A_{\mathrm{raw}} = \operatorname{PReLU}\!\left(M_1M_2^{\mathsf{T}}-M_2M_1^{\mathsf{T}}\right)`,
+          T(String.raw`\(M_1\)、\(M_2\) 是两组节点嵌入的线性映射；再通过 top-k 稀疏化与 GAT 校准边权`,
+            String.raw`\(M_1\) and \(M_2\) are linear mappings of two node embeddings. Top-k sparsification and GAT then refine the edges`)) + '</div>' +
         paperResult("IEEE Transactions on Network Science and Engineering", "2025", T("共同第一作者", "Co-first author")),
       takeaway:T("预测表现、隐私与通信开销，需要共同权衡", "Balance forecasting, privacy and communication together")
     },
@@ -220,7 +249,11 @@
         bi(T("点预测", "Point forecast")) + '</strong><span>' + bi(T("预测了多少", "The predicted value")) +
         '</span></div><div><svg viewBox="0 0 120 32" aria-hidden="true"><path d="M12 16h96"/><path class="interval-range" d="M32 16h56"/><path d="M32 10v12m56-12v12"/><circle cx="60" cy="16" r="4"/></svg><strong>' +
         bi(T("区间预测", "Interval forecast")) + '</strong><span>' + bi(T("可能的波动范围", "The plausible range")) +
-        '</span></div></div></div><div class="paper-methods">' + priceResearchStudy.figures.map(renderPaperFigure).join('') + '</div>' +
+        '</span></div></div></div><div class="paper-methods">' + priceResearchStudy.figures.map(renderPaperFigure).join('') +
+        renderEquation(T("注意力主路与跳跃旁路融合", "Combine attention and skip paths"),
+          String.raw`Y_i^{*} = \phi(g_i)+\rho(g_i)`,
+          T(String.raw`\(\phi\) 表示特征加权主路，\(\rho\) 表示跳跃旁路；两路相加后进入最终全连接层`,
+            String.raw`\(\phi\) is the feature-weighted main path and \(\rho\) is the skip path. Their sum feeds the final fully connected layer`)) + '</div>' +
         paperResult("IEEE Transactions on Power Systems", "2023", T("第二作者", "Second author")),
       takeaway:T("将不确定性纳入输出与评估", "Bring uncertainty into both the output and the evaluation")
     },
@@ -434,6 +467,7 @@
     document.querySelector(".preview-close").setAttribute("aria-label", lang === "zh" ? "关闭项目详情" : "Close project details");
     if (persist) { try { localStorage.setItem("jason-portfolio-language",lang); } catch (_) {} }
   }
+  typesetMath(document.getElementById("app"));
   setLanguage(document.documentElement.classList.contains("lang-en") ? "en" : "zh", false);
   function selectStory(id, focus = false) {
     const panel = document.getElementById(id);
@@ -683,6 +717,7 @@
       preview.querySelector("#preview-project-description").innerHTML = bi(viewInfo?.description || project.description);
       previewContent.replaceChildren(body);
       previewScroll.scrollTop = 0;
+      typesetMath(preview);
       setLanguage(document.documentElement.lang === "en" ? "en" : "zh", false);
       if (!wasOpen) setPreviewLayout();
       if (fromProjectSwitcher) preview.querySelector('[data-preview-project="' + id + '"][data-preview-view="' + view + '"]')?.focus({preventScroll:true});
