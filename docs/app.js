@@ -62,7 +62,7 @@
     '</span><span class="when-closed">' + bi(ui.expand, true) + '</span><span class="toggle-plus" aria-hidden="true"><svg class="toggle-chevron" viewBox="0 0 12 12"><path d="m2.5 4.25 3.5 3.5 3.5-3.5"/></svg></span></span>';
   const sectionIds = ["experience","projects","skills","education"];
   const navLinks = (rail = false) => sectionIds.map((id, i) =>
-    '<a href="#' + id + '" data-section-link="' + id + '">' +
+    '<a href="#' + id + '" data-section-link="' + id + '" data-section-slot="' + i + '">' +
     (rail ? '<span class="nav-line" aria-hidden="true"></span>' : '') + bi(ui.nav[i], true) + '</a>'
   ).join('');
   const storyBlock = (label, body, cls = "") => '<div class="story-block ' + cls + '"><h4 class="small-label">' + bi(label) +
@@ -393,7 +393,8 @@
         '</strong><span class="contribution-action">' + bi(link.action) + '</span><span class="contribution-state"><span class="contribution-idle">' +
         bi(T("查看项目", "Explore project"),true) + '</span><span class="contribution-selected">' + bi(T("正在对照", "In view"),true) +
         '</span></span></span><span class="contribution-arrow" aria-hidden="true">' + arrow + '</span></a>').join('') + '</div></div>' +
-      '<div class="strategy-impact"><strong>' + bi(phase.result) + '</strong><p>' + bi(phase.resultNote) + '</p></div></section>'
+      '<div class="strategy-impact"><strong>' + bi(phase.result) + '</strong>' +
+      (phase.resultTable ? renderTable(phase.resultTable) : '<p>' + bi(phase.resultNote) + '</p>') + '</div></section>'
     ).join('') + '</div></div>';
   const renderExperience = exp => '<article class="experience-card" id="' + exp.id + '">' +
     '<div class="experience-timeline"><span class="date">' + exp.date.replace(' — ', '<span class="date-dash">—</span>') +
@@ -453,8 +454,25 @@
     (project.metrics ? renderMetrics(project.metrics) : '') + '<p class="project-outcome">' + bi(project.outcome) + '</p>' +
     '<div class="project-footer">' + tags(project.tags) + (project.related ?
       '<a class="text-link" href="#' + project.related + '">' + bi(ui.workLink, true) + arrow + '</a>' : '') + '</div></div>';
-  const heading = (index, title, description, controls = false, count = false) => '<div class="section-top"><div>' +
-    '<div class="eyebrow">0' + index + ' / ' + ["EXPERIENCE","PROJECTS","SKILLS","EDUCATION"][index-1] +
+  const renderTechnology = (technology,index) => '<article class="technology-card" id="' + technology.id +
+    '" aria-labelledby="' + technology.id + '-title"><header class="technology-card-header"><span class="technology-number" aria-hidden="true">' +
+    String(index+1).padStart(2,"0") + '</span><div><h3 id="' + technology.id + '-title">' + escapeHTML(technology.name) +
+    '</h3><p>' + bi(technology.title) + '</p></div><span class="technology-icon">' + diagramIcon(technology.icon) + '</span></header>' +
+    tags(technology.tags) + '<dl class="technology-work"><div><dt>' + bi(ui.technologyProblem) + '</dt><dd>' +
+    bi(technology.problem) + '</dd></div><div><dt>' + bi(ui.technologyContribution) + '</dt><dd>' + bi(technology.contribution) +
+    '</dd></div></dl><div class="technology-evidence"><h4>' + bi(ui.technologyEvidence) + '</h4>' +
+    (technology.metrics ? renderMetrics(technology.metrics) : '') +
+    (technology.resultTable ? renderTable(technology.resultTable) : '<p>' + bi(technology.evidence) + '</p>') + '</div>' +
+    '<div class="technology-projects">' + technology.links.map(link => '<a class="contribution-link technology-project-link" href="#' +
+      link.target + '" data-open-project="' + link.target + '" aria-controls="project-preview" aria-expanded="false">' +
+      '<span class="contribution-copy"><strong>' + bi(link.label) + '</strong><span class="contribution-state"><span class="contribution-idle">' +
+      bi(ui.viewProject,true) + '</span><span class="contribution-selected">' + bi(T("正在对照", "In view"),true) +
+      '</span></span></span><span class="contribution-arrow" aria-hidden="true">' + arrow + '</span></a>').join('') + '</div></article>';
+  const renderTechnologyRoute = () => '<nav class="technology-route" aria-labelledby="technology-route-title"><p id="technology-route-title">' +
+    bi(ui.technologyRoute) + '</p><ol>' + data.technologies.map((technology,index) => '<li><a href="#' + technology.id + '"><span aria-hidden="true">' +
+    String(index+1).padStart(2,"0") + '</span><strong>' + escapeHTML(technology.name) + '</strong>' + arrow + '</a></li>').join('') + '</ol></nav>';
+  const heading = (index, title, description, controls = false, count = false, category = ["EXPERIENCE","PROJECTS","SKILLS","EDUCATION"][index-1]) => '<div class="section-top"><div>' +
+    '<div class="eyebrow">0' + index + ' / ' + category +
     '</div><h2 class="section-title">' + bi(title) + '</h2><p class="section-description">' + bi(description) + '</p></div>' +
     (controls ? '<div class="section-controls"><button class="quiet-button" type="button" data-expand-all>' +
       bi(index === 1 ? ui.expandNotes : ui.expandAll, true) + '</button><button class="quiet-button" type="button" data-collapse-all>' +
@@ -463,7 +481,10 @@
   document.getElementById("app").innerHTML =
     '<a class="skip-link" href="#main">' + bi(ui.skip, true) + '</a>' +
     '<div class="ambient-light" aria-hidden="true"></div><div class="reading-line" aria-hidden="true"></div>' +
-    '<div class="language-dock"><div class="language-switch" role="group" aria-label="Language / 语言">' +
+    '<div class="language-dock"><div class="perspective-switch" role="group" aria-label="Portfolio perspective / 浏览视角">' +
+    '<button type="button" data-perspective="experience" aria-controls="experience technology" aria-pressed="true">' + bi(ui.experienceView,true) + '</button>' +
+    '<button type="button" data-perspective="technology" aria-controls="experience technology" aria-pressed="false">' + bi(ui.technologyView,true) + '</button>' +
+    '</div><div class="language-switch" role="group" aria-label="Language / 语言">' +
     '<button type="button" data-language="zh" lang="zh-CN" aria-label="切换到中文">中</button>' +
     '<button type="button" data-language="en" lang="en" aria-label="Switch to English">EN</button></div></div>' +
     '<div class="page-shell" id="top"><div class="site-layout"><aside class="profile">' +
@@ -476,6 +497,8 @@
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5-10-5m4 3v5l6 3 6-3v-5M22 9v7"/></svg>Google Scholar' + diagonal +
     '</a></div></aside><nav class="mobile-index" aria-label="Page sections">' + navLinks() + '</nav><main class="main-content" id="main">' +
     '<section class="section" id="experience">' + heading(1,ui.workTitle,ui.workDesc) + data.experience.map(renderExperience).join('') + '</section>' +
+    '<section class="section technology-view" id="technology" hidden>' + heading(1,ui.technologyTitle,ui.technologyDesc,false,false,"AI TECHNOLOGY") +
+    renderTechnologyRoute() + '<div class="technology-list">' + data.technologies.map(renderTechnology).join('') + '</div></section>' +
     '<section class="section" id="projects">' + heading(2,ui.projectTitle,ui.projectDesc,true,true) +
     data.projects.map(renderProject).join('') + '<div class="research-collection" id="research-projects"><div class="research-collection-heading"><div class="eyebrow">RESEARCH / ' + String(researchProjects.length).padStart(2,'0') + '</div><h3>' +
     bi(T("相关研究详解", "Research deep dives")) + '</h3><p>' + bi(T("从 Transformer 机制研究，到电力系统预测与 AI 应用", "From Transformer mechanisms to power-system forecasting and AI applications")) +
@@ -533,6 +556,7 @@
     document.querySelectorAll("[data-language]").forEach(button =>
       button.setAttribute("aria-pressed", String(button.dataset.language === lang)));
     document.querySelector(".preview-close").setAttribute("aria-label", lang === "zh" ? "关闭项目详情" : "Close project details");
+    document.querySelector(".perspective-switch").setAttribute("aria-label", ui.perspective[lang]);
     if (persist) { try { localStorage.setItem("jason-portfolio-language",lang); } catch (_) {} }
   }
   typesetMath(document.getElementById("app"));
@@ -603,23 +627,31 @@
       item.strategy.phases.some(phase => phase.links.some(matchesProject)) :
       item.stories.some(story => story.project === project.id));
     const phase = exp?.strategy?.phases.find(item => item.links.some(matchesProject));
-    const links = exp?.strategy ? exp.strategy.phases.flatMap(item => item.links) : [{target:project.id,label:project.title}];
-    preview.querySelector(".preview-breadcrumb").innerHTML = bi(exp?.shortCompany || exp?.company || ui.viewProject, true) +
+    const technology = document.body.dataset.perspective === "technology" &&
+      data.technologies.find(item => item.id === previewOrigin?.closest(".technology-card")?.id);
+    const links = technology ? technology.links : exp?.strategy ? exp.strategy.phases.flatMap(item => item.links) : [{target:project.id,label:project.title}];
+    preview.querySelector(".preview-breadcrumb").innerHTML = technology ? escapeHTML(technology.name) :
+      bi(exp?.shortCompany || exp?.company || ui.viewProject, true) +
       (phase ? '<span aria-hidden="true">/</span>' + bi(phase.previewLabel || T("阶段 " + phase.number, "Stage " + phase.number),true) : '');
-    document.querySelector(".comparison-company").innerHTML = bi(exp?.shortCompany || exp?.company || ui.workTitle,true);
+    document.querySelector(".comparison-company").innerHTML = technology ? escapeHTML(technology.name) : bi(exp?.shortCompany || exp?.company || ui.workTitle,true);
+    document.querySelector(".comparison-label").innerHTML = bi(technology ? ui.technologyView : T("经历总览", "Experience"),true);
     preview.querySelector(".preview-mobile-projects").innerHTML = links.map(link =>
       '<button type="button" data-preview-project="' + link.target + '" data-preview-view="' + (link.view || '') + '" aria-pressed="' + matchesProject(link) + '">' +
       bi(previewNames[link.view || link.target] || link.label,true) + '</button>').join('');
     document.querySelectorAll("[data-open-project]").forEach(link => {
-      const selected = link.dataset.openProject === project.id && (link.dataset.projectView || "") === view;
+      const sourceTechnology = link.closest(".technology-card");
+      const selected = link.dataset.openProject === project.id && (link.dataset.projectView || "") === view &&
+        (!technology || !sourceTechnology || sourceTechnology.id === technology.id);
       link.setAttribute("aria-expanded",String(selected));
       if (selected) link.setAttribute("aria-current","true");
       else link.removeAttribute("aria-current");
     });
   }
   function currentContribution() {
-    return Array.from(document.querySelectorAll(".contribution-link")).find(link =>
-      link.dataset.openProject === preview.dataset.project && (link.dataset.projectView || "") === (preview.dataset.view || ""));
+    const matches = link => link.dataset.openProject === preview.dataset.project &&
+      (link.dataset.projectView || "") === (preview.dataset.view || "");
+    if (previewOrigin?.matches(".contribution-link") && matches(previewOrigin) && previewOrigin.getClientRects().length) return previewOrigin;
+    return Array.from(document.querySelectorAll(".contribution-link")).find(link => matches(link) && link.getClientRects().length);
   }
   function settlePreviewMotion() {
     // Commit the latest destination before starting another interaction.
@@ -702,7 +734,7 @@
   }
   function alignComparisonSource() {
     const source = currentContribution() || previewOrigin;
-    const anchor = source?.closest(".strategy-phase") || source?.closest(".story-panel") || source;
+    const anchor = source?.closest(".technology-card") || source?.closest(".strategy-phase") || source?.closest(".story-panel") || source;
     if (anchor) window.scrollTo({top:window.scrollY + anchor.getBoundingClientRect().top - 88,behavior:"instant"});
     // Longer research overviews still keep the selected contribution in view.
     if (source && source.getBoundingClientRect().bottom > window.innerHeight - 36) {
@@ -750,7 +782,7 @@
     if (!wasOpen) {
       previewOrigin = origin;
       previewPagePosition = {x:window.scrollX,y:window.scrollY,width:window.innerWidth};
-      previewReturnAnchor = origin?.closest(".strategy-phase") || origin?.closest(".story-panel") || origin;
+      previewReturnAnchor = origin?.closest(".technology-card") || origin?.closest(".strategy-phase") || origin?.closest(".story-panel") || origin;
       previewReturnOffset = previewReturnAnchor?.getBoundingClientRect().top || 0;
     }
     // A contribution can select a specific chapter of a shared project.
@@ -808,6 +840,34 @@
       restoreExperiencePosition();
     },"close",immediate);
   }
+  function setPerspective(perspective, persist = true, navigate = true) {
+    const view = perspective === "technology" ? "technology" : "experience";
+    if (preview.open || previewMotion.pending) closeProjectPreview(true);
+    document.body.dataset.perspective = view;
+    document.getElementById("experience").hidden = view !== "experience";
+    document.getElementById("technology").hidden = view !== "technology";
+    document.querySelectorAll("button[data-perspective]").forEach(button =>
+      button.setAttribute("aria-pressed",String(button.dataset.perspective === view)));
+    sectionIds[0] = view;
+    document.querySelectorAll('[data-section-slot="0"]').forEach(link => {
+      link.href = "#" + view;
+      link.dataset.sectionLink = view;
+      link.innerHTML = (link.closest(".section-nav") ? '<span class="nav-line" aria-hidden="true"></span>' : '') +
+        bi(view === "technology" ? ui.technologyNav : ui.nav[0],true);
+    });
+    preview.querySelector(".preview-mobile-label").innerHTML = bi(view === "technology" ? T("返回技术", "Back to technology") : T("返回经历", "Back to experience"),true);
+    setLanguage(document.documentElement.lang === "en" ? "en" : "zh",false);
+    if (persist) { try { localStorage.setItem("jason-portfolio-perspective",view); } catch (_) {} }
+    if (navigate) {
+      history.replaceState(null,"","#" + view);
+      document.getElementById(view).scrollIntoView({behavior:reducedMotion.matches ? "instant" : "smooth",block:"start"});
+    }
+    scheduleReadingUpdate();
+  }
+  function revealPerspectiveFor(target) {
+    if (target.closest("#technology") && document.getElementById("technology").hidden) setPerspective("technology",true,false);
+    if (target.closest("#experience") && document.getElementById("experience").hidden) setPerspective("experience",true,false);
+  }
   preview.addEventListener("cancel",event => { event.preventDefault(); closeProjectPreview(); });
   desktopComparison.addEventListener("change",() => {
     settlePreviewMotion();
@@ -857,6 +917,11 @@
     };
   }
   document.addEventListener("click",event => {
+    const perspectiveButton = event.target.closest("button[data-perspective]");
+    if (perspectiveButton) {
+      if (perspectiveButton.dataset.perspective !== document.body.dataset.perspective) setPerspective(perspectiveButton.dataset.perspective);
+      return;
+    }
     const projectTrigger = event.target.closest("[data-open-project]");
     if (projectTrigger && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
       event.preventDefault();
@@ -898,6 +963,7 @@
     if (link) {
       const target = document.getElementById(link.getAttribute("href").slice(1));
       if (target) {
+        revealPerspectiveFor(target);
         const panel = target.closest(".story-panel");
         if (panel) selectStory(panel.id);
         let ancestor = target;
@@ -938,6 +1004,7 @@
     const id = decodeURIComponent(location.hash.slice(1));
     const target = document.getElementById(id);
     if (!target) return;
+    revealPerspectiveFor(target);
     const panel = target.closest(".story-panel");
     if (panel) selectStory(panel.id);
     let ancestor = target;
@@ -970,6 +1037,9 @@
   }
   window.addEventListener("scroll",scheduleReadingUpdate,{passive:true});
   window.addEventListener("resize",scheduleReadingUpdate);
+  let savedPerspective = "experience";
+  try { savedPerspective = localStorage.getItem("jason-portfolio-perspective") || savedPerspective; } catch (_) {}
+  setPerspective(savedPerspective,false,false);
   updateReadingState();
   let printState = [];
   window.addEventListener("beforeprint",() => {

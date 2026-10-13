@@ -4,6 +4,8 @@ Live website: https://jasonmils.github.io/
 
 A bilingual interview portfolio with three experience overviews, four featured projects and four research deep dives.
 
+The perspective switch offers the existing experience view and an AI technology view with eight areas, each connecting a problem, contribution and evidence to the shared project deep dives. The selected perspective is remembered; direct experience and technology links reveal the appropriate view.
+
 ## Publication
 
 GitHub Pages publishes only the `/docs` directory of the `master` branch. `.nojekyll` serves this site as static files. The complete previous academic website is archived separately in `../legacy/` and is not part of the Pages output. The public URL remains https://jasonmils.github.io/.
