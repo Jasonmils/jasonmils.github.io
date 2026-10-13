@@ -109,16 +109,21 @@
         '><th scope="row">' + bi(row[0],true) + '</th>' + row.slice(1).map(value => '<td>' + cell(value) + '</td>').join('') +
         '</tr>').join('') + '</tbody></table></div>';
   };
-  const renderResearchResults = study => '<div class="research-results"><div class="paper-result-summary">' +
+  const renderResearchResults = study => '<div class="research-results' + (study.kind === "review" ? ' review-results' : '') + '"><div class="paper-result-summary">' +
     study.summary.map(item => '<div><span>' + bi(item.label,true) + '</span><strong>' + item.value + '</strong><p>' + bi(item.note) + '</p></div>').join('') +
-    '</div><p class="table-note research-source-note">' + bi(study.sourceNote) + '</p><p class="paper-scroll-hint">' +
+    '</div><p class="table-note research-source-note">' + bi(study.sourceNote) + '</p>' +
+    (study.paperURL ? '<a class="paper-zoom" href="' + escapeHTML(study.paperURL) + '" target="_blank" rel="noopener noreferrer">' +
+      bi(T("阅读发表论文", "Read the published paper"),true) + diagonal + '</a>' : '') + '<p class="paper-scroll-hint">' +
     bi(T("表格可横向滑动，查看全部条件", "Scroll tables horizontally to see every condition")) + '</p>' +
     study.tables.map(table => {
       const body = table.groups.map(group => '<section class="paper-dataset">' + (group.label ? '<h5>' + bi(group.label,true) + '</h5>' : '') +
         renderResearchTable(table,group) + '</section>').join('') + '<p class="table-note">' + bi(table.note) + '</p>';
       return table.collapsed ? '<details class="paper-evidence"><summary>' + bi(table.title,true) + toggle() +
         '</summary><div class="paper-disclosure-body">' + body + '</div></details>' : '<section class="research-table-section">' + body + '</section>';
-    }).join('') + '</div>';
+    }).join('') + (study.outlook ? '<section class="review-outlook"><h4 class="small-label">' +
+      bi(T("论文研究展望", "Research outlook")) + '</h4><div class="review-outlook-grid">' +
+      study.outlook.map(item => '<article><h5>' + bi(item.title) + '</h5><p>' + bi(item.body) + '</p></article>').join('') +
+      '</div></section>' : '') + '</div>';
   const renderPaperTable = (rows, title) => '<div class="paper-table-scroll" tabindex="0" role="region" aria-label="' +
     escapeHTML(title.en) + '"><table class="paper-result-table"><caption>' + bi(title) + '</caption><thead><tr><th scope="col">' +
     bi(T("模型 / 配置", "Model / setup"),true) + '</th><th scope="col">wMAPE ↓</th><th scope="col">MAPE ↓</th>' +
@@ -266,14 +271,16 @@
       takeaway:T("将不确定性纳入输出与评估", "Bring uncertainty into both the output and the evaluation")
     },
     "hust-review": {
-      tab:T("系统综述", "Review"),title:T("把 AI 方法放回电力运行场景", "Place AI methods in their operating context"),
-      challenge:T("沿着预测对象与用途组织研究方法", "Organize methods around forecasting targets and their uses"),
+      tab:T("系统综述", "Review"),title:T("新能源电力系统的 AI 方法与运行任务", "AI methods and operational tasks in renewable power systems"),
+      challenge:T("预测 · 调度 · 控制 · 电力市场", "Forecasts · Dispatch · Control · Electricity markets"),
       render: () => diagramFlow([
-        ["energy",T("源", "Generation"),T("发电侧", "Power generation")],
-        ["home",T("荷", "Demand"),T("负荷侧", "Electricity demand")],
-        ["grid",T("网", "Grid"),T("电网运行", "Grid operations")]
-      ],null,true) + '<div class="review-synthesis"><span aria-hidden="true">↓</span><strong>' + bi(T("方法 × 预测对象 × 应用场景", "Methods × targets × operating contexts")) +
-        '</strong><span>' + bi(T("文献研究 → 相关章节英文写作与修订", "Literature research → writing and revising the relevant sections")) + '</span></div>' +
+        ["forecast",T("预测", "Forecasts"),T("发电 · 负荷 · 电价", "Generation · Load · Price")],
+        ["decision",T("调度", "Dispatch"),T("潮流 · 成本 · 机组组合", "OPF · Cost · Unit commitment")],
+        ["grid",T("控制", "Control"),T("电压 · 频率 · 稳定性", "Voltage · Frequency · Stability")],
+        ["people",T("市场", "Markets"),T("竞价 · 出清 · 多方交互", "Bidding · Clearing · Interaction")]
+      ],null,true) + '<div class="paper-methods">' + renderPaperFigure(reviewResearchStudy.figures[0]) +
+        '<details class="paper-evidence"><summary>' + bi(T("论文原图 · 调度、控制与市场", "Paper figures · Dispatch, control and markets"),true) + toggle() +
+        '</summary><div class="paper-disclosure-body">' + reviewResearchStudy.figures.slice(1).map(renderPaperFigure).join('') + '</div></details></div>' +
         paperResult("Nature Reviews Electrical Engineering", "2024", T("第二作者", "Second author")),
       takeaway:T("先解释问题与用途，再讨论方法的条件与局限", "Explain the problem and use, then the method’s conditions and limits")
     }

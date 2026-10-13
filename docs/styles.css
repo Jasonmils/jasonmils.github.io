@@ -344,6 +344,19 @@ details[open]>summary .toggle-plus:before{content:none}
 .research-table-section{margin:24px 0 30px}
 .research-table-section>.table-note{margin-top:14px}
 .research-results .paper-evidence{margin-top:20px}
+.review-results .paper-result-table{min-width:620px;text-align:left;table-layout:fixed}
+.review-results .paper-result-table th:first-child{width:17%}
+.review-results .paper-result-table th:nth-child(2){width:19%}
+.review-results .paper-result-table th:nth-child(3){width:30%}
+.review-results .paper-result-table td,.review-results .paper-result-table tbody th{vertical-align:top;line-height:1.85}
+.review-results .paper-result-table thead th{white-space:normal}
+.review-results .paper-result-table td{color:#515154}
+.review-outlook{margin-top:30px}
+.review-outlook-grid{display:grid;gap:12px}
+.review-outlook-grid article{padding:18px;border:1px solid var(--line);border-radius:14px;background:#f4f6fd80}
+.review-outlook-grid h5{font-size:14px;line-height:1.7;color:var(--ink);margin:0 0 8px}
+.review-outlook-grid p{font-size:12px;line-height:1.9;color:var(--muted)}
+.paper-disclosure-body>.paper-figure{margin-top:16px}
 @media(max-width:600px){
  .paper-figure{padding:14px}.paper-figure figcaption strong{font-size:14px}.paper-figure>p{font-size:11px}
  .paper-equation{padding:17px 14px;border-radius:15px}.math-scroll{font-size:15px;padding:14px 0}

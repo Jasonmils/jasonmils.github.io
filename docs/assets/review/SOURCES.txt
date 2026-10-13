@@ -1,0 +1,13 @@
+Source: owner-supplied YuanzhengLiPaper.pdf
+SHA-256: d989d4776cc76fec8befb6a136a4e04fef4c24b35863c896a70189bfeaac90ba
+Title: Artificial intelligence-based methods for renewable power system operation
+DOI: https://doi.org/10.1038/s44287-024-00018-9
+Publisher: Nature Reviews Electrical Engineering
+
+Figures rendered directly from the supplied PDF at 216 dpi, preserving the original artwork.
+Figure 1: file page 3; Figure 2: file page 5; Figure 3: file page 8; Figure 4: file page 11.
+Crop bounds: x=37..563 pt; y=108..482/514/482/365 pt from page top. Captions are presented separately in bilingual form on the site.
+Method comparisons summarize Table 1 on file pages 12-13.
+Research directions summarize the Outlook on file pages 13-14 and retain their prospective status.
+The supplied publisher-formatted file has a placeholder online publication date. Website year retains the existing 2024 bibliographic record.
+No new experiments or deployment outcomes are inferred from this review.

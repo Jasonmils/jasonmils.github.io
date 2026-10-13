@@ -138,6 +138,72 @@ const priceResearchStudy = {
       note:T("瑞典数据集上的资源评估；时间为训练与验证合计。对照 GRU 为七层、各层后接 PReLU；这些数值不代表线上推理延迟", "Resource evaluation on Sweden. Time sums training and validation; the GRU comparator has seven layers, each followed by PReLU. These figures are not inference latency")},
   ],
 };
+// Original figures and qualitative method comparisons from the supplied Review.
+const reviewResearchStudy = {
+  kind:"review",
+  paperURL:"https://doi.org/10.1038/s44287-024-00018-9",
+  sourceNote:T("依据所提供论文版本的 Figures 1–4 与 Table 1 整理；下表归纳文献中的方法与适用条件，研究展望保留为未来方向", "Based on Figures 1–4 and Table 1 in the supplied paper. The tables synthesize methods and applicability from the literature; the outlook retains its status as future research"),
+  figures:[
+    {number:1,src:"assets/review/figure-1-forecast.png",width:1578,height:1122,
+      title:T("新能源预测：输入、模型与预测对象", "Renewable forecasts: inputs, models and targets"),
+      note:T("论文原图 1 · 天气、历史发电、负荷和电价构成输入；卷积、循环与注意力模型分别学习局部模式、时间依赖与样本关系，输出发电量、负荷或电价预测", "Paper Figure 1 · Weather and historical generation, load and prices form the inputs. Convolutional, recurrent and attention models learn local patterns, temporal dependencies and sample relationships to forecast generation, load or prices")},
+    {number:2,src:"assets/review/figure-2-dispatch.png",width:1578,height:1218,
+      title:T("调度：最优潮流、经济调度与机组组合", "Dispatch: optimal power flow, economic dispatch and unit commitment"),
+      note:T("论文原图 2 · 对照 ML、DL 和 Actor–Critic 强化学习，讨论发电、储能与可调负荷在成本和安全约束下的资源配置", "Paper Figure 2 · ML, DL and actor–critic RL support resource allocation across generation, storage and flexible loads under cost and security constraints")},
+    {number:3,src:"assets/review/figure-3-control.png",width:1578,height:1122,
+      title:T("控制：监测、建模与控制器协同", "Control: monitoring, modeling and controllers"),
+      note:T("论文原图 3 · 发电、输配电、负荷与储能向监测和建模模块提供状态；控制器据此生成动作，面向电压、频率及系统稳定性调节", "Paper Figure 3 · Generation, transmission/distribution, demand and storage provide states for monitoring and modeling. Controllers generate actions to regulate voltage, frequency and system stability")},
+    {number:4,src:"assets/review/figure-4-markets.png",width:1578,height:771,
+      title:T("电力市场：单智能体与多智能体决策", "Electricity markets: single- and multi-agent decisions"),
+      note:T("论文原图 4 · 区分批发与零售市场，展示需求、价格和设备状态如何支持竞价策略，以及多参与者与市场出清机制之间的交互", "Paper Figure 4 · Wholesale and retail markets use demand, prices and device states to support bidding strategies and interactions between participants and market-clearing mechanisms")}
+  ],
+  summary:[
+    {label:T("运行任务", "Operational tasks"),value:"4",note:T("预测 · 调度 · 控制 · 电力市场", "Forecasts · Dispatch · Control · Markets")},
+    {label:T("AI 方法范式", "AI paradigms"),value:"3",note:T("机器学习 · 深度学习 · 强化学习", "Machine learning · Deep learning · Reinforcement learning")}
+  ],
+  tables:[
+    {title:T("Table 1 · 预测方法与适用条件", "Table 1 · Forecasting methods and applicability"),collapsed:true,highlight:false,
+      headers:[T("方法", "Method"),T("任务", "Task"),T("关键特征", "Key feature"),T("适用条件与局限", "Applicability and limits")],
+      groups:[{rows:[
+        ["SVR",T("风功率与风速预测", "Wind power and speed"),T("参数较少，通过核函数表达非线性关系", "Few parameters; kernels model nonlinear relations"),T("对核函数和超参数敏感", "Sensitive to kernel and hyperparameter choices")],
+        ["CNN",T("光伏功率预测", "Photovoltaic power"),T("局部卷积与权重共享，提取短期变化", "Local convolutions and shared weights extract short-term changes"),T("可堆叠扩展，但较经典 ML 更复杂", "Scalable and stackable, with more complexity than classical ML")],
+        ["TCN",T("光伏功率预测", "Photovoltaic power"),T("扩张卷积扩大感受野，因果设计减少信息泄漏", "Dilated convolutions enlarge the receptive field; causality limits leakage"),T("适合超短期依赖，长期预测能力受限", "Suited to immediate dependencies; limited long-range modeling")],
+        ["GRU",T("风功率预测", "Wind power"),T("门控与记忆机制建模时间依赖", "Gating and memory model temporal dependencies"),T("论文指出短期波动和长预测窗仍有局限", "The review notes limits for short-term fluctuations and long horizons")],
+        ["Transformer",T("风功率与太阳辐照度预测", "Wind power and solar irradiance"),T("自注意力建模长短期关系", "Self-attention models long- and short-term relationships"),T(String.raw`较高参数与计算开销；标准注意力为 \(O(L^2)\)`, String.raw`Higher parameter and computation costs; standard attention is \(O(L^2)\)`) ],
+        ["Informer",T("通用时序预测", "General forecasting"),T("在自注意力中引入稀疏性", "Introduces sparsity into self-attention"),T(String.raw`降低注意力计算开销，论文给出 \(O(L\log L)\)`, String.raw`Reduces attention cost; the review gives \(O(L\log L)\)`) ]
+      ]}],note:T("依据 Table 1 与预测章节选取关键特征；上述适用条件来自综述归纳，具体效果仍取决于数据、预测窗及模型配置", "Key features selected from Table 1 and the forecasting section. Applicability reflects the review’s synthesis; performance depends on data, horizon and model configuration")},
+    {title:T("Table 1 · 调度方法与运行约束", "Table 1 · Dispatch methods and operational constraints"),collapsed:true,highlight:false,
+      headers:[T("方法", "Method"),T("任务", "Task"),T("关键特征", "Key feature"),T("适用条件与局限", "Applicability and limits")],
+      groups:[{rows:[
+        ["ELM",T("经济调度", "Economic dispatch"),T("为调度求解器生成候选方案", "Generates candidates for a dispatch solver"),T("可估计非线性关系，近似能力限制直接最优求解", "Estimates nonlinear relations; approximation limits direct optimal solutions")],
+        ["CNN",T("交流最优潮流", "AC optimal power flow"),T("从网络输入估计潮流与安全状态", "Estimates power flow and security states from network inputs"),T("神经网络结构与拓扑需要审慎设计", "Requires careful network architecture and topology design")],
+        ["DNN",T("交流最优潮流", "AC optimal power flow"),T("将离散拓扑嵌入连续导纳空间", "Embeds discrete topology in a continuous admittance space"),T("可处理特定设置下的不同拓扑；高维问题需要较大网络", "Handles different topologies under specified settings; high dimensions require larger networks")],
+        ["PPO",T("日前机组组合", "Day-ahead unit commitment"),T("用强化学习策略引导树搜索", "Uses an RL policy to guide tree search"),T("随机组数增加具有时间效率优势，效果依赖新能源预测精度", "Time efficient as generator counts increase; relies on renewable forecast accuracy")]
+      ]}],note:T("OPF、经济调度与机组组合分别对应不同决策变量和时间尺度，均需要满足各自运行约束", "OPF, economic dispatch and unit commitment have different decision variables and timescales, with their own operational constraints")},
+    {title:T("Table 1 · 控制方法与动作空间", "Table 1 · Control methods and action spaces"),collapsed:true,highlight:false,
+      headers:[T("方法", "Method"),T("任务", "Task"),T("关键特征", "Key feature"),T("适用条件与局限", "Applicability and limits")],
+      groups:[{rows:[
+        ["Random Forest",T("子系统响应建模", "Subsystem response modeling"),T("提供特征重要性，建立数据驱动响应模型", "Provides feature importance and data-driven response models"),T("参数敏感，性能取决于具体设置", "Parameter sensitive; performance depends on the setting")],
+        ["PSO",T("控制决策搜索", "Control decision search"),T("搜索高维状态空间，跳出局部最优", "Searches high-dimensional spaces beyond local optima"),T("参数敏感，求解及时性难以保证", "Parameter sensitive, with no guaranteed timeliness")],
+        ["ANN",T("子系统响应建模", "Subsystem response modeling"),T("从历史数据构造非线性响应模型", "Builds nonlinear response models from historical data"),T("可扩展，但计算复杂度高于经典 ML", "Scalable, with higher computational complexity than classical ML")],
+        ["DQN",T("控制动作选择", "Control action selection"),T("通过环境交互近似状态或动作价值", "Approximates state or action values through interaction"),T("适合离散动作空间；连续动作适配受限", "Suited to discrete actions; limited applicability to continuous actions")],
+        ["DDPG",T("控制策略学习", "Control policy learning"),T("环境交互与经验回放支持策略学习", "Interaction and replay support policy learning"),T("支持连续动作，对环境变化的鲁棒性仍有不足", "Supports continuous actions, with limits in robustness to environmental changes")]
+      ]}],note:T("按 Table 1 的任务、方法特征与适用条件归纳；稳定性与实时性需要结合具体物理系统评估", "Synthesized from the tasks, features and applicability in Table 1. Stability and real-time behavior require evaluation in the specific physical system")},
+    {title:T("Table 1 · 市场方法与多参与者交互", "Table 1 · Market methods and participant interactions"),collapsed:true,highlight:false,
+      headers:[T("方法", "Method"),T("任务", "Task"),T("关键特征", "Key feature"),T("适用条件与局限", "Applicability and limits")],
+      groups:[{rows:[
+        ["SVM",T("市场力或合谋识别", "Market power or collusion detection"),T("从交易数据学习合谋相关特征", "Learns collusion-related features from trading data"),T("结果受训练数据和特征质量影响", "Depends on training data and features")],
+        [T("单智能体 RL", "Single-agent RL"),T("竞价决策", "Bidding decisions"),T("为一个参与者建立策略智能体", "Models a policy agent for one participant"),T("可处理非凸约束，其他参与者的简化可能偏离真实市场", "Handles non-convex constraints; simplifying other participants can depart from reality")],
+        [T("多智能体 RL", "Multi-agent RL"),T("竞价与交互决策", "Bidding and interaction decisions"),T("多个参与者分别学习策略并开展博弈", "Multiple participants learn policies and interact strategically"),T("更贴近多方竞价，问题规模与计算难度随智能体数变化", "Closer to multi-party bidding; size and computational difficulty depend on agent count")]
+      ]}],note:T("覆盖批发与零售市场的竞价、出清与交易研究；方法适用性需要结合市场机制与参与者假设判断", "Covers bidding, clearing and trading in wholesale and retail markets. Applicability depends on market mechanisms and participant assumptions")}
+  ],
+  outlook:[
+    {title:T("分布式高比例新能源", "Distributed systems with high renewable penetration"),body:T("作者提出结合联邦学习与图学习，探索跨场站时空关联，并处理空间拓扑和协作学习中的隐私要求", "The authors propose combining federated and graph learning to study cross-site spatiotemporal relations while addressing privacy in spatial topology and collaboration")},
+    {title:T("多形态储能协同", "Coordination of diverse storage technologies"),body:T("针对储能类型、充放电速度、规模与应用场景差异，讨论 Meta-RL 对多任务适应和统一调度控制的潜力", "For differences in storage type, charge/discharge speed, scale and use, the review discusses meta-RL’s potential for task adaptation and unified dispatch/control")},
+    {title:T("复杂市场与可解释决策", "Complex markets and interpretable decisions"),body:T("面对异构参与者和多市场耦合，讨论模仿学习与强化学习结合，以利用运营者经验并改善决策可解释性", "For heterogeneous participants and coupled markets, the review discusses combining imitation learning with RL to use operator experience and improve interpretability")}
+  ]
+};
+
 // Project covers use the corresponding detail diagram or original paper figure.
 const projectCovers = {
   "project-agent": {
@@ -173,12 +239,7 @@ const projectCovers = {
     "height": 226
   },
   "project-hust-review": {
-    "src": {
-      "zh": "assets/project-covers/project-hust-review-zh.png",
-      "en": "assets/project-covers/project-hust-review-en.png"
-    },
-    "width": 1230,
-    "height": 226
+    "src": "assets/review/figure-1-forecast.png", "width": 1578, "height": 1122
   },
   "project-deformer": {
     "src": "assets/deformer/figure-2-tokenization.png",
@@ -432,7 +493,7 @@ const portfolio = {
           links:[
             {target:"project-hust-wind",label:T("多风电场联邦预测", "Federated wind-power forecasting"),action:T("用 SiDGI 学习特征图，通过 CPLF 共享空间参数、保留本地时间模型，在数据留在场站的条件下开展协作", "Learned feature graphs with SiDGI and collaborated through CPLF, sharing spatial parameters while retaining local temporal models and raw data")},
             {target:"project-hust-price",label:T("日前电价点预测与区间预测", "Point & interval price forecasting"),action:T("以 ARUCNN–GRU 提取时间依赖，用 Dense Skip Attention 学习特征权重，通过 MAE 与平滑分位损失支持两种预测模式", "Extracted temporal dependencies with ARUCNN–GRU, learned feature weights through Dense Skip Attention, and supported two forecast modes through MAE and smooth quantile losses")},
-            {target:"project-hust-review",label:T("新能源系统 AI 方法综述", "AI for renewable power operations"),action:T("梳理源–荷–网三侧预测方法，独立完成相关章节的文献研究、英文写作与修订", "Reviewed forecasting across generation, demand and grids, independently researching, writing and revising the relevant sections")},
+            {target:"project-hust-review",label:T("新能源系统 AI 方法综述", "AI for renewable power operations"),action:T("梳理预测、调度、控制与电力市场中的 AI 方法，独立完成相关章节的文献研究、英文写作与修订", "Reviewed AI across forecasting, dispatch, control and electricity markets, independently researching, writing and revising the relevant sections")},
           ],
           result:T("3 篇相关论文 · 连接方法与应用", "Three publications · Methods & applications"),
           resultNote:T("共同第一作者 1 篇、第二作者 2 篇；发表于 2023–2025 年", "One co-first-authored and two second-authored papers, published in 2023–2025"),
@@ -470,15 +531,18 @@ const portfolio = {
           stack:["ARUCNN","GRU","Dense Skip Attention","PReLU",T("平滑分位回归","Smooth Quantile Regression")],
         },
         {
-          id:"hust-review",title:T("以系统综述连接模型方法与电力运行场景", "Connecting AI methods with power-system operations"),
-          brief:T("发电、负荷与电网三侧的方法梳理与英文写作", "Methods across generation, demand and grid operations"),
-          problem:T("“双碳”背景下，新能源系统的 AI 应用分布在不同运行环节。系统综述需要把方法、预测对象和运行场景联系起来，而不只是罗列算法", "Under decarbonization goals, AI applications span several parts of renewable power-system operation. A systematic review must connect methods with forecasting targets and operational contexts"),
+          id:"hust-review",title:T("新能源电力系统运行的 AI 方法综述", "AI methods for renewable power system operation"),
+          brief:T("围绕预测、调度、控制与电力市场四类运行任务，对照机器学习、深度学习和强化学习的关键机制、适用条件与研究挑战", "A review of machine learning, deep learning and reinforcement learning across forecasts, dispatch, control and electricity markets, comparing mechanisms, applicability and research challenges"),
+          problem:T("高比例新能源带来发电波动、供需失衡及电压和频率变化，并增加资源调度与市场交互的复杂性。综述需要将方法能力、运行目标、物理约束与计算代价联系起来，解释不同 AI 路线的适用范围", "High renewable penetration brings generation variability, supply–demand imbalance and voltage/frequency changes, while complicating resource dispatch and market interactions. The review connects model capabilities with operational objectives, physical constraints and computation to explain where different AI approaches apply"),
           actions:[
-            T("系统梳理“源–荷–网”三侧预测方法及人工智能应用，独立完成相关章节的文献研究、英文写作与修订", "I systematically reviewed forecasting methods and AI applications across generation, demand and grid operations, independently conducting the literature review and writing and revising the relevant English manuscript sections"),
+            T("围绕新能源发电、负荷和电价预测，梳理 SVR、CNN / TCN、GRU 与 Transformer / Informer 的建模机制，以及精度、预测窗和计算开销之间的取舍。个人贡献包括相关章节的文献研究、英文写作与修订", "Reviewed mechanisms for forecasting renewable generation, demand and electricity prices using SVR, CNN/TCN, GRU and Transformer/Informer, including trade-offs among accuracy, forecast horizon and computation. My contribution included literature research, writing and revision of the relevant sections"),
+            T("论文将调度细分为最优潮流、经济调度与机组组合，对照 ML / DL 的候选解生成和端到端估计，以及强化学习的策略优化；讨论发电、储能、可调负荷在运行成本与安全约束下的协同", "The paper separates dispatch into optimal power flow, economic dispatch and unit commitment, comparing ML/DL candidate generation and end-to-end estimation with RL policy optimization. It discusses coordination of generation, storage and flexible loads under cost and security constraints"),
+            T("控制部分按监测、建模与控制器组织方法，覆盖发电、输配电、需求及储能子系统；区分 DQN 的离散动作与 DDPG 的连续动作适配，并讨论实时性、环境变化和物理稳定性的约束", "The control section organizes methods into monitoring, modeling and controllers across generation, transmission/distribution, demand and storage. It distinguishes DQN’s discrete-action setting from DDPG’s continuous-action setting and discusses timeliness, environmental change and physical stability"),
+            T("市场部分区分批发与零售场景，比较单智能体和多智能体强化学习的竞价与交易机制；结合 Table 1 梳理方法边界，并在 Outlook 中讨论联邦与图学习、多形态储能的 Meta-RL，以及可解释市场决策等未来方向", "The market section distinguishes wholesale and retail settings and compares single- and multi-agent RL for bidding and trading. Table 1 synthesizes applicability; the Outlook discusses federated/graph learning, meta-RL for diverse storage and interpretable market decisions as future directions")
           ],
-          result:T("相关综述发表于 Nature Reviews Electrical Engineering（2024），我是第二作者", "The review appeared in Nature Reviews Electrical Engineering in 2024, with me as second author"),
+          result:T("综述形成预测、调度、控制与电力市场四类任务的系统框架，以 Figures 1–4 展示典型机制，Table 1 归纳方法目标、特征和适用条件。论文发表于 Nature Reviews Electrical Engineering（2024），本人为第二作者；贡献声明列出本人参与资料研究、论文写作与投稿前修订", "The review provides a framework across forecasts, dispatch, control and electricity markets. Figures 1–4 illustrate typical mechanisms; Table 1 synthesizes objectives, features and applicability. Published in Nature Reviews Electrical Engineering (2024), with me as second author; the contribution statement records my participation in research, writing and pre-submission revision"),
           takeaway:T("综述训练了我把具体模型放回问题背景中的能力：先说明预测对象与用途，再解释方法的适用条件和局限", "Review work trained me to place a model in context: explain the forecasting target and its use, then the method’s applicability and limitations"),
-          stack:[T("文献研究","Literature Review"),T("新能源系统","Renewable Power"),T("英文科研写作","Scientific Writing")],
+          stack:[T("文献研究","Literature Review"),T("新能源系统","Renewable Power"),"ML / DL / RL",T("方法适用性","Method Applicability"),T("英文科研写作","Scientific Writing")],
         },
       ],
     },
@@ -680,11 +744,12 @@ const portfolio = {
     },
     {
       id:"project-hust-review",index:"R4",sourceStory:"hust-review",
-      category:T("研究详解 · 新能源系统综述", "Research · Renewable power review"),
-      title:T("新能源电力系统：AI 方法与运行场景", "Renewable power systems: AI methods & operations"),
-      role:T("相关章节文献研究、英文写作与修订 · 第二作者", "Literature research, writing and revision of the relevant sections · Second author"),
-      context:T("新能源电力系统的 AI 应用分布在发电、负荷和电网运行的不同环节。综述以运行场景为线索，将预测对象、方法选择与应用用途联系起来", "AI applications in renewable power span generation, demand and grid operation. The review connected forecasting targets, methods and uses through their operating contexts"),
-      decisionTitles:[T("按源–荷–网组织方法与问题", "Organize methods around generation, demand and grids")],
+      category:T("研究详解 · 新能源电力系统运行综述", "Research · Renewable power system operation review"),
+      title:T("新能源电力系统：AI 预测、调度、控制与市场", "AI for renewable power system operation"),
+      role:T("第二作者 · 相关章节文献研究、英文写作与修订", "Second author · Literature research, writing and revision of the relevant sections"),
+      context:T("论文以高比例新能源接入带来的不确定性为背景，将预测、调度、控制和电力市场作为四个关键运行环节。综述将 ML、DL 与 RL 方法放入各自任务、决策变量与物理约束中，讨论计算效率、适用条件及后续研究方向", "Against uncertainty from high renewable penetration, the paper identifies forecasts, dispatch, control and electricity markets as four key operational components. It places ML, DL and RL within their tasks, decision variables and physical constraints to discuss computation, applicability and future research"),
+      researchStudy:reviewResearchStudy,
+      decisionTitles:[T("预测：建模机制与计算取舍", "Forecasts: modeling mechanisms and computation"),T("调度：任务分类与运行约束", "Dispatch: tasks and operational constraints"),T("控制：系统状态与动作空间", "Control: system states and action spaces"),T("市场：多参与者交互与研究展望", "Markets: participant interactions and outlook")],
     },
   ],
   skills:[
