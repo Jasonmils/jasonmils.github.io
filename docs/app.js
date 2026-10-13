@@ -42,7 +42,15 @@
   const diagonal = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 18 18 6M6 6h12v12"/></svg>';
   const up = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
   const dot = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>';
-  const tags = values => '<div class="tag-list">' + values.map(v => '<span class="tag">' + bi(v, true) + '</span>').join('') + '</div>';
+  const tagLogos = {
+    Python:"python",PyTorch:"pytorch",TensorFlow:"tensorflow",Transformers:"huggingface",
+    Qwen3:"qwen","Qwen3-4B":"qwen",Codex:"openai"
+  };
+  const tags = values => '<div class="tag-list">' + values.map(v => {
+    const logo = tagLogos[typeof v === "object" ? v.en : v];
+    return '<span class="tag">' + (logo ? '<img class="tag-logo" src="assets/logos/skills/' + logo +
+      '.svg" alt="" width="16" height="16" loading="lazy" decoding="async">' : '') + bi(v,true) + '</span>';
+  }).join('') + '</div>';
   // Reserve space for each complete translated group, so tags stay with their paragraph.
   const experienceOverview = exp => '<div class="experience-overview bi">' + ["zh", "en"].map(lang =>
     '<div class="' + lang + '" lang="' + (lang === "zh" ? "zh-CN" : "en") + '"><p>' +
@@ -274,14 +282,12 @@
     const visual = visualStories[story.id];
     return '<article class="story story-panel" id="' + story.id + '" role="tabpanel" aria-labelledby="tab-' + story.id + '"' +
       (i ? ' hidden' : '') + '><header class="visual-story-heading"><h4>' + bi(visual.title) + '</h4><p>' + bi(visual.challenge) +
-      '</p></header><div class="story-visual">' + visual.render() + '</div><div class="visual-takeaway"><span aria-hidden="true">↗</span>' +
-      bi(visual.takeaway) + '</div><details class="story-notes"><summary class="notes-summary">' + bi(ui.storyNotes,true) + toggle() +
+      '</p></header><div class="story-visual">' + visual.render() + '</div><details class="story-notes"><summary class="notes-summary">' + bi(ui.storyNotes,true) + toggle() +
       '</summary><div class="story-body"><div class="story-original-heading"><div class="story-original-title">' + bi(story.title) +
       '</div><p class="story-original-brief">' + bi(story.brief) + '</p></div>' +
     storyBlock(ui.problem, '<p>' + bi(story.problem) + '</p>') +
     storyBlock(ui.action, '<ul class="action-list">' + story.actions.map(a => '<li>' + bi(a) + '</li>').join('') + '</ul>') +
     storyBlock(ui.result, '<div class="result-box">' + bi(story.result) + '</div>') +
-    storyBlock(ui.takeaway, '<p class="takeaway-text">' + bi(story.takeaway) + '</p>') +
     '<div class="story-footer">' + tags(story.stack) + (story.project ?
       '<a class="text-link" href="#' + story.project + '" data-open-project="' + story.project + '" aria-haspopup="dialog" aria-controls="project-preview" aria-expanded="false">' + bi(ui.viewProject, true) + arrow + '</a>' : '') +
     '</div></div></details></article>';
@@ -291,10 +297,18 @@
       '" aria-selected="' + (!i) + '" tabindex="' + (i ? '-1' : '0') + '" data-story-tab="' + story.id + '"><span class="tab-index" aria-hidden="true">0' +
       (i+1) + '</span>' + bi(visualStories[story.id].tab,true) + '</button>').join('') +
     '</div><div class="stories-list">' + exp.stories.map(renderStory).join('') + '</div></div>';
+  const institutionLogos = {
+    alibaba:{id:"alibaba",src:"assets/logos/alibaba.svg"},
+    hust:{id:"hust",src:"assets/logos/hust.png"},
+    psl:{id:"psl",src:"assets/logos/psl-icon.svg"},
+    wut:{id:"wut",src:"assets/logos/wut-icon.svg"}
+  };
+  const institutionLogo = (logo,extraClass = "") => '<span class="experience-logo experience-logo--' +
+    logo.id + ' ' + extraClass + '"><img src="' + logo.src + '" alt="" width="56" height="56" decoding="async"></span>';
   const experienceLogos = {
-    alibaba: [{id:"alibaba",src:"assets/logos/alibaba.ico"}],
+    alibaba: [institutionLogos.alibaba],
     innox: [{id:"innox",src:"assets/logos/innox.png"}],
-    hust: [{id:"hust",src:"assets/logos/hust.png"},{id:"psl",src:"assets/logos/psl-icon.svg"}]
+    hust: [institutionLogos.hust,institutionLogos.psl]
   };
   const renderStrategy = strategy => '<div class="experience-strategy"><h4 class="strategy-title">' + bi(strategy.title) +
     '</h4><div class="strategy-phases">' + strategy.phases.map((phase, i) =>
@@ -317,9 +331,7 @@
     '<div class="experience-timeline"><span class="date">' + exp.date.replace(' — ', '<span class="date-dash">—</span>') +
     '</span><span class="kind">' + bi(ui[exp.kind], true) + '</span></div><div class="experience-content">' +
     '<header class="experience-header' + (experienceLogos[exp.id].length > 1 ? ' experience-header--joint' : '') +
-    '"><span class="experience-logos">' + experienceLogos[exp.id].map(logo =>
-    '<span class="experience-logo experience-logo--' + logo.id + '"><img src="' + logo.src +
-    '" alt="" width="48" height="48" decoding="async"></span>').join('') + '</span>' +
+    '"><span class="experience-logos">' + experienceLogos[exp.id].map(logo => institutionLogo(logo)).join('') + '</span>' +
     '<div class="experience-heading"><h3>' + bi(exp.company) + '</h3><div class="experience-role">' + bi(exp.role) +
     '</div><div class="company-entity">' + bi(exp.entity) + '</div></div></header>' +
     experienceOverview(exp) + (exp.strategy ? renderStrategy(exp.strategy) :
@@ -335,22 +347,13 @@
     '</tbody></table></div><p class="table-note">' + bi(table.note) + '</p>';
   const renderMetrics = metrics => '<div class="metric-row">' + metrics.map(m => '<div class="metric">' +
     '<div class="metric-value">' + bi(m.value) + '</div><div class="metric-label">' + bi(m.label) + '</div></div>').join('') + '</div>';
-  // Concept diagrams describe each project; they are not product screenshots or measured charts.
   const projectVisual = project => {
-    const diagrams = {
-      "project-agent": '<path d="M29 35h31m24 0h31M115 35v36H29V56"/><rect x="15" y="24" width="27" height="23" rx="6"/><rect x="60" y="24" width="27" height="23" rx="6"/><rect x="103" y="24" width="27" height="23" rx="6"/><circle cx="29" cy="70" r="6"/><path d="m25 54 4-5 4 5"/>',
-      "project-wiki": '<rect x="18" y="18" width="47" height="58" rx="6"/><path d="M29 31h23m-23 10h23m-23 10h15m21-10h15l16-12m-16 12 19 23"/><circle cx="103" cy="25" r="9"/><circle cx="109" cy="69" r="10"/><circle cx="84" cy="44" r="5"/>',
-      "project-qwen": '<rect x="16" y="23" width="39" height="20" rx="5"/><rect x="16" y="54" width="39" height="20" rx="5"/><path d="M55 33h15l13 14m-28 17h15l13-17m0 0h18m0 0 10-16 8 10 12-18"/><circle cx="83" cy="47" r="5"/>',
-      "project-deformer": '<path d="M17 25h24m-24 13h24m-24 13h24m-24 13h24m19-17h22m-7-6 7 6-7 6M101 20v53m10-42v42m10-48v48m10-34v34"/>',
-      "project-ring": '<ellipse cx="73" cy="46" rx="32" ry="35"/><ellipse cx="73" cy="46" rx="22" ry="27"/><path d="m97 19 7-6M39 76l8-8M111 64h19m-9-4 9 4-9 4"/>',
-      "project-hust-wind": '<circle cx="35" cy="28" r="8"/><circle cx="110" cy="28" r="8"/><circle cx="73" cy="67" r="8"/><path d="M43 28h59M41 34l26 27m36-27L79 61"/>',
-      "project-hust-price": '<path d="M20 65h108M24 71V20m9 31 17-14 18 8 19-20 31 10m-85 9 17-15 18 8 19-20 31 10m-85 27 17-9 18 8 19-20 31 10"/>',
-      "project-hust-review": '<rect x="18" y="22" width="31" height="48" rx="5"/><rect x="58" y="22" width="31" height="48" rx="5"/><rect x="98" y="22" width="31" height="48" rx="5"/><path d="M25 34h17m23 0h17m23 0h17M25 44h12m28 0h12m28 0h12"/>'
-    };
-    const labels = {"project-agent":"AGENT", "project-wiki":"WIKI", "project-qwen":"QWEN3", "project-deformer":"DEFORMER", "project-ring":"PRODUCT", "project-hust-wind":"FEDERATED", "project-hust-price":"FORECAST", "project-hust-review":"REVIEW"};
-    return '<span class="project-visual" aria-hidden="true"><span class="visual-top"><span>' + project.index +
-      '</span><span class="visual-dots">•••</span></span><svg viewBox="0 0 148 92">' + diagrams[project.id] +
-      '</svg><span class="visual-label">' + labels[project.id] + '</span></span>';
+    const cover = projectCovers[project.id];
+    const img = src => '<img src="' + escapeHTML(src) + '" alt="" width="' + cover.width +
+      '" height="' + cover.height + '" loading="lazy" decoding="async">';
+    const picture = typeof cover.src === "string" ? img(cover.src) : '<span class="bi project-cover-translations">' +
+      '<span class="zh" lang="zh-CN">' + img(cover.src.zh) + '</span><span class="en" lang="en">' + img(cover.src.en) + '</span></span>';
+    return '<span class="project-visual" aria-hidden="true">' + picture + '</span>';
   };
   // Technical diagrams live in the project deep dives; experiences retain their overview.
   // Preserve earlier story anchors so bookmarked links still open the appropriate project.
@@ -380,9 +383,7 @@
     '<h4 class="small-label">' + bi(ui.result) +
     '</h4>' + (project.researchStudy ? renderResearchResults(project.researchStudy) : project.paperStudy ? renderPaperResults(project.paperStudy) : project.table && !project.visualStory ? renderTable(project.table) : '') +
     (project.metrics ? renderMetrics(project.metrics) : '') + '<p class="project-outcome">' + bi(project.outcome) + '</p>' +
-    '<div class="learning-box"><h4 class="small-label">' + bi(ui.learnings) +
-    '</h4><p>' + bi(project.learning) +
-    '</p></div><div class="project-footer">' + tags(project.tags) + (project.related ?
+    '<div class="project-footer">' + tags(project.tags) + (project.related ?
       '<a class="text-link" href="#' + project.related + '">' + bi(ui.workLink, true) + arrow + '</a>' : '') + '</div></div>';
   const heading = (index, title, description, controls = false, count = false) => '<div class="section-top"><div>' +
     '<div class="eyebrow">0' + index + ' / ' + ["EXPERIENCE","PROJECTS","SKILLS","EDUCATION"][index-1] +
@@ -413,20 +414,19 @@
     '</p></div>' + researchProjects.map(renderProject).join('') + '</div></section>' +
     '<section class="section" id="skills">' + heading(3,ui.skillsTitle,ui.skillsDesc) +
     '<div class="skill-grid">' + data.skills.map(group => '<div class="skill-group"><h3>' + bi(group.title) + '</h3>' + tags(group.items) + '</div>').join('') +
-    '</div><p class="language-note">' + dot + bi(data.language,true) + '</p></section>' +
+    '<div class="skill-group skill-group--language"><h3>' + bi(T("语言能力", "Languages")) + '</h3>' +
+    tags([data.language]) + '</div></div></section>' +
     '<section class="section" id="education">' + heading(4,ui.educationTitle,ui.educationDesc) +
-    '<div class="education-list">' + data.education.map(ed => '<div class="education-row"><div><h3>' + bi(ed.name) +
+    '<div class="education-list">' + data.education.map(ed => '<div class="education-row"><div class="education-school">' +
+      institutionLogo(institutionLogos[ed.id],"education-logo") + '<div class="education-copy"><h3>' + bi(ed.name) +
       '</h3><p>' + bi(ed.degree) + '</p>' + (ed.note ? '<div class="education-note">' + bi(ed.note) + '</div>' : '') +
-      '</div><span class="date">' + ed.date + '</span></div>').join('') + '</div>' +
+      '</div></div><span class="date">' + ed.date + '</span></div>').join('') + '</div>' +
     '<div class="papers"><div class="papers-header"><h3>' + bi(ui.selectedPapers) +
     '</h3><a class="text-link" href="' + data.scholar + '" target="_blank" rel="noopener noreferrer">' + bi(ui.allPapers,true) +
     diagonal + '</a></div><div class="paper-list">' + data.papers.map(paper =>
       '<div class="paper"><div class="paper-title">' + escapeHTML(paper.title) + '</div><div class="paper-venue">' +
       bi(paper.venue) + '</div></div>').join('') + '</div><p class="honors">' + bi(data.honors) + '</p></div></section>' +
-    '<footer class="contact-section" id="contact"><h2>' + bi(ui.contactTitle) + '</h2><p>' + bi(ui.contactDesc) +
-    '</p><div class="footer-links"><a href="mailto:' + data.email + '">' + data.email + diagonal +
-    '</a><a href="' + data.scholar +
-    '" target="_blank" rel="noopener noreferrer">Google Scholar' + diagonal + '</a></div></footer><div class="bottom-bar"><span>' + bi(ui.source) + '</span><a href="#top">© 2026 Jason Ding' + up + '</a></div></main></div></div>';
+    '<div class="bottom-bar"><span>' + bi(ui.source) + '</span><a href="#top">© 2026 Jason Ding' + up + '</a></div></main></div></div>';
   document.getElementById("app").insertAdjacentHTML("beforeend",
     '<div class="comparison-bar"><span class="comparison-identity">JASON DING</span><span class="comparison-divider" aria-hidden="true">/</span>' +
     '<span class="comparison-company"></span><span class="comparison-label">' + bi(T("经历总览", "Experience"),true) + '</span></div>' +

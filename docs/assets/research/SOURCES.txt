@@ -18,3 +18,12 @@ Autoformer out-of-memory results are retained as OOM.
 Price tables select MAPE from Table VIII and all RWS/MPL rows from Table X.
 Resource figures from Table IX are training + validation, not inference latency.
 Supplied manuscript versions are labeled separately from publication metadata.
+
+Original figures added 2026-10-13, extracted losslessly from embedded PDF images:
+fedgin-figure-1-cplf.png: supplied 2023 revision, page 3, Figure 1.
+fedgin-figure-2-gin.png: supplied 2023 revision, page 4, Figure 2.
+fedgin-figure-3-sidgi.png: supplied 2023 revision, page 5, Figure 3.
+price-figure-2-framework.png: supplied accepted author manuscript, page 4, Figure 2.
+price-figure-4-dense-skip.png: supplied accepted author manuscript, page 7, Figure 4.
+These originals supersede the schematic SVGs in the displayed project details.
+The source manuscript hashes and version distinctions above remain applicable.

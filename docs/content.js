@@ -55,12 +55,15 @@ const deformerStudy = {
 const windResearchStudy = {
   sourceNote:T("实验数据来自所提供的 2023 年修订稿（Tables II–IV）；下表选列 MAPE，文中比率换算为百分比显示", "Experiments use the supplied 2023 revision (Tables II–IV). Tables below select MAPE, converting the paper’s ratios to percentages"),
   figures:[
-    {redrawn:true,src:"assets/research/fedgin-cplf.svg",width:720,height:452,
+    {number:1,src:"assets/research/fedgin-figure-1-cplf.png",width:2096,height:965,
       title:T("CPLF：共享空间模块，时间模型保留本地", "CPLF: shared spatial modules, local temporal models"),
-      note:T("依据修订稿 Fig. 1–2 与 Section III 重绘。各场站本地训练 GIN，仅上传加密的空间模块参数；Encoder–Decoder 保留本地，末轮再进行本地微调", "Redrawn from revision Figures 1–2 and Section III. Farms train GIN locally, exchange encrypted spatial-module parameters, retain local Encoder–Decoders, and fine-tune locally in the final round")},
-    {redrawn:true,src:"assets/research/fedgin-sidgi.svg",width:720,height:372,
+      note:T("修订稿原图 1 · 各场站本地训练 GIN，仅上传加密的空间模块参数；Encoder–Decoder 保留本地，末轮再进行本地微调", "Revision Figure 1 · Farms train GIN locally, exchange encrypted spatial-module parameters, retain local Encoder–Decoders, and fine-tune locally in the final round")},
+    {number:2,src:"assets/research/fedgin-figure-2-gin.png",width:1671,height:1317,
+      title:T("GIN：图特征推理与时间编码解码", "GIN: graph feature inference and temporal encoding/decoding"),
+      note:T("修订稿原图 2 · 位置与时间嵌入配合 SiDGI 图特征模块，为本地 Encoder–Decoder 提供时空表征", "Revision Figure 2 · Positional and temporal embeddings work with SiDGI graph features to provide spatiotemporal representations for the local Encoder–Decoder")},
+    {number:3,src:"assets/research/fedgin-figure-3-sidgi.png",width:1383,height:1200,
       title:T("SiDGI：先学习结构，再校准边权", "SiDGI: learn the structure, then calibrate edge weights"),
-      note:T("依据修订稿 Fig. 3 重绘。图节点是功率与气象特征；两组可学习嵌入生成有向邻接矩阵，经 top-k 稀疏化后，由多头 GAT 校准边权", "Redrawn from revision Figure 3. Nodes are power and meteorological features. Two learnable embeddings form a directed adjacency matrix, top-k selection sparsifies it, and multi-head GAT calibrates edge weights")},
+      note:T("修订稿原图 3 · 图节点是功率与气象特征；两组可学习嵌入生成有向邻接矩阵，经 top-k 稀疏化后，由多头 GAT 校准边权", "Revision Figure 3 · Nodes are power and meteorological features. Two learnable embeddings form a directed adjacency matrix, top-k selection sparsifies it, and multi-head GAT calibrates edge weights")},
   ],
   summary:[
     {label:T("NW · 1 小时预测", "NW · 1-hour forecast"),value:"−12.4%",note:T("相对 Standalone 的 MAPE 下降", "Relative MAPE reduction vs Standalone")},
@@ -91,12 +94,12 @@ const windResearchStudy = {
 const priceResearchStudy = {
   sourceNote:T("实验数据来自所提供的作者接收稿：点预测为 Table VIII，区间预测为 Table X，资源评估为 Table IX", "Results use the supplied accepted author manuscript: point forecasts from Table VIII, intervals from Table X, and resources from Table IX"),
   figures:[
-    {redrawn:true,src:"assets/research/price-framework.svg",width:720,height:494,
+    {number:2,src:"assets/research/price-figure-2-framework.png",width:1308,height:1155,
       title:T("从时间特征提取，到两种预测模式", "From temporal features to two forecasting modes"),
-      note:T("依据 Fig. 2、6 重绘。ARUCNN 与 GRU 处理短期和长期依赖，Dense Skip Attention 对特征加权；按点预测或区间预测任务选择相应回归损失", "Redrawn from Figures 2 and 6. ARUCNN and GRU extract short- and long-term dependencies; Dense Skip Attention weights features. The regression loss is selected for point or interval forecasting")},
-    {redrawn:true,src:"assets/research/price-dense-skip.svg",width:720,height:444,
+      note:T("论文原图 2 · ARUCNN 与 GRU 提取短期和长期依赖，Dense Skip Attention 对特征加权；点预测或区间预测分别选择相应回归损失", "Paper Figure 2 · ARUCNN and GRU extract short- and long-term dependencies; Dense Skip Attention weights features. The regression loss is selected for point or interval forecasting")},
+    {number:4,src:"assets/research/price-figure-4-dense-skip.png",width:1395,height:515,
       title:T("Dense Skip Attention 的两条路径", "The two paths in Dense Skip Attention"),
-      note:T("依据 Fig. 4 与 Eq. 12–14 重绘。主路经 Seq2Seq GRU 与维度置换，在特征轴上计算注意力；旁路经另一 GRU、Dense 与 PReLU，两路输出相加后进入全连接层", "Redrawn from Figure 4 and Equations 12–14. The main path uses Seq2Seq GRU and permutation for feature-axis attention. A second GRU, Dense and PReLU form the skip path; outputs are summed before the final fully connected layer")},
+      note:T("论文原图 4 · 主路经 Seq2Seq GRU 与维度置换，在特征轴上计算注意力；旁路经另一 GRU、Dense 与 PReLU，两路输出相加后进入全连接层", "Paper Figure 4 · The main path uses Seq2Seq GRU and permutation for feature-axis attention. A second GRU, Dense and PReLU form the skip path; outputs are summed before the final fully connected layer")},
   ],
   summary:[
     {label:T("瑞典", "Sweden"),value:"5.24%",note:T("Proposed · 点预测 MAPE", "Proposed · Point-forecast MAPE")},
@@ -135,6 +138,64 @@ const priceResearchStudy = {
       note:T("瑞典数据集上的资源评估；时间为训练与验证合计。对照 GRU 为七层、各层后接 PReLU；这些数值不代表线上推理延迟", "Resource evaluation on Sweden. Time sums training and validation; the GRU comparator has seven layers, each followed by PReLU. These figures are not inference latency")},
   ],
 };
+// Project covers use the corresponding detail diagram or original paper figure.
+const projectCovers = {
+  "project-agent": {
+    "src": {
+      "zh": "assets/project-covers/project-agent-zh.png",
+      "en": "assets/project-covers/project-agent-en.png"
+    },
+    "width": 1230,
+    "height": 302
+  },
+  "project-wiki": {
+    "src": {
+      "zh": "assets/project-covers/project-wiki-zh.png",
+      "en": "assets/project-covers/project-wiki-en.png"
+    },
+    "width": 1230,
+    "height": 212
+  },
+  "project-qwen": {
+    "src": {
+      "zh": "assets/project-covers/project-qwen-zh.png",
+      "en": "assets/project-covers/project-qwen-en.png"
+    },
+    "width": 1230,
+    "height": 762
+  },
+  "project-ring": {
+    "src": {
+      "zh": "assets/project-covers/project-ring-zh.png",
+      "en": "assets/project-covers/project-ring-en.png"
+    },
+    "width": 1230,
+    "height": 226
+  },
+  "project-hust-review": {
+    "src": {
+      "zh": "assets/project-covers/project-hust-review-zh.png",
+      "en": "assets/project-covers/project-hust-review-en.png"
+    },
+    "width": 1230,
+    "height": 226
+  },
+  "project-deformer": {
+    "src": "assets/deformer/figure-2-tokenization.png",
+    "width": 634,
+    "height": 243
+  },
+  "project-hust-wind": {
+    "src": "assets/research/fedgin-figure-1-cplf.png",
+    "width": 2096,
+    "height": 965
+  },
+  "project-hust-price": {
+    "src": "assets/research/price-figure-2-framework.png",
+    "width": 1308,
+    "height": 1155
+  }
+};
 const portfolio = {
   name: T("丁逸洲", "Yizhou Ding"),
   alias: "Jason",
@@ -152,7 +213,7 @@ const portfolio = {
     headline: T("AI 算法工程师", "AI Algorithm Engineer"),
     contextDetails: T("业务背景与职责", "Context & responsibilities"),
     stories: T("重点经历", "Selected stories"),
-    storyNotes: T("讲解补充 · 挑战、行动与思考", "Speaker notes · challenge, actions & learning"),
+    storyNotes: T("讲解补充 · 挑战与行动", "Speaker notes · challenge & actions"),
     expandNotes: T("展开全部讲解", "Open all notes"),
     collapseNotes: T("收起全部讲解", "Close all notes"),
     backTop: T("回到顶部", "Back to top"),
@@ -366,7 +427,7 @@ const portfolio = {
         goalLabel:T("研究目标", "Research objective"), contributionLabel:T("我的贡献", "My contribution"),
         phases:[{
           id:"hust-research",number:"01",previewLabel:T("研究主线", "Research"),horizon:T("硕士科研 · 三项相互补充的研究", "Master’s research · Three complementary studies"),
-          title:T("让建模方法回应电力系统的具体问题", "Ground modeling methods in power-system problems"),
+          title:T("新能源电力系统的时空建模与不确定性预测研究", "Spatiotemporal modeling and uncertainty forecasting for renewable power systems"),
           goal:T("面向数据分散、场站差异和电价不确定性开展预测研究，并把具体方法放回源–荷–网的运行场景", "Address distributed data, site differences and price uncertainty, while placing forecasting methods in generation, demand and grid operations"),
           links:[
             {target:"project-hust-wind",label:T("多风电场联邦预测", "Federated wind-power forecasting"),action:T("用 SiDGI 学习特征图，通过 CPLF 共享空间参数、保留本地时间模型，在数据留在场站的条件下开展协作", "Learned feature graphs with SiDGI and collaborated through CPLF, sharing spatial parameters while retaining local temporal models and raw data")},
@@ -633,9 +694,9 @@ const portfolio = {
     {title:T("研究与产品方法","Research & product methods"),items:[T("时序预测","Time-series Forecasting"),T("联邦学习","Federated Learning"),T("动态图","Dynamic Graphs"),T("实验与消融","Experiments & Ablations"),"A/B Testing",T("用户研究","User Research")]},
   ],
   education:[
-    {name:T("巴黎文理研究大学","Université Paris Sciences & Lettres"),degree:T("人工智能 · 硕士，第二学位","Artificial Intelligence · Master’s degree, second degree"),date:"2021.09 — 2024.07"},
-    {name:T("华中科技大学","Huazhong University of Science and Technology"),degree:T("新能源科学与工程 · 硕士","New Energy Science and Engineering · Master’s degree"),date:"2021.09 — 2024.07",note:T("国家奖学金 · Top 1%","National Scholarship · Top 1%")},
-    {name:T("武汉理工大学","Wuhan University of Technology"),degree:T("通信工程（卓越计划）· 本科","Communication Engineering, Excellence Program · Bachelor’s degree"),date:"2017.09 — 2021.07"},
+    {id:"psl",name:T("巴黎文理研究大学","Université Paris Sciences & Lettres"),degree:T("人工智能 · 硕士，第二学位","Artificial Intelligence · Master’s degree, second degree"),date:"2021.09 — 2024.07"},
+    {id:"hust",name:T("华中科技大学","Huazhong University of Science and Technology"),degree:T("新能源科学与工程 · 硕士","New Energy Science and Engineering · Master’s degree"),date:"2021.09 — 2024.07",note:T("国家奖学金 · Top 1%","National Scholarship · Top 1%")},
+    {id:"wut",name:T("武汉理工大学","Wuhan University of Technology"),degree:T("通信工程（卓越计划）· 本科","Communication Engineering, Excellence Program · Bachelor’s degree"),date:"2017.09 — 2021.07"},
   ],
   papers:[
     {title:"DEFormer: Understanding and Alleviating Rank Collapse Caused by Autocorrelation in Transformer-based Time Series Forecaster",venue:T("2026 · 已投稿 · Ding, Y., et al.","2026 · Submitted · Ding, Y., et al.")},

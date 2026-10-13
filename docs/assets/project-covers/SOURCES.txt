@@ -1,0 +1,5 @@
+Project-cover images captured from the corresponding existing project detail diagrams.
+Agent: operating feedback loop. Wiki: evidence workflow. Qwen: training tree.
+Ring: discovery-to-prototype flow. Review: generation/demand/grid flow.
+Chinese and English versions retain the on-page content and measured values.
+Captured on 2026-10-13 at 2x resolution. These are diagrams, not product photos.

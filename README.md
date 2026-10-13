@@ -34,4 +34,6 @@ T(String.raw`目标为 \(Y_{\ln}=\ln(1+Y/X_L)\)`,
 
 `docs/app.js` 中的 `renderEquation(标题, 公式, 说明)` 用于带标题的公式卡片，公式参数直接写 TeX，无需另加定界符。过长公式会在卡片内横向滚动。
 
+项目封面由 `docs/content.js` 的 `projectCovers` 配置：研究项目使用详情中的论文原图，其他项目使用详情图的中英文截图。技能标签图标由 `docs/app.js` 的 `tagLogos` 配置。图与 Logo 的来源记录在对应资源目录的 `SOURCES.txt`。
+
 如需处理旧网站，请在 `legacy/` 内操作；原有使用说明见 [legacy/README.md](legacy/README.md)。两个版本的资源文件已分开。
