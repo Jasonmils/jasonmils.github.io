@@ -599,6 +599,55 @@ body.project-preview-open{overflow:hidden}
  .growth-detail .strategy-phase:before{left:-17px}
 }
 .project-study{margin:32px 0;padding:26px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);scroll-margin-top:20px}
+.research-section{padding:30px 0;border-top:1px solid var(--line);scroll-margin-top:12px}
+.research-section:first-child{padding-top:0;border-top:0}
+.research-section-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
+.research-section-number{font:12px/1.7 var(--font-mono);color:var(--accent);padding-top:2px}
+.research-section-label{font-size:11px!important;line-height:1.6!important;color:var(--muted);margin:0 0 6px!important}
+.research-section-header h4{font:600 19px/1.6 var(--font);color:var(--ink)}
+.research-section>p,.research-method>p,.research-task p,.research-contribution p,.research-narrative .paper-results>p{font-size:14px;line-height:1.95;color:#515154}
+.research-section>p+p{margin-top:16px}
+.research-task,.research-contribution{margin:20px 0;padding:17px 19px;border:1px solid var(--line);border-radius:14px;background:#f6f7fb}
+.research-contribution{background:linear-gradient(135deg,#eef2ff,#ffffffb3);border-color:#dfe5f4}
+.research-contribution p{color:var(--ink)}
+.research-narrative .project-role{margin:20px 0 0}
+.research-narrative .project-role .small-label{font-size:12px;margin-bottom:7px}
+.research-method{margin-top:28px}
+.research-method+.research-method{padding-top:28px;border-top:1px solid var(--line)}
+.research-method>h5,.research-result-heading{font:600 16px/1.7 var(--font);color:var(--ink);margin:0 0 12px}
+.research-result-heading:not(:first-child){margin-top:32px}
+.research-evidence{margin-top:24px}
+.research-figure-question{font:600 14px/1.8 var(--font);color:var(--ink);margin:0 0 8px}
+.research-read-guide{font-size:12px;line-height:1.9;color:var(--muted);margin:0 0 14px}
+.research-insight{margin-top:12px;padding:12px 15px;border-left:2px solid var(--accent);background:#f5f7fc;font-size:13px;line-height:1.9;color:#414552;border-radius:0 8px 8px 0}
+.attention-phenomenon{margin:24px 0}
+.attention-phenomenon>.research-read-guide{margin:0 0 16px}
+.attention-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.attention-panel{min-width:0}
+.attention-panel h5{font:500 11px/1.8 var(--font);color:var(--ink);margin:0 0 8px}
+.attention-panel svg{display:block;width:100%;height:auto;overflow:hidden;background:#fff}
+.attention-panel p{font-size:12px;line-height:1.85;color:#515154;margin-top:10px}
+.attention-phenomenon>.attention-source{padding-top:14px;border-top:1px solid var(--line);margin-top:18px}
+.research-narrative .paper-dataset h6{font:600 14px/1.7 var(--font);margin:0 0 12px}
+.research-equations .paper-equation{margin-top:4px}
+.research-challenges{display:grid;gap:20px}
+.research-challenges h5{font:600 15px/1.8 var(--font);margin:0 0 8px;color:var(--ink)}
+.research-challenges p,.research-result-block>p,.research-narrative .research-results>p{font-size:14px;line-height:1.95;color:#515154}
+.research-result-block{margin-top:28px}
+.research-result-block .research-result-heading{margin:0 0 12px}
+.research-narrative .paper-dataset h6{font:600 14px/1.7 var(--font);margin:0 0 12px}
+.research-method-detail p{font-size:13px;line-height:1.9;color:#515154}
+.research-narrative .review-outlook{margin-top:30px}
+.preview-tabs:has([data-preview-section="challenge"]) button{white-space:nowrap}
+@media(max-width:600px){
+ .research-section-header{gap:10px}.research-section-header h4{font-size:17px}
+ .research-task,.research-contribution{padding:14px 15px}
+ .attention-panels{grid-template-columns:1fr;gap:20px}
+ .attention-panel svg{max-width:340px;margin:0 auto}
+ .preview-tabs:has([data-preview-section="challenge"]){gap:3px;padding-left:16px;padding-right:16px}
+ .preview-tabs:has([data-preview-section="challenge"]) button{padding:7px 8px;font-size:11px}
+ .lang-en .preview-tabs:has([data-preview-section="challenge"]) button{padding:7px 6px;font-size:11px}
+}
 @media(max-width:600px){
  .experience-strategy{margin-top:26px}.strategy-title{font-size:19px;margin-bottom:17px}
  .strategy-phase{padding:20px;scroll-margin-top:12px}.strategy-phase-header{grid-template-columns:28px minmax(0,1fr);gap:11px}.strategy-number{width:28px;height:28px;font-size:10px}

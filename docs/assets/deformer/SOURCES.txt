@@ -8,3 +8,14 @@ The website captions are bilingual summaries with original figure numbers.
 Tables 1 and 2 on PDF page 7 are transcribed as accessible HTML tables.
 Derived error reductions are relative; WSC changes are percentage points.
 The entire anonymous manuscript is not bundled with the website.
+
+Attention-collapse phenomenon illustration
+Source: attention map supplied by the website owner on 2026-10-13.
+Original filename: codex-clipboard-c918dec2-d647-4fbe-aa4a-6bfab310f0b4.png
+Stored unchanged as attention-collapse-example.png (1408 x 910).
+Source SHA-256: 602745a4a32e824950d3f458018a48d1674a643e8f5f0e0dbfbc32ab7573ce9c
+The page uses SVG viewports to show the original (e)/(g) self-attention panels;
+the full original remains available through the image link.
+This is an illustration from another task, not a DEFormer experiment.
+Prediction-Feedback labels are preserved from the source image.
+The source publication was not supplied; no attribution is inferred.

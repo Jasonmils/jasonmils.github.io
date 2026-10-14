@@ -118,19 +118,24 @@
         '><th scope="row">' + bi(row[0],true) + '</th>' + row.slice(1).map(value => '<td>' + cell(value) + '</td>').join('') +
         '</tr>').join('') + '</tbody></table></div>';
   };
-  const renderResearchResults = study => '<div class="research-results' + (study.kind === "review" ? ' review-results' : '') + '"><div class="paper-result-summary">' +
+  const renderResearchTables = (study,indices,collapsed) => indices.map(index => {
+    const table = study.tables[index];
+    const body = table.groups.map(group => '<section class="paper-dataset">' + (group.label ? '<h6>' + bi(group.label,true) + '</h6>' : '') +
+      renderResearchTable(table,group) + '</section>').join('') + '<p class="table-note">' + bi(table.note) + '</p>';
+    return collapsed ? '<details class="paper-evidence"><summary>' + bi(table.title,true) + toggle() +
+      '</summary><div class="paper-disclosure-body">' + body + '</div></details>' : '<section class="research-table-section">' + body + '</section>';
+  }).join('');
+  const renderResearchResults = study => '<div class="research-results' + (study.kind === "review" ? ' review-results' : '') + '"><p>' +
+    bi(study.narrative.resultIntro) + '</p><div class="paper-result-summary">' +
     study.summary.map(item => '<div><span>' + bi(item.label,true) + '</span><strong>' + item.value + '</strong><p>' + bi(item.note) + '</p></div>').join('') +
     '</div><p class="table-note research-source-note">' + bi(study.sourceNote) + '</p>' +
     (study.paperURL ? '<a class="paper-zoom" href="' + escapeHTML(study.paperURL) + '" target="_blank" rel="noopener noreferrer">' +
       bi(T("阅读发表论文", "Read the published paper"),true) + diagonal + '</a>' : '') + '<p class="paper-scroll-hint">' +
     bi(T("表格可横向滑动，查看全部条件", "Scroll tables horizontally to see every condition")) + '</p>' +
-    study.tables.map(table => {
-      const body = table.groups.map(group => '<section class="paper-dataset">' + (group.label ? '<h5>' + bi(group.label,true) + '</h5>' : '') +
-        renderResearchTable(table,group) + '</section>').join('') + '<p class="table-note">' + bi(table.note) + '</p>';
-      return table.collapsed ? '<details class="paper-evidence"><summary>' + bi(table.title,true) + toggle() +
-        '</summary><div class="paper-disclosure-body">' + body + '</div></details>' : '<section class="research-table-section">' + body + '</section>';
-    }).join('') + (study.outlook ? '<section class="review-outlook"><h4 class="small-label">' +
-      bi(T("论文研究展望", "Research outlook")) + '</h4><div class="review-outlook-grid">' +
+    study.narrative.resultBlocks.map(block => '<div class="research-result-block"><h5 class="research-result-heading">' + bi(block.title) +
+      '</h5><p>' + bi(block.body) + '</p>' + renderResearchTables(study,block.tables,block.collapsed) + '</div>').join('') +
+    (study.outlook ? '<section class="review-outlook"><h5 class="research-result-heading">' +
+      bi(T("未来方向：论文提出了哪些待探索问题？", "Future directions: which questions remain open?")) + '</h5><div class="review-outlook-grid">' +
       study.outlook.map(item => '<article><h5>' + bi(item.title) + '</h5><p>' + bi(item.body) + '</p></article>').join('') +
       '</div></section>' : '') + '</div>';
   const renderWikiResults = study => '<div class="wiki-results"><div class="wiki-output-grid">' +
@@ -143,7 +148,8 @@
     '<th scope="col">SC ↑</th><th scope="col">WSC ↑</th></tr></thead><tbody>' + rows.map((row,i) =>
       '<tr' + (!i ? ' class="paper-best-row"' : '') + '><th scope="row">' + escapeHTML(row[0]) + '</th>' +
       [row[2],row[1],row[3],row[4]].map(value => '<td>' + value.toFixed(3) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
-  const renderPaperResults = study => '<div class="paper-results"><div class="paper-result-summary">' + study.datasets.map(dataset => {
+  const renderPaperResults = study => '<div class="paper-results"><h5 class="research-result-heading">' +
+    bi(study.narrative.resultHeadings[0]) + '</h5><div class="paper-result-summary">' + study.datasets.map(dataset => {
     const method = dataset.comparison[0], baseline = dataset.comparison[1];
     return '<div><span>' + dataset.name + ' · ' + dataset.items.toLocaleString("en") + '</span><strong>−' +
       ((baseline[2]-method[2])/baseline[2]*100).toFixed(1) + '%</strong><p>' + bi(T("wMAPE 相对下降", "Relative wMAPE reduction")) +
@@ -152,17 +158,22 @@
   }).join('') + '</div><p class="table-note">' + bi(T("相对 PatchTST · 论文离线实验；WSC 增益以百分点表示", "Versus PatchTST · Offline paper experiments; WSC gains are percentage points")) +
     '</p><div class="paper-metric-key"><p>' + bi(T("MAPE / wMAPE：误差越低越好；SC：达标样本占比；WSC：销量加权的达标样本占比", "MAPE / wMAPE: lower error is better. SC: accepted-sample coverage. WSC: sales-weighted accepted-sample coverage")) +
     '</p><p>' + bi(T("论文以样本 wMAPE ≤ 0.4 判定达标。下表的 SC / WSC 保留论文的 0–1 数值", "The paper uses sample wMAPE ≤ 0.4 as its acceptance criterion. SC / WSC below retain the paper’s 0–1 values")) +
-    '</p></div><p class="paper-scroll-hint">' + bi(T("表格可横向滑动，查看全部指标", "Scroll tables horizontally to see all metrics")) + '</p>' +
-    study.datasets.map(dataset => '<section class="paper-dataset"><h5>' + dataset.name + ' · ' +
-      bi(T("约 " + dataset.items.toLocaleString("en") + " 件商品", "~" + dataset.items.toLocaleString("en") + " products"),true) + '</h5>' +
-      renderPaperTable(dataset.comparison,T("Table 2 · 完整模型对照", "Table 2 · Full model comparison")) +
-      '<details class="paper-ablation"><summary>' + bi(T("Table 1 · 查看模块消融", "Table 1 · View module ablations"),true) + toggle() + '</summary><div class="paper-disclosure-body">' +
-      renderPaperTable(dataset.ablation,T("Table 1 · 模块消融", "Table 1 · Module ablations")) + '<p class="table-note">' +
+    '</p></div><details class="paper-evidence"><summary>' + bi(study.narrative.fullTables,true) + toggle() +
+    '</summary><div class="paper-disclosure-body"><p class="paper-scroll-hint">' +
+    bi(T("表格可横向滑动，查看全部指标", "Scroll tables horizontally to see all metrics")) + '</p>' +
+    study.datasets.map(dataset => '<section class="paper-dataset"><h6>' + dataset.name + ' · ' +
+      bi(T("约 " + dataset.items.toLocaleString("en") + " 件商品", "~" + dataset.items.toLocaleString("en") + " products"),true) + '</h6>' +
+      renderPaperTable(dataset.comparison,T("Table 2 · 完整模型对照", "Table 2 · Full model comparison")) + '</section>').join('') +
+    '</div></details><h5 class="research-result-heading">' + bi(study.narrative.resultHeadings[1]) + '</h5><p>' + bi(study.narrative.ablation) +
+    '</p><p class="table-note">' +
       bi(T("De-corr：去相关 Tokenization；De-auto：去自回归目标与多任务训练；移除两者即 PatchTST", "De-corr: decorrelative tokenization. De-auto: de-autoregressive targets and multi-task training. Removing both gives PatchTST")) +
-      '</p></div></details></section>').join('') + '<details class="paper-evidence"><summary>' +
-    bi(T("查看表征机制实验 · Figures 1、5–7", "Representation experiments · Figures 1, 5–7"),true) + toggle() +
-    '</summary><div class="paper-disclosure-body">' + ["diagnosis","rank","similarity","acf"].map(key => renderPaperFigure(study.figures[key])).join('') +
-    '</div></details></div>';
+      '</p>' + study.datasets.map(dataset => '<section class="paper-dataset"><h6>' + dataset.name + ' · ' +
+      bi(T("约 " + dataset.items.toLocaleString("en") + " 件商品", "~" + dataset.items.toLocaleString("en") + " products"),true) +
+      '</h6>' + renderPaperTable(dataset.ablation,T("Table 1 · 模块消融", "Table 1 · Module ablations")) + '</section>').join('') +
+    '<h5 class="research-result-heading">' + bi(study.narrative.resultHeadings[2]) + '</h5><p>' + bi(study.narrative.mechanism) +
+    '</p>' + renderDeformerFigure("rank") + '<details class="paper-evidence"><summary>' +
+    bi(T("展开 Token 相似度与 ACF 分布验证 · 图 6–7", "Expand token similarity and ACF comparisons · Figures 6–7"),true) + toggle() +
+    '</summary><div class="paper-disclosure-body">' + ["similarity","acf"].map(renderDeformerFigure).join('') + '</div></details></div>';
   const paperResult = (venue, year, authorship) => '<div class="paper-result"><span class="paper-result-year">' + year +
     '</span><div><strong>' + escapeHTML(venue) + '</strong><span>' + bi(authorship) + '</span></div></div>';
   const visualStories = {
@@ -431,11 +442,81 @@
     return '<div class="project-study" id="' + storyId + '"><div class="visual-story-heading"><h4>' +
       bi(visual.title) + '</h4><p>' + bi(visual.challenge) + '</p></div><div class="story-visual">' + visual.render() + '</div></div>';
   };
+  const renderResearchSection = (info,index,body,alias = "") => '<section class="research-section"' +
+    (alias ? ' id="' + escapeHTML(alias) + '"' : '') + ' data-preview-anchor="' + info.key + '"><header class="research-section-header"><span class="research-section-number">0' +
+    (index+1) + '</span><div><p class="research-section-label">' + bi(info.title) + '</p><h4>' + bi(info.heading) + '</h4></div></header>' + body + '</section>';
+  const renderGuidedResearchFigure = (figure,guide,collapsed = false) => {
+    const artwork = renderPaperFigure(figure);
+    return '<div class="research-evidence"><h5 class="research-figure-question">' + bi(guide.question) +
+      '</h5><p class="research-read-guide">' + bi(guide.guide) + '</p>' + (collapsed ? '<details class="paper-evidence"><summary>' +
+      bi(T("展开机制原图 · 图 " + figure.number, "Expand mechanism figure · Figure " + figure.number),true) + toggle() +
+      '</summary><div class="paper-disclosure-body">' + artwork + '</div></details>' : artwork) +
+      '<p class="research-insight">' + bi(guide.insight) + '</p></div>';
+  };
+  const renderDeformerFigure = key => renderGuidedResearchFigure(deformerStudy.figures[key],deformerStudy.narrative.guides[key]);
+  const renderResearchEquation = equation => '<details class="paper-evidence research-equations"><summary>' +
+    bi(T("展开公式与符号说明", "Expand equations and notation"),true) + toggle() + '</summary><div class="paper-disclosure-body">' +
+    renderEquation(equation.title,equation.formula,equation.note) + '</div></details>';
+  const renderAttentionPhenomenon = figure => '<figure class="paper-figure attention-phenomenon"><figcaption><span class="paper-figure-number">' +
+    bi(T("现象示例 · 其他任务", "ILLUSTRATIVE EXAMPLE · OTHER TASK")) + '</span><strong>' + bi(figure.title) +
+    '</strong></figcaption><p class="research-read-guide">' + bi(figure.guide) + '</p><div class="attention-panels">' +
+    figure.panels.map(panel => '<div class="attention-panel"><h5>' + bi(panel.label) + '</h5><svg viewBox="' + panel.viewBox +
+      '" role="img" aria-label="' + escapeHTML(panel.note.en) + '"><image href="' + figure.src + '" width="' + figure.width +
+      '" height="' + figure.height + '"></image></svg><p>' + bi(panel.note) + '</p></div>').join('') + '</div><p class="attention-source">' +
+    bi(figure.note) + '</p><a class="paper-zoom" href="' + figure.src + '" target="_blank" rel="noopener noreferrer">' +
+    bi(T("查看完整原图", "View complete source image"),true) + diagonal + '</a></figure>';
+  const renderDeformerBody = project => {
+    const story = deformerStudy.narrative;
+    const section = (index,body) => renderResearchSection(story.sections[index],index,body,index === 2 ? "ali-deformer" : "");
+    const equations = (title,formula,note) => renderResearchEquation({title,formula,note});
+    const method = (index,key,equation) => '<article class="research-method"><h5>' + bi(project.decisions[index].title) + '</h5><p>' +
+      bi(project.decisions[index].body) + '</p>' + renderDeformerFigure(key) + equation + '</article>';
+    return '<div class="project-body deformer-narrative research-narrative">' +
+      section(0,'<p>' + bi(story.background) + '</p><div class="research-task"><p>' + bi(project.context) +
+        '</p></div><div class="project-role"><h5 class="small-label">' + bi(ui.role) + '</h5><div>' + bi(project.role) + '</div></div>') +
+      section(1,'<p>' + bi(story.intuition) + '</p>' + renderAttentionPhenomenon(story.phenomenon) + '<p>' + bi(project.challenge) +
+        '</p><div class="research-task"><p>' + bi(story.measures) + '</p></div>' + renderDeformerFigure("diagnosis")) +
+      section(2,'<div class="research-contribution"><p>' + bi(story.contribution) + '</p></div><p>' + bi(story.bridge) + '</p>' +
+        method(1,"tokenization",equations(T("原序列与差分的双路表达", "Raw and differenced representations"),
+          String.raw`\begin{aligned}\Delta X_t &= X_t-X_{t-1}\\[6pt]Z &= \phi(X)W+\phi(\Delta X)W_d\end{aligned}`,
+          T(String.raw`\(\phi\) 为缩放后的带符号对数变换；\(W\)、\(W_d\) 是两路独立的线性投影`,
+            String.raw`\(\phi\) is the signed-log transform after scaling; \(W\) and \(W_d\) are independent linear projections`))) +
+        method(2,"multitask",equations(T("目标变换与多任务训练", "Target transform and multi-task training"),
+          String.raw`\begin{aligned}Y_{\ln} &= \ln\!\left(1+\frac{Y}{X_L}\right)\\[8pt]\mathcal{L} &= \mathcal{L}_{\mathrm{reg}}+\beta\mathcal{L}_{\mathrm{cla}}\end{aligned}`,
+          T(String.raw`\(X_L\) 是最后一个历史值；\(\beta\) 控制辅助分类损失的权重。回归使用 MSE，分类使用 Focal Loss`,
+            String.raw`\(X_L\) is the final historical value; \(\beta\) weights auxiliary classification loss. Regression uses MSE and classification uses Focal Loss`)))) +
+      section(3,renderPaperResults(deformerStudy) + '<p class="project-outcome">' + bi(project.outcome) + '</p>') +
+      '<div class="project-footer">' + tags(project.tags) + '<a class="text-link" href="#' + project.related + '">' + bi(ui.workLink,true) + arrow + '</a></div></div>';
+  };
+  const renderResearchBody = project => {
+    const study = project.researchStudy, story = study.narrative;
+    const section = (index,body) => renderResearchSection(story.sections[index],index,body,index === 2 ? project.sourceStory : "");
+    const methods = story.methods.map(method => {
+      const decision = project.decisions[method.decision];
+      return '<article class="research-method"><h5>' + bi(method.title || decision.title) + '</h5><p>' +
+        bi(method.body || decision.body) + '</p>' + (method.figure !== undefined ?
+        renderGuidedResearchFigure(study.figures[method.figure],method.guide,method.collapsedFigure) : '') +
+        (method.equation ? renderResearchEquation(method.equation) : '') + (method.details ? '<details class="paper-evidence research-method-detail"><summary>' +
+        bi(method.details.title,true) + toggle() + '</summary><div class="paper-disclosure-body"><p>' +
+        bi(project.decisions[method.details.decision].body) + '</p></div></details>' : '') + '</article>';
+    }).join('');
+    const publication = story.publication;
+    return '<div class="project-body research-narrative">' +
+      section(0,'<p>' + bi(story.background) + '</p><div class="research-task"><p>' + bi(story.context) + '</p></div>' +
+        '<div class="project-role"><h5 class="small-label">' + bi(ui.role) + '</h5><div>' + bi(project.role) + '</div></div>') +
+      section(1,'<div class="research-challenges">' + story.challenges.map(item => '<article><h5>' + bi(item.title) + '</h5><p>' +
+        bi(item.body) + '</p></article>').join('') + '</div>') +
+      section(2,'<div class="research-contribution"><p>' + bi(story.contribution) + '</p></div><p>' + bi(story.bridge) + '</p>' + methods) +
+      section(3,renderResearchResults(study) + '<div class="research-task"><p>' + bi(story.boundary) + '</p></div>' +
+        paperResult(publication.venue,publication.year,publication.authorship)) + '<div class="project-footer">' + tags(project.tags) +
+      '<a class="text-link" href="#' + project.related + '">' + bi(ui.workLink,true) + arrow + '</a></div></div>';
+  };
   const renderProject = project => '<details class="project-card" id="' + project.id + '"><summary class="project-summary">' +
     projectVisual(project) + '<div class="project-heading"><div class="eyebrow">' + bi(project.category) +
     '</div><h3>' + bi(project.title) + '</h3><p>' + bi(project.description) + '</p>' + tags(project.tags.slice(0,3)) + '</div>' + toggle() + '</summary>' +
     renderProjectBody(project) + '</details>';
-  const renderProjectBody = project =>
+  const renderProjectBody = project => project.id === "project-deformer" ? renderDeformerBody(project) :
+    project.researchStudy?.narrative ? renderResearchBody(project) :
     '<div class="project-body"><div class="project-role"><h4 class="small-label">' + bi(ui.role) +
     '</h4><div>' + bi(project.role) +
     '</div></div><div class="project-context"><div><h4 class="small-label">' + bi(ui.context) +
@@ -558,6 +639,12 @@
     document.querySelector(".preview-close").setAttribute("aria-label", lang === "zh" ? "关闭项目详情" : "Close project details");
     document.querySelector(".perspective-switch").setAttribute("aria-label", ui.perspective[lang]);
     if (persist) { try { localStorage.setItem("jason-portfolio-language",lang); } catch (_) {} }
+    const path = persist ? window.portfolioLanguage.pathnameFor(lang) : location.pathname;
+    const url = path + location.search + location.hash;
+    const state = { ...history.state, portfolioLanguage: lang };
+    if (persist && path !== location.pathname) history.pushState(state, "", url);
+    else history.replaceState(state, "", url);
+    window.portfolioLanguage.syncLinks();
   }
   typesetMath(document.getElementById("app"));
   setLanguage(document.documentElement.classList.contains("lang-en") ? "en" : "zh", false);
@@ -611,7 +698,7 @@
   function updatePreviewSection() {
     previewFramePending = false;
     const top = previewScroll.getBoundingClientRect().top;
-    let selected = "diagram";
+    let selected = previewContent.querySelector("[data-preview-anchor]")?.dataset.previewAnchor || "diagram";
     previewContent.querySelectorAll("[data-preview-anchor]").forEach(anchor => {
       if (anchor.getBoundingClientRect().top <= top + 90) selected = anchor.dataset.previewAnchor;
     });
@@ -797,12 +884,19 @@
     } else body = document.getElementById(id).querySelector(".project-body").cloneNode(true);
     // Keep copied document IDs unique.
     body.querySelectorAll("[id]").forEach(element => { element.id = "preview-" + element.id; });
-    const diagram = body.querySelector(".project-study") || body.querySelector(".flow");
-    if (diagram) { body.prepend(diagram); diagram.dataset.previewAnchor = "diagram"; }
-    body.querySelector(".project-role").dataset.previewAnchor = "context";
-    const decisions = body.querySelector(".decision-list");
-    decisions.previousElementSibling.dataset.previewAnchor = "approach";
-    decisions.nextElementSibling.dataset.previewAnchor = "results";
+    const narrative = body.classList.contains("research-narrative");
+    if (!narrative) {
+      const diagram = body.querySelector(".project-study") || body.querySelector(".flow");
+      if (diagram) { body.prepend(diagram); diagram.dataset.previewAnchor = "diagram"; }
+      body.querySelector(".project-role").dataset.previewAnchor = "context";
+      const decisions = body.querySelector(".decision-list");
+      decisions.previousElementSibling.dataset.previewAnchor = "approach";
+      decisions.nextElementSibling.dataset.previewAnchor = "results";
+    }
+    const sections = narrative ? (project.paperStudy || project.researchStudy).narrative.sections : [
+      {key:"diagram",title:T("图解", "Visuals")},{key:"context",title:T("背景", "Context")},
+      {key:"approach",title:T("方案", "Approach")},{key:"results",title:T("结果", "Results")}
+    ];
     const returnLink = body.querySelector(".project-footer .text-link");
     if (returnLink) {
       returnLink.dataset.previewClose = "";
@@ -811,6 +905,8 @@
     runPreviewMotion(() => {
       preview.dataset.project = id;
       preview.dataset.view = view;
+      preview.querySelector(".preview-tabs").innerHTML = sections.map(info => '<button type="button" data-preview-section="' +
+        info.key + '">' + bi(info.nav || info.title,true) + '</button>').join('');
       renderPreviewContext(project);
       preview.querySelector("#preview-project-category").innerHTML = bi(project.category);
       preview.querySelector("#preview-project-title").innerHTML = bi(viewInfo?.title || project.title);
@@ -859,7 +955,7 @@
     setLanguage(document.documentElement.lang === "en" ? "en" : "zh",false);
     if (persist) { try { localStorage.setItem("jason-portfolio-perspective",view); } catch (_) {} }
     if (navigate) {
-      history.replaceState(null,"","#" + view);
+      history.replaceState(history.state,"",location.pathname + location.search + "#" + view);
       document.getElementById(view).scrollIntoView({behavior:reducedMotion.matches ? "instant" : "smooth",block:"start"});
     }
     scheduleReadingUpdate();
@@ -959,9 +1055,9 @@
       const current = disclosureAnimations.get(detail);
       setDisclosure(detail, !(current ? current.open : detail.open), true);
     }
-    const link = event.target.closest('a[href^="#"]');
+    const link = event.target.closest('a[data-language-hash]');
     if (link) {
-      const target = document.getElementById(link.getAttribute("href").slice(1));
+      const target = document.getElementById(link.dataset.languageHash.slice(1));
       if (target) {
         revealPerspectiveFor(target);
         const panel = target.closest(".story-panel");
@@ -1015,6 +1111,9 @@
     target.scrollIntoView();
   }
   window.addEventListener("hashchange",openHashTarget);
+  window.addEventListener("popstate", event => {
+    setLanguage(window.portfolioLanguage.fromPath() || event.state?.portfolioLanguage || "zh", false);
+  });
   if (location.hash) requestAnimationFrame(openHashTarget);
   let framePending = false;
   function updateReadingState() {
