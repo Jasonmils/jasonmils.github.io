@@ -595,7 +595,7 @@ const portfolio = {
         journey:{
           label:T("时间跨度与决策范围的延伸", "A wider time horizon and decision scope"),
           stages:[
-            {target:"ali-short-term",number:"01",horizon:T("单个档期 · 14 days", "One campaign · 14 days"),title:T("短期交易增长", "Near-term GMV"),action:T("价量预测 → 促销定价", "Forecast → Promotional pricing"),diagram:"price"},
+            {target:"ali-short-term",number:"01",horizon:T("单个档期 · 未来 14 天", "One campaign · Next 14 days"),title:T("短期 GMV 最大化", "Maximize near-term GMV"),action:T("不同价格下的未来 14 天逐日销量预测", "Daily sales forecasts over the next 14 days at different prices"),diagram:"price"},
             {target:"ali-long-term",number:"02",horizon:T("跨营销周期 · 持续迭代", "Across cycles · Ongoing iteration"),title:T("长期商品成长", "Long-term product growth"),action:T("高潜孵化 · 成长层级防滑落", "Incubation · Growth-tier retention"),diagram:"growth"}
           ],
           connection:T("预测能力复用", "Reuse the forecasting capability"),
@@ -608,7 +608,7 @@ const portfolio = {
             id:"ali-short-term",number:"01",
             horizon:T("单个营销周期 · 以未来 14 天为例", "One marketing cycle · e.g. the next 14 days"),
             title:T("提升预测质量，支持短期 GMV 最大化", "Better forecasts for single-cycle GMV optimization"),
-            goal:T("预估不同价格下的销量，为促销定价提供依据，优化当期交易额", "Forecast sales at different prices to inform promotional pricing and optimize GMV within the cycle"),
+            goal:T("对每个候选价格，预测未来 14 天的每日销量，输出 14 维预测序列；在决策环节，将 14 个日预测值求和后乘以价格，比较预测 GMV，为当期 GMV 最大化定价提供依据", "For each candidate price, output a 14-dimensional sequence of daily sales forecasts. At the decision stage, sum the 14 daily predictions and multiply by price, then compare predicted GMV to inform pricing that maximizes GMV within the cycle"),
             contribution:T("围绕 PatchTST 提升泛化能力；提出 DEFormer 缓解 Transformer 秩坍缩，并推进条件表征与推理稳定性优化", "Improved forecasting generalization from a PatchTST baseline: proposed DEFormer to mitigate rank collapse, and refined conditional representations and inference stability"),
             result:T("项目累计 GMV +5.06%", "Cumulative project GMV +5.06%"),
             resultNote:T("多轮迭代相对初始版本的整体结果", "Overall result across iterations versus the initial version"),
@@ -871,7 +871,7 @@ const portfolio = {
       title:T("Qwen3 增强的销量预测与推理优化", "Qwen3-enhanced forecasting & inference"),
       description:T("从条件表征到后训练，再分别评估预测精度与推理稳定性", "From conditional representations to post-training, with separate accuracy and stability evaluation"),
       role:T("阿里营销算法团队 · 表征融合、后训练实验、下游预测与推理优化", "Alibaba Marketing Algorithms Team · Representation fusion, post-training, downstream forecasting and inference"),
-      context:T("这条优化路线服务于短期价量预测：在未来一个营销周期（如 14 天）内，预估不同价格下的销量，为 GMV 优化提供依据。围绕历史数值、商品与营销条件，将 Qwen3 表征与时序模型结合，验证后训练对下游预测的收益，并单独优化线上输出稳定性", "This optimization track supported short-term price–sales forecasting: estimating sales at different prices over a future marketing cycle, such as 14 days, to inform GMV optimization. It combined Qwen3 representations of product and marketing context with temporal signals, evaluated post-training in downstream forecasting, and separately improved inference stability"),
+      context:T("这条优化路线服务于短期价量预测：在未来一个营销周期（如 14 天）内，预估不同价格下每天的销量，为 GMV 优化提供依据。围绕历史数值、商品与营销条件，将 Qwen3 表征与时序模型结合，验证后训练对下游预测的收益，并单独优化线上输出稳定性", "This optimization track supported short-term price–sales forecasting: estimating daily sales at different prices over a future marketing cycle, such as 14 days, to inform GMV optimization. It combined Qwen3 representations of product and marketing context with temporal signals, evaluated post-training in downstream forecasting, and separately improved inference stability"),
       challenge:T("通用大模型表征未必与销量变化任务充分对齐。即使标签任务得到改善，也需要重新接入下游模型验证实际预测误差；线上稳定性则需要在逐样本、跨批次和受控扰动条件下单独衡量", "General-purpose representations may not be sufficiently aligned with sales-change prediction. Improvements on the label task must be tested again after integration with the downstream forecaster. Stability needs separate per-sample, cross-batch and controlled-perturbation measurements"),
       flow:[T("商品与营销条件","Product & marketing context"),T("Qwen3 条件表征","Qwen3 representation"),T("门控时序融合","Gated temporal fusion"),T("重训下游预测器","Retrain forecaster")],
       decisions:[

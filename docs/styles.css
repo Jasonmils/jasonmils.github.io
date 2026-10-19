@@ -548,12 +548,8 @@ body.project-preview-open{overflow:hidden}
 .journey-chart{display:block;width:100%;height:auto;overflow:visible;font-family:var(--font)}
 .journey-chart .journey-chart-axis{fill:none;stroke:#acb8d0;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
 .journey-chart-axis-label{font-size:14px;fill:#71809b;font-weight:500}
-.journey-chart-curve,.journey-chart-history,.journey-chart-incubation,.journey-chart-retention{fill:none;stroke-width:3;stroke-linecap:round}
-.journey-chart-curve{stroke:#5278d8}
-.journey-chart-guide{fill:none;stroke:#9db2e6;stroke-width:1.3;stroke-dasharray:3 4}
-.journey-chart-halo{fill:#5278d821}.journey-chart-point{fill:#4169cd;stroke:#fff;stroke-width:2}
-.journey-chart-optimum{font-size:16px;font-weight:600;fill:#3d63bc}
-.journey-chart-price-label,.journey-chart-current-label{font-size:12px;fill:#7385a9}
+.journey-chart-history,.journey-chart-incubation,.journey-chart-retention{fill:none;stroke-width:3;stroke-linecap:round}
+.journey-chart-current-label{font-size:12px;fill:#7385a9}
 .journey-chart-history{stroke:#b7a6d2}
 .journey-chart-incubation{stroke:#8a65b8}
 .journey-chart-retention{stroke:#688da4}
@@ -565,6 +561,31 @@ body.project-preview-open{overflow:hidden}
 .journey-chart-retention-label{fill:#537c92}
 .journey-chart-risk-label{font-size:12px;fill:#8f8c9f}
 .journey-chart-note{display:block;font-size:9px;line-height:1.7;text-align:center;color:#8990a2;margin-top:4px}
+.pricing-decision{margin-top:0}
+.growth-journey-stage--long .growth-journey-diagram{margin-top:auto;margin-bottom:auto}
+.pricing-step-label{display:block;font-size:11px;line-height:1.6;font-weight:600;color:#365dba;margin-bottom:8px}
+.pricing-curve-axis-label{font-size:12px;fill:#657895;font-weight:500}
+.pricing-curve-line{fill:none;stroke:#5278d8;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.pricing-forecast-output{display:block;margin:-3px 0 12px;font-size:12px;color:#3d5e9e}
+.pricing-scenario{color:#4e929c}
+.pricing-scenario--selected{color:#4169cd}
+.pricing-scenario--higher{color:#9c8db9}
+.pricing-scenario .pricing-curve-line{stroke:currentColor;stroke-width:2}
+.pricing-scenario--selected .pricing-curve-line{stroke-width:2.6}
+.pricing-daily-point{fill:currentColor;stroke:#f6f8ff;stroke-width:.7}
+.pricing-scenario-label{fill:currentColor;font-size:13px;font-weight:600}
+.pricing-curve-area{fill:#5278d812}
+.pricing-curve-guide{fill:none;stroke:#9db2e6;stroke-width:1.3;stroke-dasharray:3 4}
+.pricing-curve-halo{fill:#5278d81a}
+.pricing-curve-point{fill:#4169cd;stroke:#fff;stroke-width:2}
+.pricing-curve-maximum{font-size:13px;fill:#315bb8;font-weight:600}
+.pricing-curve-price{font-size:12px;fill:#315bb8;font-weight:600}
+.pricing-formula{display:block;margin:5px 0 8px;padding:7px 4px 0;border-top:1px solid #d8e2f4;font-size:11px;line-height:1.7;text-align:center;color:#526787}
+.pricing-aggregation-label{display:block;font-size:10px;margin-bottom:6px}
+.pricing-formula .katex{font-size:1.07em}
+.pricing-formula-arrow{display:block;font-size:14px;line-height:1.4;color:#6b89c9;margin-top:2px}
+.pricing-decision-choice{display:block;margin-top:6px;padding:8px;border:1px solid #c1d0f0;border-radius:8px;background:#ffffffa8;font-size:11px;line-height:1.65;font-weight:600;text-align:center;color:#234794}
+.pricing-decision .journey-chart-note{margin-top:7px}
 .growth-journey-link{display:flex;gap:5px;align-items:center;margin-top:auto;font-size:10px;line-height:1.6;color:#4662b7}
 .growth-journey-diagram~.growth-journey-link{margin-top:0}
 .growth-journey-link .icon{width:12px;height:12px}
@@ -587,7 +608,7 @@ body.project-preview-open{overflow:hidden}
 .growth-detail .strategy-bridge{margin:0 8px;padding:20px 0}
 .growth-detail .bridge-arrow{color:#91a0c0}
 @media(min-width:601px) and (max-width:1000px){.growth-detail .strategy-phase{scroll-margin-top:72px}}
-@media(max-width:480px){
+@media(max-width:540px){
  .growth-journey-stages{grid-template-columns:1fr;gap:28px}
  .growth-journey-stage{padding:16px 18px}
  .growth-journey-stage>strong{margin-top:9px}

@@ -347,10 +347,70 @@
     hust: [institutionLogos.hust,institutionLogos.psl]
   };
   const renderGrowthDiagram = kind => {
-    const title = kind === "price" ? T("GMV 与价格曲线：峰值对应最优价格", "GMV versus price: the peak identifies the optimal price") :
-      T("跨档期商品成长：高潜孵化与成长层级防滑落", "Product growth across campaigns: incubation and growth-tier retention");
-    const description = kind === "price" ? T("概念示意。横轴为价格，纵轴为预测 GMV；在候选价格范围内选择预测 GMV 最高的价格。图中无实际业务数据", "Conceptual illustration. Price is on the horizontal axis and predicted GMV on the vertical axis. Select the price with the highest predicted GMV in the candidate range. No actual business data is plotted") :
-      T("策略示意。横轴为档期，纵轴为成长层级；从当前商品状态出发，高潜商品进行孵化，有滑落风险的商品进行层级维持。虚线表示滑落风险，图中无实际业务数据", "Strategy illustration. Campaigns are on the horizontal axis and growth tier on the vertical axis. Incubate products with growth potential and retain the tier of products at risk. The dashed path denotes decline risk; no actual business data is plotted");
+    if (kind === "price") {
+      // Illustrative daily forecasts only. GMV is derived from all 14 outputs at each price.
+      const dailyProfile = [0.72,0.76,0.68,0.84,0.91,1.06,0.96,0.82,0.78,0.89,1.03,1.18,1.08,1.13];
+      const forecast = price => dailyProfile.map(value => value * Math.exp(-0.5 * price * price));
+      const predictedGMV = price => price * forecast(price).reduce((sum,value) => sum + value,0);
+      const gmv = price => predictedGMV(price) / predictedGMV(1);
+      const scenarios = [{price:0.55,label:"p₁",kind:"lower"},{price:1,label:"p*",kind:"selected"},{price:1.55,label:"p₃",kind:"higher"}];
+      const priceX = price => 40 + 116 * price;
+      const dayX = index => 40 + 232 * index / 13;
+      const gmvY = price => 108 - 63 * gmv(price);
+      const dailyY = value => 128 - 78 * value;
+      const gmvPath = Array.from({length:81}, (_,i) => (i ? "L" : "M") + priceX(i / 40).toFixed(2) + " " + gmvY(i / 40).toFixed(2)).join(" ");
+      const svg = (lang,chart) => {
+        const isSales = chart === "sales";
+        const id = "journey-price-" + chart + "-" + lang;
+        const height = isSales ? 160 : 142;
+        const label = (x,y,text,cls,anchor = "start") => '<text x="' + x + '" y="' + y + '" class="' + cls + '" text-anchor="' + anchor + '">' + escapeHTML(text) + '</text>';
+        const title = isSales ? T("不同候选价格下，未来 14 天每天的销量预测", "Daily sales forecasts for the next 14 days at different candidate prices") :
+          T("汇总逐日预测，选择预测 GMV 最大的价格", "Aggregate daily forecasts to select the price with maximum predicted GMV");
+        const description = isSales ? T(
+          "横轴为未来第 1 至第 14 天，纵轴为每日预测销量。每条曲线对应一个候选价格，并包含 14 个日预测值，模型输出 Y(p) 属于 R14。蓝色曲线为下图最优价格 p* 对应的完整逐日预测序列。曲线及其形状仅为示意，并非普遍规律或实际业务数据",
+          "The horizontal axis is future day 1 through day 14; the vertical axis is predicted daily units. Each curve represents a candidate price and contains 14 daily predictions: model output Y(p) is a vector in R14. The blue trajectory is the complete daily forecast at p*, the selected price in the lower chart. The curves and their shapes are illustrative, not universal relationships or actual business data"
+        ) : T(
+          "横轴为候选价格，纵轴为预测 GMV。模型先为每个价格输出 14 个逐日销量预测；在决策环节，将这 14 个日预测值求和后乘以该价格，得到预测 GMV。曲线峰值对应候选范围内预测 GMV 最高的价格 p*，蓝色峰值与上图蓝色逐日预测曲线对应。此示意中每个候选价格在 14 天内保持不变",
+          "The horizontal axis is candidate price; the vertical axis is predicted GMV. The model first outputs 14 daily sales predictions for each price. The decision step sums those daily predictions and multiplies by the price. The peak identifies p*, the price with the highest predicted GMV within the candidate range, matching the blue daily trajectory above. Each candidate price is held constant across the 14 days in this illustration"
+        );
+        let plot;
+        if (isSales) {
+          plot = '<path class="journey-chart-axis" d="M30 40V132H284M26 46l4-6 4 6M278 128l6 4-6 4"/>' +
+            label(30,16,T("每日预测销量", "Predicted daily units")[lang],"pricing-curve-axis-label") +
+            scenarios.map((scenario,index) => {
+              const values = forecast(scenario.price);
+              const curve = values.map((value,i) => (i ? "L" : "M") + dayX(i).toFixed(2) + " " + dailyY(value).toFixed(2)).join(" ");
+              const legendX = 43 + index * 86;
+              return '<g class="pricing-scenario pricing-scenario--' + scenario.kind + '" data-price="' + scenario.price + '">' +
+                '<path class="pricing-curve-line" data-curve="daily-sales" d="' + curve + '"/>' +
+                values.map((value,i) => '<circle class="pricing-daily-point" data-day="' + (i + 1) + '" cx="' + dayX(i).toFixed(2) + '" cy="' + dailyY(value).toFixed(2) + '" r="2.3"/>').join('') +
+                '<path class="pricing-curve-line" d="M' + legendX + ' 32h16"/>' + label(legendX + 21,36,scenario.label,"pricing-scenario-label") + '</g>';
+            }).join('') +
+            [0,6,13].map(index => '<path class="journey-chart-axis" d="M' + dayX(index) + ' 132v4"/>' + label(dayX(index),153,T("第 " + (index + 1) + " 天", "Day " + (index + 1))[lang],"pricing-curve-axis-label","middle")).join('');
+        } else {
+          plot = '<path class="journey-chart-axis" d="M30 30V113H284M26 36l4-6 4 6M278 109l6 4-6 4"/>' +
+            '<path class="pricing-curve-area" d="' + gmvPath + ' L272 113H40Z"/><path class="pricing-curve-guide" d="M156 45V113"/>' +
+            '<path class="pricing-curve-line" data-curve="gmv" d="' + gmvPath + '"/>' +
+            '<circle class="pricing-curve-halo" cx="156" cy="45" r="8"/><circle class="pricing-curve-point" cx="156" cy="45" r="4"/>' +
+            label(30,16,T("预测 GMV", "Predicted GMV")[lang],"pricing-curve-axis-label") +
+            label(156,30,T("预测 GMV 最大", "Maximum predicted GMV")[lang],"pricing-curve-maximum","middle") +
+            label(156,135,T("最优价格 p*", "Optimal price p*")[lang],"pricing-curve-price","middle") +
+            label(284,135,T("价格 p", "Price p")[lang],"pricing-curve-axis-label","end");
+        }
+        return '<svg class="journey-chart pricing-curve pricing-curve--' + chart + '" viewBox="0 0 300 ' + height + '" width="300" height="' + height + '" role="img" aria-labelledby="' + id + '-title ' + id + '-desc">' +
+          '<title id="' + id + '-title">' + escapeHTML(title[lang]) + '</title><desc id="' + id + '-desc">' + escapeHTML(description[lang]) + '</desc>' + plot + '</svg>';
+      };
+      const chart = kind => '<span class="bi"><span class="zh" lang="zh-CN">' + svg("zh",kind) + '</span><span class="en" lang="en">' + svg("en",kind) + '</span></span>';
+      return '<span class="growth-journey-diagram pricing-decision"><span class="pricing-step-label">' + bi(T("01 · 逐日销量预测", "01 · Daily sales forecasting")) +
+        '</span><span class="pricing-forecast-output">' + escapeHTML(String.raw`\(\hat{\mathbf Y}(p)\in\mathbb R^{14}\)`) + '</span>' + chart("sales") +
+        '<span class="pricing-formula"><span class="pricing-aggregation-label">' + bi(T("决策时汇总 14 个日预测值", "Sum the 14 daily predictions for pricing")) + '</span>' +
+        escapeHTML(String.raw`\(\widehat{\mathrm{GMV}}(p)=p\sum_{t=1}^{14}\hat y_t(p)\)`) +
+        '<span class="pricing-formula-arrow" aria-hidden="true">↓</span></span><span class="pricing-step-label">' + bi(T("02 · GMV 最大化决策", "02 · Maximize predicted GMV")) + '</span>' + chart("gmv") +
+        '<strong class="pricing-decision-choice">' + bi(T("选择曲线峰值对应的价格 p*", "Choose p* at the peak of predicted GMV")) +
+        '</strong><span class="journey-chart-note">' + bi(T("候选价格范围内的决策示意 · 非实际业务数据", "Decision within the candidate price range · Illustration only")) + '</span></span>';
+    }
+    const title = T("跨档期商品成长：高潜孵化与成长层级防滑落", "Product growth across campaigns: incubation and growth-tier retention");
+    const description = T("策略示意。横轴为档期，纵轴为成长层级；从当前商品状态出发，高潜商品进行孵化，有滑落风险的商品进行层级维持。虚线表示滑落风险，图中无实际业务数据", "Strategy illustration. Campaigns are on the horizontal axis and growth tier on the vertical axis. Incubate products with growth potential and retain the tier of products at risk. The dashed path denotes decline risk; no actual business data is plotted");
     const svg = lang => {
       const id = "journey-" + kind + "-" + lang;
       const label = (x,y,value,cls,anchor = "start") => '<text x="' + x + '" y="' + y + '" class="' + cls +
@@ -358,12 +418,6 @@
       return '<svg class="journey-chart journey-chart--' + kind + '" viewBox="0 0 300 186" width="300" height="186" role="img" aria-labelledby="' +
         id + '-title ' + id + '-desc"><title id="' + id + '-title">' + escapeHTML(title[lang]) + '</title><desc id="' + id + '-desc">' +
         escapeHTML(description[lang]) + '</desc><path class="journey-chart-axis" d="M34 32V154H278M30 38l4-6 4 6M272 150l6 4-6 4"/>' +
-        (kind === "price" ? '<defs><linearGradient id="' + id + '-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6587e8" stop-opacity=".19"/><stop offset="1" stop-color="#6587e8" stop-opacity=".01"/></linearGradient></defs>' +
-          '<path d="M48 139Q152 -27 256 139V154H48Z" fill="url(#' + id + '-fill)"/>' +
-          '<path class="journey-chart-guide" d="M152 56V154"/><path class="journey-chart-curve" data-curve="gmv" d="M48 139Q152 -27 256 139"/>' +
-          '<circle class="journey-chart-halo" cx="152" cy="56" r="10"/><circle class="journey-chart-point" data-optimum="true" cx="152" cy="56" r="4"/>' +
-          label(34,20,"GMV","journey-chart-axis-label") + label(278,178,"Price","journey-chart-axis-label","end") +
-          label(152,35,T("最优", "Optimal"),"journey-chart-optimum","middle") + label(152,176,T("最优价格", "Optimal price"),"journey-chart-price-label","middle") :
           '<path class="journey-chart-history" d="M48 125C75 120 100 95 134 94"/>' +
           '<path class="journey-chart-risk" data-path="risk" d="M134 94C176 102 214 128 252 132"/>' +
           '<path class="journey-chart-incubation" data-path="incubation" d="M134 94C176 85 213 56 252 42"/>' +
@@ -372,10 +426,9 @@
           '<circle class="journey-chart-growth-point" cx="252" cy="42" r="4"/><circle class="journey-chart-retention-point" cx="252" cy="94" r="4"/>' +
           label(34,20,T("成长层级", "Growth tier"),"journey-chart-axis-label") + label(278,178,T("档期", "Campaigns"),"journey-chart-axis-label","end") +
           label(134,176,T("当前", "Now"),"journey-chart-current-label","middle") + label(170,30,T("高潜孵化", "Incubation"),"journey-chart-incubation-label") +
-          label(225,79,T("防滑落", "Retain tier"),"journey-chart-retention-label") + label(252,147,T("滑落风险", "Decline risk"),"journey-chart-risk-label","end")) + '</svg>';
+          label(225,79,T("防滑落", "Retain tier"),"journey-chart-retention-label") + label(252,147,T("滑落风险", "Decline risk"),"journey-chart-risk-label","end") + '</svg>';
     };
-    const note = kind === "price" ? T("GMV = 价格 × 销量 · 示意", "GMV = Price × Units · Illustration") :
-      T("评估 → 运营 → 反馈 · 示意", "Assess → Act → Review · Illustration");
+    const note = T("评估 → 运营 → 反馈 · 示意", "Assess → Act → Review · Illustration");
     return '<span class="growth-journey-diagram"><span class="bi journey-chart-translations"><span class="zh" lang="zh-CN">' + svg("zh") +
       '</span><span class="en" lang="en">' + svg("en") + '</span></span><span class="journey-chart-note">' + bi(note) + '</span></span>';
   };
