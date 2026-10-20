@@ -44,7 +44,7 @@
   const dot = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>';
   const tagLogos = {
     Python:"python",PyTorch:"pytorch",TensorFlow:"tensorflow",Transformers:"huggingface",
-    Qwen3:"qwen","Qwen3-4B":"qwen","Qwen3-ASR":"qwen",Codex:"openai",
+    Qwen3:"qwen","Qwen3-4B":"qwen","Qwen3.5-35B-A3B":"qwen","Qwen3-ASR":"qwen",Codex:"openai",
     Gemini:"googlegemini",DeepSeek:"deepseek"
   };
   const tags = values => '<div class="tag-list">' + values.map(v => {
@@ -176,6 +176,15 @@
     '</summary><div class="paper-disclosure-body">' + ["similarity","acf"].map(renderDeformerFigure).join('') + '</div></details></div>';
   const paperResult = (venue, year, authorship) => '<div class="paper-result"><span class="paper-result-year">' + year +
     '</span><div><strong>' + escapeHTML(venue) + '</strong><span>' + bi(authorship) + '</span></div></div>';
+  const renderGrowthAB = (compact = false) => '<div class="ab-results' + (compact ? ' ab-results--compact' : '') + '">' +
+    productGrowthABResults.phases.map(phase => '<article class="ab-phase"><div class="phase-label">' + bi(phase.label) +
+      '</div><h5 class="ab-treatment">' + bi(phase.treatment) + '</h5><p class="ab-control">' +
+      bi(T("对照：" + phase.control.zh, "Control: " + phase.control.en)) + '</p><p class="ab-planning">' + bi(phase.planning) +
+      '</p><div class="ab-measures"><div><div class="adoption-value">' + phase.adoption + '<span>%</span></div><div class="chart-label">' +
+      bi(T("建议采纳率", "Recommendation adoption")) + '</div><div class="adoption-track" aria-hidden="true"><span style="width:' +
+      phase.adoption + '%"></span></div></div><div class="gmv-result"><strong>' + phase.growth + '%</strong><span>' +
+      bi(T("GMV 增幅较该期对照组高", "Higher GMV growth than this phase’s control")) + '</span></div></div></article>'
+    ).join('') + '</div>';
   const visualStories = {
     "wiki-system": {
       tab:T("证据工作流", "Evidence workflow"),title:T("从多模态证据到可核对的知识更新", "From multimodal evidence to checkable knowledge updates"),
@@ -184,27 +193,27 @@
     },
     "ali-agent": {
       tab: T("Agent 闭环", "Agent loop"), title: T("从预测到运营闭环", "From forecasts to an operating loop"),
-      challenge: T("让商品状态、运营建议与执行反馈连起来", "Connect product signals, recommendations and operating feedback"),
+      challenge: T("LangGraph 批量编排 · Qwen3.5-35B-A3B 多档期规划 · SQL 跨轮次记忆", "LangGraph batch workflows · Qwen3.5-35B-A3B planning · SQL memory across rounds"),
       render: () => diagramFlow([
         ["forecast", T("预测工具", "Forecast"), T("价量模型", "Price–sales tools")],
-        ["decision", T("评估建议", "Assess & plan"), T("潜力 / 保层", "Growth / retention")],
-        ["execute", T("执行保障", "Execute"), T("重试 · 人审", "Retry / review")],
-        ["memory", T("反馈记忆", "Feedback"), T("记录与检索", "Store / retrieve")]
-      ], T("反馈进入记忆 → 支持下一轮判断", "Memory feeds the next round of decisions")) +
+        ["decision", T("多档期规划", "Cycle planning"), T("LangGraph · Qwen3.5", "LangGraph · Qwen3.5")],
+        ["execute", T("执行保障", "Execution checks"), T("重试 · 回退 · 人审", "Retry · Fallback · Review")],
+        ["memory", T("SKU 记忆", "SKU memory"), T("SQL 摘要 / 运营记录", "SQL summary / history")]
+      ], T("规划前检索历史反馈 → 反馈回收后更新记忆", "Retrieve feedback before planning → Update memory after feedback")) +
         '<div class="visual-section-label">' + bi(T("两期线上 A/B 实验", "Two online A/B phases")) + '</div>' +
-        '<div class="ab-results">' + [["01",26.6,65.2],["02",39.3,27.7]].map(([phase,adoption,growth]) =>
-          '<div class="ab-phase"><div class="phase-label">' + bi(T("第 " + phase + " 期", "Phase " + phase)) +
-          '</div><div class="adoption-value">' + adoption + '<span>%</span></div><div class="chart-label">' +
-          bi(T("建议采纳率", "Recommendation adoption")) + '</div><div class="adoption-track" aria-hidden="true"><span style="width:' +
-          adoption + '%"></span></div><div class="gmv-result"><strong>+' + growth + '%</strong><span>' +
-          bi(T("GMV 增幅较对照组高", "GMV growth above control")) + '</span></div></div>'
-        ).join('') + '</div>' + visualNote(T("项目整体效果；两期分别对照，不叠加，也不归因于单个 Agent 模块", "Project-level results. Each phase uses its own control; effects are not additive or attributed to an individual agent module")),
+        renderGrowthAB() + visualNote(productGrowthABResults.note),
       takeaway: T("把模型输出接入可追踪、可迭代的业务流程", "Turn model outputs into a traceable, repeatable workflow")
     },
     "ali-forecast": {
-      tab: T("预测优化", "Forecasting"), title: T("表征 → 后训练 → 稳定推理", "Representations, post-training & stability"),
+      tab: T("预测优化", "Forecasting"), title: T("时序建模 → 条件表征 → 后训练 → 稳定推理", "Temporal models, LLM features, post-training & stability"),
       challenge: T("误差与稳定性分别衡量；后训练回到下游预测验证", "Evaluate accuracy and stability separately, then validate post-training downstream"),
-      render: () => '<div class="visual-section-label">' + bi(T("wMAPE 相对下降 · 越低越好", "Relative wMAPE reduction · lower is better")) +
+      render: () => '<div class="forecast-research"><strong>' + bi(T("DEFormer · 时序表征优化", "DEFormer · Temporal representations")) +
+        '</strong><p>' + bi(T("原序列与差分编码 · log1p 目标变换 · 回归与分类多任务", "Raw and differenced inputs · log1p targets · Regression and classification")) +
+        '</p><div class="forecast-research-results"><b>↓ 12.7% / 5.6%</b><span>' +
+        bi(T("两个零售数据集的离线 wMAPE · 相对 PatchTST", "Offline wMAPE on two retail datasets · vs. PatchTST")) +
+        '</span></div><a class="text-link" href="#project-deformer" data-open-project="project-deformer" aria-controls="project-preview" aria-expanded="false">' +
+        bi(T("查看机制研究与消融", "Explore mechanisms & ablations"),true) + arrow + '</a></div>' +
+        '<div class="visual-section-label">' + bi(T("Qwen3 表征与后训练 · wMAPE 相对下降", "Qwen3 features & post-training · Relative wMAPE reduction")) +
         '</div><div class="training-tree"><div class="training-node"><div><strong>' + bi(T("冻结 Qwen3 表征", "Frozen Qwen3 features")) +
         '</strong><span>' + bi(T("对比：同配置、无 Qwen", "vs. same setup without Qwen")) + '</span></div><b>↓ 2.1%</b></div>' +
         '<div class="tree-arrow" aria-hidden="true">↓</div><div class="training-node training-sft"><div><strong>LoRA SFT</strong><span>' +
@@ -227,7 +236,7 @@
       render: () => diagramFlow([
         ["scope",T("去相关输入", "Decorrelative inputs"),T("原序列 + 一阶差分", "Raw values + first differences")],
         ["graph",T("Patch-wise Transformer", "Patch-wise Transformer"),T("表征与注意力", "Representations & attention")],
-        ["decision",T("去自回归训练", "De-autoregressive training"),T("Log-return · MMoE · 双任务", "Log-return · MMoE · Dual tasks")]
+        ["decision",T("去自回归训练", "De-autoregressive training"),T("log1p · MMoE · 双任务", "log1p · MMoE · Dual tasks")]
       ]) + '<div class="paper-methods">' + renderPaperFigure(deformerStudy.figures.tokenization) +
         renderEquation(T("原序列与差分的双路表达", "Raw and differenced representations"),
           String.raw`\begin{aligned}\Delta X_t &= X_t-X_{t-1}\\[6pt]Z &= \phi(X)W+\phi(\Delta X)W_d\end{aligned}`,
@@ -494,7 +503,7 @@
     '</p></div><div><h4 class="small-label">' + bi(ui.responsibility) +
     '</h4><p>' + bi(exp.responsibilities) +
     '</p></div></div></details>' + renderStoryBoard(exp)) + '</div></article>';
-  const renderTable = table => '<div class="table-wrap"><table class="result-table"><thead><tr>' +
+  const renderTable = table => table.phases ? renderGrowthAB(true) + visualNote(table.note) : '<div class="table-wrap"><table class="result-table"><thead><tr>' +
     table.headers.map(h => '<th scope="col">' + bi(h) + '</th>').join('') + '</tr></thead><tbody>' +
     table.rows.map(row => '<tr>' + row.map(cell => '<td>' + bi(cell) + '</td>').join('') + '</tr>').join('') +
     '</tbody></table></div><p class="table-note">' + bi(table.note) + '</p>';
@@ -527,6 +536,11 @@
       '<p class="research-insight">' + bi(guide.insight) + '</p></div>';
   };
   const renderDeformerFigure = key => renderGuidedResearchFigure(deformerStudy.figures[key],deformerStudy.narrative.guides[key]);
+  const renderDiagnosticMetrics = metrics => '<section class="diagnostic-metrics"><h5>' + bi(metrics.title) +
+    '</h5><p>' + bi(metrics.context) + '</p>' + metrics.cards.map(metric => '<article class="diagnostic-metric">' +
+      renderEquation(metric.title,metric.formula,metric.notation) + '<p class="diagnostic-interpretation">' + bi(metric.interpretation) + '</p>' +
+      (metric.note ? '<p class="diagnostic-note">' + bi(metric.note) + '</p>' : '') + '</article>').join('') +
+    '<p class="research-insight">' + bi(metrics.reading) + '</p></section>';
   const renderResearchEquation = equation => '<details class="paper-evidence research-equations"><summary>' +
     bi(T("展开公式与符号说明", "Expand equations and notation"),true) + toggle() + '</summary><div class="paper-disclosure-body">' +
     renderEquation(equation.title,equation.formula,equation.note) + '</div></details>';
@@ -548,7 +562,7 @@
       section(0,'<p>' + bi(story.background) + '</p><div class="research-task"><p>' + bi(project.context) +
         '</p></div><div class="project-role"><h5 class="small-label">' + bi(ui.role) + '</h5><div>' + bi(project.role) + '</div></div>') +
       section(1,'<p>' + bi(story.intuition) + '</p>' + renderAttentionPhenomenon(story.phenomenon) + '<p>' + bi(project.challenge) +
-        '</p><div class="research-task"><p>' + bi(story.measures) + '</p></div>' + renderDeformerFigure("diagnosis")) +
+        '</p><div class="research-task"><p>' + bi(story.measures) + '</p></div>' + renderDiagnosticMetrics(story.diagnosticMetrics) + renderDeformerFigure("diagnosis")) +
       section(2,'<div class="research-contribution"><p>' + bi(story.contribution) + '</p></div><p>' + bi(story.bridge) + '</p>' +
         method(1,"tokenization",equations(T("原序列与差分的双路表达", "Raw and differenced representations"),
           String.raw`\begin{aligned}\Delta X_t &= X_t-X_{t-1}\\[6pt]Z &= \phi(X)W+\phi(\Delta X)W_d\end{aligned}`,

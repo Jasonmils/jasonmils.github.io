@@ -162,6 +162,25 @@ details[open]>summary .toggle-plus:before{content:none}
 .ab-results{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ab-phase{min-width:0;padding:20px 18px 16px;border:1px solid var(--line);border-radius:8px;background:#fff;box-shadow:none}
 .phase-label{font-size:11px;line-height:1.6;color:var(--muted);letter-spacing:.04em;font-family:var(--font-mono)}
+.ab-phase{display:flex;flex-direction:column}
+.ab-treatment{font-size:16px;font-weight:600;line-height:1.6;color:var(--ink);margin:8px 0 0}
+.ab-control{font-size:12px;line-height:1.75;color:var(--accent);margin-top:6px}
+.ab-planning{font-size:11px;line-height:1.8;color:var(--muted);margin-top:10px;padding-bottom:6px}
+.ab-measures{margin-top:auto}
+.ab-results--compact{margin-top:16px}
+.ab-results--compact .ab-phase{padding:17px 16px;border-radius:14px;background:var(--glass-surface,#fff)}
+.ab-results--compact .ab-treatment{font-size:14px}
+.ab-results--compact .adoption-value{font-size:32px}
+.ab-results--compact .adoption-value>span{font-size:17px}
+.ab-results--compact .gmv-result>strong{font-size:24px}
+@media(max-width:600px){
+ .ab-results{grid-template-columns:minmax(0,1fr)}
+ .ab-measures{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;margin-top:12px}
+ .ab-measures .adoption-value{font-size:32px;margin-top:0}
+ .ab-measures .gmv-result{margin-top:0;padding-top:0;padding-left:16px;border-top:0;border-left:1px solid var(--line)}
+ .ab-measures .gmv-result>strong{font-size:28px}
+ .ab-measures .chart-label,.ab-measures .gmv-result>span{font-size:11px}
+}
 .adoption-value{font-size:44px;line-height:1.3;letter-spacing:-.03em;font-weight:500;color:var(--accent);font-variant-numeric:tabular-nums;margin-top:12px;font-family:var(--font-display)}
 .adoption-value>span{font-size:22px;margin-left:2px;letter-spacing:0}
 .chart-label{font-size:12px;line-height:1.7;color:var(--muted);margin-top:4px}
@@ -182,6 +201,12 @@ details[open]>summary .toggle-plus:before{content:none}
 .story-original-brief{font-size:14px;color:#6e6e73;line-height:1.75;margin-top:10px}
 .all-stories .story-panel+.story-panel{margin-top:30px;padding-top:30px;border-top:1px solid var(--line)}
 .training-tree{font-variant-numeric:tabular-nums}
+.forecast-research{padding:20px;margin-bottom:22px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,#f4f7ff,#fff)}
+.forecast-research>strong{display:block;font-size:15px;font-weight:600;color:var(--ink);line-height:1.7}
+.forecast-research>p{font-size:12px;line-height:1.85;margin-top:7px;color:var(--muted)}
+.forecast-research-results{margin:13px 0}
+.forecast-research-results>b{display:block;font-size:24px;line-height:1.6;font-weight:500;color:var(--accent);font-family:var(--font-display)}
+.forecast-research-results>span{display:block;font-size:11px;line-height:1.75;color:var(--muted)}
 .training-node{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px;border:1px solid var(--line);border-radius:8px;background:#fff}
 .training-node strong{display:block;color:var(--ink);font-size:14px;font-weight:500;line-height:1.7}
 .training-node>div>span{display:block;font-size:10px;line-height:1.7;color:var(--muted);margin-top:3px}
@@ -680,6 +705,18 @@ body.project-preview-open{overflow:hidden}
 .attention-phenomenon>.attention-source{padding-top:14px;border-top:1px solid var(--line);margin-top:18px}
 .research-narrative .paper-dataset h6{font:600 14px/1.7 var(--font);margin:0 0 12px}
 .research-equations .paper-equation{margin-top:4px}
+.diagnostic-metrics{margin:24px 0 30px;min-width:0}
+.diagnostic-metrics>h5{font:600 16px/1.7 var(--font);margin:0 0 10px;color:var(--ink)}
+.diagnostic-metrics>p,.diagnostic-interpretation{font-size:13px;line-height:1.95;color:#515154}
+.diagnostic-metric{margin-top:20px;min-width:0}
+.diagnostic-interpretation{margin-top:12px;overflow-wrap:anywhere}
+.diagnostic-note{font-size:11px;line-height:1.85;color:var(--muted);margin-top:10px}
+.diagnostic-metrics .katex{font-size:1.05em}
+.diagnostic-metrics .math-scroll{font-size:16px}
+@media(max-width:600px){
+ .diagnostic-metrics .math-scroll{font-size:14px}
+ .diagnostic-metrics>p,.diagnostic-interpretation{font-size:12px}
+}
 .research-challenges{display:grid;gap:20px}
 .research-challenges h5{font:600 15px/1.8 var(--font);margin:0 0 8px;color:var(--ink)}
 .research-challenges p,.research-result-block>p,.research-narrative .research-results>p{font-size:14px;line-height:1.95;color:#515154}

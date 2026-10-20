@@ -1,6 +1,7 @@
-/* Bilingual content. Measured claims are grounded in the supplied v4 CVs.
-   DEFormer and research details use the owner-supplied manuscripts.
-   The Alibaba two-stage narrative incorporates Jason's October 12 clarification.
+/* Bilingual content. Alibaba experience is aligned with Jason_CV_v7_CN (October 20, 2026).
+   Other measured claims retain their supplied CV and manuscript sources.
+   DEFormer figures/tables document dual-path encoding and multi-task experiments;
+   the CV's SubAttention contribution has no separately displayed ablation result.
    The 14-day horizon is an example; no new measured results are inferred. */
 const T = (zh, en) => ({ zh, en });
 // Figures and exact Table 1 / Table 2 values from the supplied AAAI manuscript.
@@ -23,7 +24,27 @@ const deformerStudy = {
       ],
       note:T("其他任务中的 Self-Attention 示例，选取所提供原图的 (e)/(g) 面板。Prediction-Feedback 是原图的方法标签；此图用于现象说明，DEFormer 的实验诊断见下方图 1。热力图本身不能判定矩阵的秩", "Self-attention examples from another task, showing panels (e)/(g) of the supplied image. Prediction-Feedback is the original method label. This illustrates the phenomenon; DEFormer’s diagnostic evidence follows in Figure 1. A heatmap alone does not establish matrix rank")},
     measures:T("为把视觉直觉变成可比较的证据，我检查两个指标：注意力稳定秩衡量注意力矩阵的有效多样性，Token 平均余弦相似度衡量表征是否趋同。稳定秩低、相似度高，是需要进一步诊断的信号", "To turn visual intuition into comparable evidence, I examine two measures: attention stable rank captures effective matrix diversity, while mean token cosine similarity checks representation homogenization. Low stable rank and high similarity are signals for further diagnosis"),
-    contribution:T("我的贡献：以稳定秩与 Token 相似度开展分层诊断，提出原序列与差分的双路 Tokenization，以及目标变换与多任务训练，并用基线对照、逐模块消融和表征分析检验改进", "My contribution: layer-wise diagnosis using stable rank and token similarity; dual-path tokenization of raw values and differences; transformed targets and multi-task training; and evaluation through baselines, component ablations and representation analysis"),
+    diagnosticMetrics:{
+      title:T("两个诊断指标：公式与含义", "Two diagnostic measures: definitions & interpretation"),
+      context:T(String.raw`沿用论文第 3 页式 (3)–(6)：\(X\in\mathbb R^{L\times d}\) 表示某层的 Token 表征，\(X_k\) 为第 \(k\) 个 Token，\(L\) 为 Token 数、\(d\) 为表征维度。对 Patch 模型，\(L\) 指分块后的 Token 数，不是原始时间点数`, String.raw`Following Equations (3)–(6) on manuscript page 3, \(X\in\mathbb R^{L\times d}\) denotes token representations at a layer, with token vector \(X_k\), token count \(L\) and dimension \(d\). In a patch-based model, \(L\) counts patch tokens, not raw time steps`),
+      cards:[
+        {
+          title:T("Stable rank · 注意力稳定秩", "Stable rank · Attention diversity"),
+          formula:String.raw`\begin{aligned}A_h &= \operatorname{softmax}\!\left(\frac{Q_hK_h^{\mathsf T}}{\sqrt{d_k}}\right)\\[8pt]\rho_{\mathrm{sr}}(A_h) &= \frac{\lVert A_h\rVert_F^2}{\lVert A_h\rVert_2^2}=\frac{\sum_i\sigma_i(A_h)^2}{\sigma_1(A_h)^2}\\[8pt]\overline{\rho}_{\mathrm{sr}} &= \frac{1}{N_{\mathrm{head}}}\sum_{h=1}^{N_{\mathrm{head}}}\rho_{\mathrm{sr}}(A_h)\end{aligned}`,
+          notation:T(String.raw`\(A_h\in\mathbb R^{L\times L}\) 是第 \(h\) 个头经 softmax 得到的注意力权重矩阵；\(Q_h,K_h\) 是 Query 与 Key，\(d_k\) 是 Key 维度。\(\lVert A_h\rVert_F^2\) 是全部元素的平方和，也等于全部奇异值的平方和；\(\lVert A_h\rVert_2^2=\sigma_1^2\) 是最大奇异值的平方。论文按头计算后取平均，\(N_{\mathrm{head}}\) 为头数`, String.raw`\(A_h\in\mathbb R^{L\times L}\) is head \(h\)'s post-softmax attention-weight matrix; \(Q_h,K_h\) are queries and keys, and \(d_k\) is the key dimension. \(\lVert A_h\rVert_F^2\) sums squared entries, equivalently squared singular values. \(\lVert A_h\rVert_2^2=\sigma_1^2\) is the squared largest singular value. The paper averages the per-head measure over \(N_{\mathrm{head}}\) heads`),
+          interpretation:T(String.raw`它衡量矩阵能量是否集中在少数方向，而不是“有多少个非零奇异值”。非零矩阵满足 \(1\leq\rho_{\mathrm{sr}}\leq\operatorname{rank}(A_h)\leq L\)：接近 1 表示一个方向占主导；若 \(r\) 个非零奇异值相等，则稳定秩为 \(r\)。例如，所有 Query 的注意力行完全相同，会形成秩 1 矩阵，稳定秩也为 1`, String.raw`This measures whether matrix energy is concentrated in a few directions, rather than counting nonzero singular values. For a nonzero matrix, \(1\leq\rho_{\mathrm{sr}}\leq\operatorname{rank}(A_h)\leq L\). A value near 1 indicates one dominant direction; \(r\) equal nonzero singular values give stable rank \(r\). Identical attention rows for every query produce a rank-one matrix with stable rank 1`),
+        },
+        {
+          title:T("Cosine similarity · Token 平均余弦相似度", "Cosine similarity · Mean token alignment"),
+          formula:String.raw`\begin{aligned}\rho_{kk'} &= \frac{\mathbb E\langle X_k,X_{k'}\rangle}{\sqrt{\mathbb E\lVert X_k\rVert_2^2\;\mathbb E\lVert X_{k'}\rVert_2^2}}\\[10pt]\rho_{\mathrm{ca}} &= \frac{1}{L(L-1)}\sum_{k=1}^{L}\sum_{\substack{k'=1\\k'\ne k}}^{L}\rho_{kk'}\end{aligned}`,
+          notation:T(String.raw`\(\langle X_k,X_{k'}\rangle\) 是内积，\(\lVert X_k\rVert_2\) 是向量长度，\(\mathbb E\) 保留论文的期望记号。先用期望内积与二阶矩归一化，再对 \(L(L-1)\) 个有序 Token 对求平均；排除 \(k=k'\) 的自相似项，不取绝对值，也不计算反余弦角度。要求 \(L>1\) 且归一化分母非零`, String.raw`\(\langle X_k,X_{k'}\rangle\) is an inner product, \(\lVert X_k\rVert_2\) is vector length, and \(\mathbb E\) retains the paper's expectation notation. Expected inner products are normalized by second moments, then averaged over \(L(L-1)\) ordered token pairs. Self-pairs \(k=k'\) are excluded; there is no absolute value or inverse-cosine angle. This requires \(L>1\) and nonzero normalization denominators`),
+          interpretation:T(String.raw`固定向量时，\(\rho_{kk'}\) 退化为通常的 \(\cos\theta_{kk'}=\langle X_k,X_{k'}\rangle/(\lVert X_k\rVert_2\lVert X_{k'}\rVert_2)\)。数值越接近 1，方向越一致；平均值接近 1，说明不同 Token 趋于同质化。接近 0 可能包含正负相似度抵消，并不代表每对 Token 都正交；负值表示反向成分，不能简单理解成“越低越好”`, String.raw`For fixed vectors, \(\rho_{kk'}\) reduces to ordinary \(\cos\theta_{kk'}=\langle X_k,X_{k'}\rangle/(\lVert X_k\rVert_2\lVert X_{k'}\rVert_2)\). Values closer to 1 indicate stronger directional alignment; a mean near 1 indicates homogenization across tokens. A mean near 0 can reflect cancellation of positive and negative similarities, not pairwise orthogonality. Negative values indicate opposing components, so lower is not automatically better`),
+          note:T("论文未在此处展开期望的具体采样维度，因此保留其定义，不自行指定为 batch 平均；“期望之比”与“逐样本 cosine 的平均”一般不等价", "The paper does not specify the expectation's sampling axis here, so the definition is retained without assigning a batch average. A ratio of expectations is generally different from the mean of per-sample cosines"),
+        },
+      ],
+      reading:T("两者要结合看：stable rank 关注注意力模式的有效多样性，cos sim 关注 Token 表征的方向一致性。低稳定秩与高相似度共同提示退化风险；它们是机制诊断指标，不能直接替代预测误差或单独证明预测效果更好", "Read them together: stable rank captures effective diversity in attention patterns, while cosine similarity captures directional alignment of token representations. Low rank and high similarity jointly signal possible degradation. These are diagnostic measures, not substitutes for forecast error or standalone proof of better forecasts"),
+    },
+    contribution:T("我的贡献：以稳定秩与 Token 相似度开展分层诊断，提出原序列与差分的双路编码、log1p 目标变换及多任务训练，并提出 SubAttention 增强表达能力、缓解秩坍缩。下方论文图表展示双路编码与多任务训练的实验，未单列 SubAttention 的消融结果", "My contribution: layer-wise diagnosis using stable rank and token similarity; dual-path encoding, log1p targets and multi-task training; and SubAttention to improve expressiveness and mitigate rank collapse. The paper figures below document dual-path and multi-task experiments, without a separate SubAttention ablation"),
     bridge:T("针对输入中的强自相关，在输入端增加差分支路；针对单一连续回归的监督形态，在目标与训练端引入变换和辅助分类。两项设计分别作用于模型读入的信息与模型学习的目标", "Add a differenced path to address strong autocorrelation in the inputs; introduce transformed targets and auxiliary classification to change continuous-regression-only supervision. The two designs act on what the model reads and what it learns to predict"),
     equations:T("展开公式与符号说明", "Expand equations and notation"),
     resultHeadings:[T("预测效果：相较 PatchTST 是否改善？", "Forecasting: does it improve on PatchTST?"),T("模块消融：两个设计是否都有作用？", "Ablations: do both designs contribute?"),T("表征验证：是否呼应最初的诊断？", "Representations: do they support the original diagnosis?")],
@@ -367,11 +388,11 @@ const wikiStudy = {
 const projectCovers = {
   "project-agent": {
     "src": {
-      "zh": "assets/project-covers/project-agent-zh.png",
-      "en": "assets/project-covers/project-agent-en.png"
+      "zh": "assets/project-covers/project-agent-zh.png?v=cv-v7-20261020",
+      "en": "assets/project-covers/project-agent-en.png?v=cv-v7-20261020"
     },
     "width": 1230,
-    "height": 302
+    "height": 386
   },
   "project-wiki": {
     "src": {"zh":"assets/wiki/architecture-zh.svg","en":"assets/wiki/architecture-en.svg"},
@@ -379,11 +400,11 @@ const projectCovers = {
   },
   "project-qwen": {
     "src": {
-      "zh": "assets/project-covers/project-qwen-zh.png",
-      "en": "assets/project-covers/project-qwen-en.png"
+      "zh": "assets/project-covers/project-qwen-zh.png?v=cv-v7-20261020",
+      "en": "assets/project-covers/project-qwen-en.png?v=cv-v7-20261020"
     },
     "width": 1230,
-    "height": 762
+    "height": 810
   },
   "project-ring": {
     "src": {
@@ -412,13 +433,31 @@ const projectCovers = {
     "height": 1155
   }
 };
+const productGrowthABPhases = [
+  {
+    id:"01",label:T("第一期","Phase 1"),
+    treatment:T("价量模型辅助运营","Forecast-assisted operations"),
+    control:T("人工运营","Manual operations"),
+    planning:T("整体运营目标平均分解至各档期","Overall objective divided evenly across campaign cycles"),
+    adoption:26.6,growth:65.2,
+  },
+  {
+    id:"02",label:T("第二期","Phase 2"),
+    treatment:T("引入 Agent 工作流","Agent-assisted operations"),
+    control:T("第一期模型辅助方案","Phase 1 forecast-assisted approach"),
+    planning:T("围绕周期目标生成多档期运营规划","Multi-cycle operating plans guided by cycle goals"),
+    adoption:39.3,growth:27.7,
+  },
+];
 const productGrowthABResults = {
-  headers:[T("线上实验","Online phase"),T("建议采纳率","Adoption"),T("GMV 增幅比较","GMV growth comparison")],
-  rows:[
-    [T("第一期","Phase 1"),"26.6%",T("较该期对照组高 65.2%","65.2% higher than that phase’s control")],
-    [T("第二期","Phase 2"),"39.3%",T("较该期对照组高 27.7%","27.7% higher than that phase’s control")],
-  ],
-  note:T("两期数字为各自对照组下的项目整体效果，不合并，也不单独归因于 Agent 的某个模块", "Each phase reports overall project results against its own control. The phases are not combined or attributed to a single agent component"),
+  phases:productGrowthABPhases,
+  headers:[T("线上实验 / 方案","Phase / approach"),T("对照方案","Control"),T("建议采纳率","Adoption"),T("GMV 增幅比较","GMV growth comparison")],
+  rows:productGrowthABPhases.map(phase => [
+    T(phase.label.zh + " · " + phase.treatment.zh, phase.label.en + " · " + phase.treatment.en),
+    phase.control, phase.adoption + "%",
+    T("较对照组高 " + phase.growth + "%", phase.growth + "% higher than control"),
+  ]),
+  note:T("第一期将整体目标平均分解至各档期；第二期引入 Agent，围绕周期目标规划。两期分别相对各自对照，效果不叠加；数字为阶段方案整体结果，不归因于单个模块", "Phase 1 divided the overall objective evenly across cycles; Phase 2 added an agent to plan around cycle goals. Each phase uses its own control. Effects are not additive and are not attributed to an individual component"),
 };
 const portfolio = {
   name: T("丁逸洲", "Yizhou Ding"),
@@ -520,10 +559,10 @@ const portfolio = {
       id:"tech-transformer",name:"Transformer",icon:"scope",
       title:T("诊断并缓解时序表征的秩坍缩", "Diagnose & mitigate rank collapse"),
       problem:T("强自相关输入容易让注意力退化、Token 表征趋同，影响销量预测的泛化", "Strong input autocorrelation can degrade attention and homogenize token representations, limiting sales-forecast generalization"),
-      contribution:T("从注意力稳定秩与 Token 相似度开展机制诊断；提出 DEFormer，融合原序列与一阶差分，并以 log-return 目标和 MMoE 回归／分类双任务训练缓解自回归依赖", "Diagnosed attention stable rank and token similarity. Proposed DEFormer with raw/differenced inputs, log-return targets and MMoE regression/classification training to reduce autoregressive dependence"),
+      contribution:T("从注意力稳定秩与 Token 相似度开展机制诊断；提出 DEFormer，融合原序列与一阶差分、log1p 目标变换和回归／分类多任务训练，并提出 SubAttention 增强表达能力、缓解秩坍缩", "Diagnosed attention stable rank and token similarity. Proposed DEFormer with raw/differenced inputs, log1p targets and regression/classification training, alongside SubAttention to improve expressiveness and mitigate rank collapse"),
       metrics:[{value:"−12.7% / −5.6%",label:T("两数据集 wMAPE · 相对 PatchTST", "wMAPE on two datasets · vs. PatchTST")}],
       evidence:T("离线结果覆盖约 4,500 / 9,000 件商品，并通过模块消融和跨层表征分析验证；论文已投稿", "Offline results cover about 4,500 / 9,000 products, with module ablations and layer-wise representation analysis. Manuscript submitted"),
-      tags:["PatchTST","Tokenization","MMoE","Ablation"],
+      tags:["PatchTST","Tokenization","SubAttention","MMoE","Ablation"],
       links:[{target:"project-deformer",label:T("DEFormer 机制研究与实验", "DEFormer mechanisms & experiments")}],
     },
     {
@@ -567,9 +606,9 @@ const portfolio = {
       id:"tech-agent",name:"Agent Systems",icon:"memory",
       title:T("把预测、决策与反馈接成运营闭环", "Connect forecasts, decisions & feedback"),
       problem:T("高潜商品孵化与成长层级维持需要差异化方案，还需要持续利用历史运营反馈", "Product incubation and growth-tier retention need different interventions and continuing use of operating feedback"),
-      contribution:T("封装价量预测工具，结合营销、广告和搜索曝光信号评估商品；串联运营决策、执行反馈与跨轮次记忆，并实现重试、回退和人工审核", "Wrapped the price–sales forecaster as a tool, assessed products with marketing, advertising and search signals, and connected operating decisions, feedback and cross-round memory with retries, fallbacks and human review"),
+      contribution:T("封装价量预测工具，结合营销、广告和搜索曝光信号评估商品；以 LangGraph 编排后台批量工作流，调用 Qwen3.5-35B-A3B 生成多档期规划，结合 SKU 级 SQL 记忆、重试回退与人工审核持续迭代", "Wrapped the price–sales forecaster as a tool and assessed marketing, advertising and search signals. Used LangGraph to orchestrate batch workflows, Qwen3.5-35B-A3B for multi-cycle plans, and SKU-level SQL memory, retries, fallbacks and human review for iteration"),
       resultTable:productGrowthABResults,
-      tags:["Tool Calling","Workflow","Memory","Human Review"],
+      tags:["LangGraph","Qwen3.5-35B-A3B","Tool Calling","SQL Memory","Human Review"],
       links:[{target:"project-agent",label:T("高潜商品孵化与防滑落 Agent", "Agent for product growth & tier retention")}],
     },
     {
@@ -588,7 +627,7 @@ const portfolio = {
       company:T("阿里巴巴", "Alibaba Group"),
       entity:T("浙江天猫技术有限公司 · 营销算法团队", "Zhejiang Tmall Technology Co., Ltd. · Marketing Algorithms Team"),
       role:T("AI 算法工程师", "AI Algorithm Engineer"), date:"2024.07 — 2026.08",
-      overview:T("两年工作沿着一条主线展开：先优化单个营销周期的价量预测，支持短期 GMV 最大化；再复用预测能力，支持更长周期的商品成长规划", "Over two years, my work progressed from price–sales forecasting for single-cycle GMV optimization to reusing that capability for longer-term product growth planning"),
+      overview:T("两年工作沿着一条主线展开：通过 DEFormer、Qwen3 条件表征与后训练优化价量预测，支持单个营销周期的 GMV 最大化；再复用预测工具，以 LangGraph 编排多档期 Agent 规划，用 SQL 记忆支持跨轮次策略调整", "Over two years, I improved price–sales forecasting through DEFormer, Qwen3 representations and post-training for single-cycle GMV optimization, then reused forecasting tools in LangGraph-based multi-cycle planning with SQL memory for cross-round adaptation"),
       focus:[T("价量预测", "Price–sales forecasting"), T("短期增长", "Near-term growth"), T("长期商品成长", "Long-term product growth")],
       strategy:{
         title:T("从短期交易增长，到长期商品成长", "From near-term GMV to long-term product growth"),
@@ -599,7 +638,7 @@ const portfolio = {
             {target:"ali-long-term",number:"02",horizon:T("跨营销周期 · 反馈驱动迭代", "Across cycles · Feedback-driven iteration"),title:T("多档期 Agent 规划", "Multi-cycle Agent planning"),action:T("高潜商品孵化 · 成长层级维持", "Product incubation · Growth-tier retention"),diagram:"agent"}
           ],
           connection:T("预测能力复用", "Reuse the forecasting capability"),
-          detail:T("优化后的价量预测模型，成为长期成长项目的 baseline", "The improved price–sales forecaster becomes the baseline for longer-term growth planning")
+          detail:T("将优化后的价量预测模型，复用为多档期运营的预测工具", "Reuse the improved price–sales model as a forecasting tool for multi-cycle operations")
         },
         goalLabel:T("业务目标", "Objective"),
         contributionLabel:T("我的贡献", "My contribution"),
@@ -609,7 +648,7 @@ const portfolio = {
             horizon:T("单个营销周期 · 以未来 14 天为例", "One marketing cycle · e.g. the next 14 days"),
             title:T("提升预测质量，支持短期 GMV 最大化", "Better forecasts for single-cycle GMV optimization"),
             goal:T("对每个候选价格，预测未来 14 天的每日销量，输出 14 维预测序列；在决策环节，将 14 个日预测值求和后乘以价格，比较预测 GMV，为当期 GMV 最大化定价提供依据", "For each candidate price, output a 14-dimensional sequence of daily sales forecasts. At the decision stage, sum the 14 daily predictions and multiply by price, then compare predicted GMV to inform pricing that maximizes GMV within the cycle"),
-            contribution:T("围绕 PatchTST 提升泛化能力；提出 DEFormer 缓解 Transformer 秩坍缩，并推进条件表征与推理稳定性优化", "Improved forecasting generalization from a PatchTST baseline: proposed DEFormer to mitigate rank collapse, and refined conditional representations and inference stability"),
+            contribution:T("主导时序表征退化研究，提出 DEFormer 与 SubAttention；融合 Qwen3 条件表征并开展 SFT、RLVR / OPD 对照，单独优化线上推理稳定性", "Led research into representation degradation with DEFormer and SubAttention; integrated Qwen3 representations, compared SFT and RLVR / OPD routes, and separately improved inference stability"),
             result:T("项目累计 GMV +5.06%", "Cumulative project GMV +5.06%"),
             resultNote:T("多轮迭代相对初始版本的整体结果", "Overall result across iterations versus the initial version"),
             links:[
@@ -621,18 +660,18 @@ const portfolio = {
             id:"ali-long-term",number:"02",
             horizon:T("跨营销周期 · 高潜孵化与防滑落", "Across cycles · Incubation & growth-tier retention"),
             title:T("复用预测能力，规划商品长期成长", "Reuse forecasting to plan longer-term growth"),
-            goal:T("面向高潜商品孵化与成长层级防滑落，规划商品在更长周期内的运营路径", "Plan longer-term interventions to incubate high-potential products and help products retain their growth tier"),
-            contribution:T("以短期优化模型作为 baseline，结合商品状态与历史反馈，串联商品评估、运营建议和持续迭代", "Used the improved short-term model as a baseline, combining product state and past feedback in a recurring assessment and recommendation workflow"),
+            goal:T("面向高潜商品跨档期孵化与主搜爆品层级维持，规划长期运营路径", "Plan longer-term interventions to incubate high-potential products across campaigns and retain top-product tiers in search"),
+            contribution:T("复用预测工具与商品信号，以 LangGraph 编排后台批量运营，调用 Qwen3.5-35B-A3B 生成多档期规划，并用 SKU 级 SQL 记忆将反馈带入下一轮", "Reused forecasting tools and product signals in LangGraph batch workflows, generated multi-cycle plans with Qwen3.5-35B-A3B, and carried feedback into subsequent rounds through SKU-level SQL memory"),
             result:T("高潜孵化与防滑落 · 两期线上 A/B", "Growth & retention · Two online A/B phases"),
             resultTable:productGrowthABResults,
-            links:[{target:"project-agent",label:T("高潜商品孵化与防滑落", "Product growth & retention"), action:T("复用预测 baseline，结合商品状态与历史反馈，串联评估、运营建议与持续迭代", "Reused the forecasting baseline with product state and feedback in an ongoing assessment and recommendation workflow")}],
+            links:[{target:"project-agent",label:T("高潜商品孵化与防滑落", "Product growth & retention"), action:T("集成预测工具、LangGraph 批量编排与 SKU 记忆，形成多档期规划和反馈迭代", "Integrated forecasting tools, LangGraph batch orchestration and SKU memory for multi-cycle planning and feedback-driven iteration")}],
           },
         ],
         bridgeLabel:T("复用预测能力，扩大决策跨度", "Reuse forecasting across a wider horizon"),
-        bridge:T("优化后的价量预测模型，成为长期成长项目的 baseline", "The improved price–sales forecaster becomes the baseline for longer-term growth planning"),
+        bridge:T("将优化后的价量预测模型，复用为多档期运营的预测工具", "Reuse the improved price–sales model as a forecasting tool for multi-cycle operations"),
       },
       background:T("团队的工作围绕电商营销中的商品增长、促销定价与补贴资源配置展开。销量预测在这里需要进入运营决策：判断哪些商品值得投入、如何配置价格与资源，以及怎样用反馈修正下一轮方案", "The team worked on product growth, promotional pricing and subsidy allocation in e-commerce marketing. Forecasts fed into operating decisions: which products merit support, how prices and resources should be configured, and how feedback should inform the next round"),
-      responsibilities:T("我的工作连接模型与业务工作流：研发与评估销量预测模型，开展 Qwen3 表征融合及后训练，处理线上推理稳定性问题；同时集成预测工具、运营反馈、记忆与人工审核，并主导 Transformer 秩坍缩的机制研究与方法验证", "My work connected modeling with operating workflows: developing and evaluating forecasters, adapting Qwen3 representations, addressing inference stability, and integrating forecasting tools, feedback, memory and human review. I also led diagnosis and experimental validation of rank collapse in time-series Transformers"),
+      responsibilities:T("我的工作连接模型与业务工作流：主导 Transformer 秩坍缩研究与 DEFormer 方法验证，开展 Qwen3 表征融合、后训练和线上推理优化；同时实现预测工具集成、LangGraph 批量编排、SKU 级 SQL 记忆、失败处理与人工审核", "My work connected modeling and operating workflows: leading rank-collapse research and DEFormer validation; adapting Qwen3 representations, post-training and inference; and implementing forecasting tools, LangGraph batch orchestration, SKU-level SQL memory, failure handling and human review"),
       stories: [
         {
           id:"ali-agent", title:T("让预测模型进入持续迭代的运营工作流", "Turning forecasts into an iterative operating workflow"),
@@ -640,26 +679,27 @@ const portfolio = {
           problem:T("高潜商品与存在成长层级滑落风险的商品，需要不同的运营方案。一次销量预测只能提供部分判断依据，后续决策还要结合营销、广告和搜索曝光信号，并理解过去一轮运营后的变化", "Products with growth potential and products at risk of falling to a lower growth tier need different interventions. A sales forecast provides only part of the decision context; marketing, advertising and search exposure signals, as well as the previous round’s outcomes, also matter"),
           actions:[
             T("将既有价量预测模型封装为可调用工具，把当前商品状态、相关信号与销量预测放到同一评估流程中，用于判断成长潜力和层级维持风险", "I exposed existing price–sales models as callable tools and brought product state, operating signals and sales forecasts into a shared assessment workflow for growth potential and retention risk"),
-            T("串联商品评估、运营决策、执行、反馈和记忆更新；存储各轮运营结果，并在下一轮检索历史反馈，与当前商品状态共同形成目标判断和营销建议", "I connected assessment, operating decisions, execution, feedback and memory updates. Round-level outcomes were stored and retrieved alongside the current product state to inform subsequent objectives and recommendations"),
+            T("以 LangGraph 编排后台批量工作流，调用 Qwen3.5-35B-A3B 生成多档期运营规划；按 SKU 用 SQL 分表保存当前记忆摘要与运营记录，规划前按商品、场景和轮次检索并注入历史反馈，回收反馈后更新记忆", "I used LangGraph to orchestrate batch workflows and Qwen3.5-35B-A3B to generate multi-cycle operating plans. SQL tables stored each SKU’s current memory summary and operating history separately; planning retrieved feedback by product, scenario and round, then updated memory when new feedback arrived"),
             T("实现重试与回退，并让运营建议进入人工审核。对于促销价格与广告预算联合配置，完成基线归一化和 GMV(B,P) 结构设计，明确适用范围、标定与回退条件；联合变化样本的结构验证仍处于规划阶段", "I implemented retries, fallbacks and human review of recommendations. For joint price–budget planning, I designed baseline normalization and a GMV(B,P) formulation with applicability, recalibration and fallback criteria. Structural validation on samples with simultaneous price and budget changes remained planned"),
           ],
-          result:T("项目完成两期线上 A/B 实验，建议采纳率分别为 26.6% 和 39.3%；实验组 GMV 增幅较各自对照组分别高 65.2% 和 27.7%。这些是项目整体效果，不单独归因于某个 Agent 模块", "The project completed two online A/B phases. Recommendation adoption was 26.6% and 39.3%; treatment-group GMV growth was 65.2% and 27.7% higher than the respective controls. These are overall project results, without separate attribution to an individual agent component"),
+          result:T("第一期以人工运营为对照，采用价量模型辅助运营，并将整体目标平均分解至各档期：采纳率 26.6%，GMV 增幅较对照高 65.2%；第二期以第一期方案为对照，引入 Agent 围绕周期目标规划：采纳率 39.3%，GMV 增幅较对照高 27.7%。两期为各自方案整体效果，不叠加", "Phase 1 compared forecast-assisted operations with manual operations, dividing the overall goal evenly across cycles: adoption was 26.6%, and GMV growth was 65.2% higher than control. Phase 2 added agent planning around cycle goals against the Phase 1 approach: adoption was 39.3%, and GMV growth was 27.7% higher than control. The phase-level effects are not additive"),
           takeaway:T("这个经历的关键是把模型输出接到可持续运行的业务闭环：工具负责提供预测依据，记忆保留反馈，可靠性机制与人工审核支持建议落地", "The central engineering idea is a repeatable feedback loop: tools supply forecasting evidence, memory preserves outcomes, and reliability mechanisms and human review support operational recommendations"),
-          stack:["Tool Calling","Workflow","Feedback & Memory",T("重试与回退","Retry & Fallback"),T("人工审核","Human Review")],
+          stack:["LangGraph","Qwen3.5-35B-A3B","SQL Memory","Tool Calling",T("重试与回退","Retry & Fallback"),T("人工审核","Human Review")],
           project:"project-agent",
         },
         {
           id:"ali-forecast", title:T("同时改善预测误差与线上输出稳定性", "Improving forecasting accuracy and inference stability"),
-          brief:T("任务表征、后训练与推理稳定性，分别定义目标与基线", "Separate objectives and baselines for representations, post-training and stability"),
+          brief:T("从表征退化研究，到条件融合、后训练与稳定推理", "From representation degradation to conditional fusion, post-training and stable inference"),
           problem:T("商品信息、促销条件与价格变化提供了数值序列以外的上下文。模型需要理解这些条件，同时线上预测还存在同一样本跨批次不一致、相近输入输出过度敏感的问题；误差与稳定性需要分开衡量", "Product information, promotion conditions and price changes add context beyond numerical history. The model needed to use that context while also addressing cross-batch inconsistency and excessive sensitivity to similar inputs. Forecasting error and stability required separate evaluation"),
           actions:[
+            T("主导 Transformer 秩坍缩研究，提出 DEFormer：融合原序列与一阶差分，采用 log1p 目标变换和回归／分类多任务训练，并提出 SubAttention 以增强表达能力；通过基线对照与逐模块消融验证", "I led Transformer rank-collapse research and proposed DEFormer with raw/differenced inputs, log1p targets and regression/classification training, alongside SubAttention to improve expressiveness. Baseline comparisons and component ablations evaluated the methods"),
             T("使用冻结的 Qwen3-4B 编码条件信息，经门控机制与时序表征融合。之后基于六类销量变化标签开展 LoRA SFT，接入适配后的表征并重新训练下游预测模型", "I encoded conditional information with frozen Qwen3-4B and fused it with time-series representations through a gate. I then used six sales-change labels for LoRA SFT, integrated the adapted representations and retrained the downstream forecaster"),
             T("从同一 SFT 基线比较 RLVR（GRPO）与 OPD：前者以销量变化标签正确性作为可验证奖励，后者利用同任务适配教师的概率指导学生采样输出。两条路线均通过重新训练下游预测器评估", "I compared RLVR with GRPO and OPD from the same SFT baseline: RLVR used sales-change label correctness as a verifiable reward; OPD used a task-adapted teacher’s probabilities on student-sampled outputs. Both were evaluated after retraining the downstream forecaster"),
             T("为线上推理引入 Monte Carlo Dropout，多次随机采样后取均值；分别以逐样本跨批次 CV 和受控输入扰动后的相对变化，评估输出一致性与敏感性", "For production inference, I introduced repeated Monte Carlo Dropout sampling with mean aggregation. I evaluated consistency with per-sample cross-batch CV and sensitivity with relative prediction changes under controlled input perturbations"),
           ],
           result:T("冻结 Qwen 表征使 wMAPE 相对下降 2.1%；SFT 相较冻结表征下降 3.7%，大促跃升样本下降 6.2%；RLVR / OPD 相较同一 SFT 基线分别下降 2.9% / 3.1%。稳定性两项指标分别下降 11% / 10%。项目多轮迭代相较初始版本，GMV / 子订单数 / GMV 覆盖率累计提升约 5.06% / 5.50% / 4.51%", "Frozen Qwen representations reduced wMAPE by 2.1%. SFT improved it by 3.7% overall and 6.2% on promotion-driven jumps versus frozen representations; RLVR and OPD improved it by 2.9% and 3.1% versus the same SFT baseline. The two stability measures improved by 11% and 10%. Across project iterations, cumulative GMV, sub-order count and GMV coverage rose approximately 5.06%, 5.50% and 4.51% versus the initial version"),
           takeaway:T("后训练的标签任务表现，需要通过下游预测重新验证；模型误差、推理稳定性与项目整体线上效果，也应使用各自的评估口径", "Post-training on the label task must be evaluated again in downstream forecasting. Model error, inference stability and overall online project impact each need their own measurement and baseline"),
-          stack:["Qwen3-4B","LoRA SFT","RLVR / GRPO","OPD","Monte Carlo Dropout"],
+          stack:["DEFormer","SubAttention","Qwen3-4B","LoRA SFT","RLVR / GRPO","OPD","Monte Carlo Dropout"],
           project:"project-qwen",
         },
         {
@@ -668,11 +708,11 @@ const portfolio = {
           problem:T("销量序列的强自相关可能使 Transformer 更依赖重复的时序模式，导致注意力退化、token 表征趋同和泛化不足。仅查看最终预测误差，不足以解释问题出现在何处", "Strong autocorrelation in sales histories can encourage reliance on repetitive temporal patterns, leading to degraded attention, similar token representations and limited generalization. End-point prediction error alone does not locate the representation problem"),
           actions:[
             T("主导问题诊断与成因分析，结合注意力矩阵稳定秩和 token 余弦相似度，分析不同层深与输入自相关强度下的退化，发现浅层也可能发生秩坍缩", "I led diagnosis and root-cause analysis using attention stable rank and token cosine similarity across depths and autocorrelation levels, finding that collapse can emerge even in shallow layers"),
-            T("提出 DEFormer：用原始序列与一阶差分构建去相关编码，结合对数比值目标变换及回归、分类多任务训练，并通过逐模块消融和跨层分析验证表征变化", "I proposed DEFormer: a decorrelation encoder combining raw histories and first-order differences, with a log-ratio target transformation and joint regression/classification training. Component ablations and cross-layer analysis checked how the representations changed"),
+            T("提出 DEFormer：用原始序列与一阶差分构建去相关编码，结合 log1p 目标变换与回归、分类多任务训练，并提出 SubAttention 增强表达能力、缓解秩坍缩；用基线对照、逐模块消融和跨层分析检验改进", "I proposed DEFormer with raw histories and first differences, log1p targets and joint regression/classification training, alongside SubAttention to improve expressiveness and mitigate rank collapse. Baselines, component ablations and layer-wise analysis evaluated the improvements"),
           ],
           result:T("在约 4,500 与 9,000 件商品的两个真实零售数据集上，相较 PatchTST，wMAPE 分别从 0.292 降至 0.255、从 0.266 降至 0.251，相对下降 12.7% 与 5.6%；销量加权覆盖率分别从 77.3% 升至 80.8%、从 80.4% 升至 81.6%，提升 3.5 与 1.2 个百分点。研究形成 DEFormer 论文，已于 2026 年投稿", "On two real-world retail datasets with approximately 4,500 and 9,000 products, wMAPE fell from 0.292 to 0.255 and from 0.266 to 0.251 versus PatchTST: relative reductions of 12.7% and 5.6%. Weighted sample coverage rose from 77.3% to 80.8% and from 80.4% to 81.6%, gains of 3.5 and 1.2 percentage points. The work resulted in the DEFormer manuscript, submitted in 2026"),
           takeaway:T("机制研究需要形成可检验的链条：输入性质 → 注意力与表征诊断 → 方法设计 → 消融验证 → 预测与业务指标", "A mechanism claim needs a testable chain: input properties, attention and representation diagnostics, method design, ablations, and forecasting and business-oriented metrics"),
-          stack:["Transformer","Stable Rank",T("一阶差分","First-order Differences"),T("多任务学习","Multitask Learning"),"PatchTST"],
+          stack:["Transformer","Stable Rank","SubAttention",T("一阶差分","First-order Differences"),T("多任务学习","Multitask Learning"),"PatchTST"],
           project:"project-deformer",
         },
       ],
@@ -808,19 +848,27 @@ const portfolio = {
     {
       id:"project-agent",index:"01",category:T("业务 Agent", "Operational agent"),
       title:T("高潜商品孵化与防滑落运营 Agent", "Agent for product growth & growth-tier retention"),
-      description:T("把预测工具、运营建议与跨轮次反馈组织成一个持续工作流", "A recurring workflow that connects forecasting tools, operating recommendations and cross-round feedback"),
-      role:T("阿里营销算法团队 · 工具集成、工作流与记忆实现、联合决策方案设计", "Alibaba Marketing Algorithms Team · Tool integration, workflow and memory implementation, joint decision design"),
-      context:T("这项工作承接短期 GMV 优化：将前一阶段优化后的价量预测模型作为 baseline，把规划周期延伸到商品的长期成长。业务区分值得孵化的高潜商品和存在成长层级滑落风险的商品，结合当前状态、预测、营销与曝光信号及历史反馈，形成有针对性的运营建议", "This work extended single-cycle GMV optimization into longer-term product growth, using the improved price–sales forecaster as its baseline. It distinguished high-potential products worth incubating from products at risk of falling to lower growth tiers, combining product state, forecasts, marketing and exposure signals, and past feedback to inform interventions"),
+      description:T("用 LangGraph 编排多档期规划，以 SKU 级 SQL 记忆连接历史反馈与下一轮策略", "LangGraph orchestration for multi-cycle plans, with SKU-level SQL memory connecting feedback to the next strategy"),
+      role:T("阿里营销算法团队 · 工具集成、LangGraph 编排与 SQL 记忆实现、联合决策设计", "Alibaba Marketing Algorithms Team · Tool integration, LangGraph orchestration, SQL memory and joint decision design"),
+      context:T("面向高潜商品的跨档期孵化与主搜爆品层级维持，复用既有价量预测模型，融合营销促销、广告投放与搜索曝光信号。项目先以模型辅助运营建立基线，再引入 Agent 围绕周期目标生成多档期规划，结合历史反馈支持长期商品成长", "For incubation across campaigns and retention of top-product tiers in search, I reused price–sales forecasting with marketing, advertising and search-exposure signals. The project first established forecast-assisted operations, then added agent-generated multi-cycle plans around cycle goals, using historical feedback to support longer-term growth"),
       challenge:T("一次评估无法覆盖持续变化的商品状态；价格与广告预算又会共同影响业务结果。方案既要复用现有模型，也要明确模型组合的假设、预算与 ROI 约束，并能够处理执行失败和人工复核", "Product state changes across rounds, and both price and advertising budget affect outcomes. The solution needed to reuse existing models, make their combination assumptions explicit under budget and ROI constraints, and support execution failures and human review"),
-      flow:[T("商品与信号","Products & signals"),T("预测工具与评估","Forecast & assess"),T("运营建议与审核","Recommend & review"),T("执行反馈与记忆","Feedback & memory")],
+      flow:[T("商品信号与预测工具","Signals & forecasting tools"),T("LangGraph 多档期规划","LangGraph multi-cycle plans"),T("人工审核与执行","Review & execution"),T("SQL 记忆与再规划","SQL memory & replanning")],
       decisions:[
         {
           title:T("把预测能力封装为工具", "Make forecasting callable"),
           body:T("复用短期阶段优化后的价量预测模型，并封装为可调用工具。商品评估综合营销促销、广告投放、搜索曝光与销量预测，形成成长潜力和维持风险的判断依据", "I reused the improved price–sales forecaster from the short-term phase and exposed it as a callable tool. Product assessment combined marketing, advertising and search exposure with sales forecasts to inform growth-potential and retention-risk judgments"),
         },
         {
-          title:T("让历史反馈进入下一轮决策", "Carry feedback into the next round"),
-          body:T("实现各轮运营结果的存储与检索，把历史反馈和当前商品状态共同用于目标判断及建议生成。重试与回退处理工作流失败，人工审核参与运营建议的审查", "I stored and retrieved round-level outcomes, using historical feedback alongside the current state to inform objectives and recommendations. Retries and fallbacks handled workflow failures, while human review supported recommendation checks"),
+          title:T("LangGraph 编排与 Qwen3.5 多档期规划", "LangGraph orchestration and Qwen3.5 multi-cycle planning"),
+          body:T("以 LangGraph 编排后台批量运营工作流，调用 Qwen3.5-35B-A3B，结合价量预测、商品信号与历史反馈，围绕周期目标生成多档期运营规划", "I used LangGraph to orchestrate batch operating workflows and called Qwen3.5-35B-A3B to generate multi-cycle plans around cycle goals, combining forecasts, product signals and historical feedback"),
+        },
+        {
+          title:T("按 SKU 持久化记忆，支持跨轮次策略调整", "Persist SKU memory for cross-round adaptation"),
+          body:T("用 SQL 分表保存当前记忆摘要与运营记录；规划前按商品、场景及轮次检索历史反馈并注入上下文，反馈回收后更新摘要和记录，让下一轮规划能够使用已有运营经验", "I stored SKU-keyed memory summaries and operating records in separate SQL tables. Before planning, feedback was retrieved by product, scenario and round and added to context; new feedback updated summaries and records for the next plan"),
+        },
+        {
+          title:T("重试、回退与人工审核", "Retries, fallbacks and human review"),
+          body:T("实现工作流重试与回退，处理工具调用及流程执行失败；运营建议进入人工审核，结合自动化工具执行与人工监督，支持方案审查和异常处理", "I implemented workflow retries and fallbacks for tool-call and execution failures. Human review of operating recommendations, alongside automated tool execution and supervision, supported plan checks and exception handling"),
         },
         {
           title:T("明确联合模型的假设与验证范围", "Make joint-model assumptions explicit"),
@@ -828,9 +876,9 @@ const portfolio = {
         },
       ],
       table:productGrowthABResults,
-      outcome:T("完成商品评估、运营决策、执行反馈与记忆更新的流程串联，并结合人工审核支持建议使用。项目通过两期线上 A/B 实验观察建议采纳与业务效果", "The implementation connected product assessment, operating decisions, execution feedback and memory updates, with human review supporting recommendations. Two online A/B phases evaluated adoption and business outcomes at project level"),
+      outcome:T("完成预测工具集成、LangGraph 批量编排与 SKU 记忆闭环。第一期验证模型辅助运营相对人工运营的效果；第二期验证引入 Agent 后相对第一期方案的增量效果，分别观察建议采纳与 GMV 增幅", "Implemented forecasting-tool integration, LangGraph batch orchestration and the SKU memory loop. Phase 1 evaluated forecast-assisted versus manual operations; Phase 2 evaluated the incremental effect of adding an agent versus the Phase 1 approach, measuring adoption and GMV growth separately"),
       learning:T("我在这里的思考是：Agent 的工程价值需要体现在业务流程中。预测依据、历史反馈、失败处理和审核环节必须各自清晰，联合模型也需要在真实样本上验证结构假设", "My takeaway is that an agent’s engineering value must show up in the operating workflow. Forecasting evidence, historical feedback, failure handling and review each need a clear role; joint models also need real-sample validation of their structural assumptions"),
-      tags:["Tool Calling","Workflow","Memory","Human Review","GMV(B,P)"],
+      tags:["LangGraph","Qwen3.5-35B-A3B","SQL Memory","Tool Calling","Human Review","GMV(B,P)"],
       visualStory:"ali-agent",related:"ali-long-term",
     },
     {
@@ -868,13 +916,17 @@ const portfolio = {
     },
     {
       id:"project-qwen",index:"03",category:T("大模型 × 时序预测", "LLMs × Time-series forecasting"),
-      title:T("Qwen3 增强的销量预测与推理优化", "Qwen3-enhanced forecasting & inference"),
-      description:T("从条件表征到后训练，再分别评估预测精度与推理稳定性", "From conditional representations to post-training, with separate accuracy and stability evaluation"),
-      role:T("阿里营销算法团队 · 表征融合、后训练实验、下游预测与推理优化", "Alibaba Marketing Algorithms Team · Representation fusion, post-training, downstream forecasting and inference"),
-      context:T("这条优化路线服务于短期价量预测：在未来一个营销周期（如 14 天）内，预估不同价格下每天的销量，为 GMV 优化提供依据。围绕历史数值、商品与营销条件，将 Qwen3 表征与时序模型结合，验证后训练对下游预测的收益，并单独优化线上输出稳定性", "This optimization track supported short-term price–sales forecasting: estimating daily sales at different prices over a future marketing cycle, such as 14 days, to inform GMV optimization. It combined Qwen3 representations of product and marketing context with temporal signals, evaluated post-training in downstream forecasting, and separately improved inference stability"),
-      challenge:T("通用大模型表征未必与销量变化任务充分对齐。即使标签任务得到改善，也需要重新接入下游模型验证实际预测误差；线上稳定性则需要在逐样本、跨批次和受控扰动条件下单独衡量", "General-purpose representations may not be sufficiently aligned with sales-change prediction. Improvements on the label task must be tested again after integration with the downstream forecaster. Stability needs separate per-sample, cross-batch and controlled-perturbation measurements"),
-      flow:[T("商品与营销条件","Product & marketing context"),T("Qwen3 条件表征","Qwen3 representation"),T("门控时序融合","Gated temporal fusion"),T("重训下游预测器","Retrain forecaster")],
+      title:T("Qwen3 增强的价量时序预测与线上推理优化", "Qwen3-enhanced price–sales forecasting & online inference optimization"),
+      description:T("从 DEFormer 表征研究到 Qwen3 适配与稳定推理，支撑促销定价和补贴配置", "From DEFormer representation research to Qwen3 adaptation and stable inference for promotional pricing and subsidy allocation"),
+      role:T("阿里营销算法团队 · DEFormer 研究、条件表征融合、后训练与线上推理优化", "Alibaba Marketing Algorithms Team · DEFormer research, conditional representations, post-training and online inference"),
+      context:T("商品运营需要准确的价量预测，结合营销工具与价格决策实现 GMV 最大化。项目在一个营销周期内（如未来 14 天）预估不同价格下的每日销量，优化路径涵盖 Transformer 表征退化研究、Qwen3 条件表征融合、任务导向后训练和线上推理稳定性", "Product operations need accurate price–sales forecasts to combine marketing tools and pricing decisions for GMV maximization. The project forecast daily sales at candidate prices over a campaign cycle, such as 14 days, through research into Transformer representation degradation, Qwen3 conditional fusion, task-oriented post-training and stable online inference"),
+      challenge:T("强自相关输入可能引起浅层表征退化，通用大模型表征也未必与销量变化任务对齐。需要从机制诊断出发改进时序模型，验证条件表征与后训练对下游预测的收益，并单独评估跨批次一致性和输入扰动敏感性", "Strong autocorrelation can degrade shallow-layer representations, while general-purpose LLM features may be poorly aligned with sales changes. The work required mechanism-led temporal modeling, downstream validation of conditional representations and post-training, and separate evaluation of cross-batch consistency and input sensitivity"),
+      flow:[T("表征退化与 DEFormer","Degradation & DEFormer"),T("Qwen3 条件融合","Qwen3 conditional fusion"),T("后训练与下游验证","Post-training & validation"),T("稳定推理与线上评估","Stable inference & online evaluation")],
       decisions:[
+        {
+          title:T("时序表征退化研究与模型优化", "Representation degradation research and model improvement"),
+          body:T("主导 Transformer 秩坍缩研究，用 Attention 稳定秩与表征余弦相似度定位浅层退化和强自相关输入下的同质化。提出 DEFormer，融合原序列与一阶差分、log1p 目标变换及回归／分类多任务训练，并提出 SubAttention 增强表达能力。通过基线对照与逐模块消融验证；完整机制分析与论文图表见 DEFormer 研究详解", "I led Transformer rank-collapse research, using attention stable rank and representation cosine similarity to diagnose shallow-layer degradation and homogenization under strong autocorrelation. I proposed DEFormer with raw/differenced inputs, log1p targets and regression/classification training, alongside SubAttention to improve expressiveness. Baselines and module ablations evaluated the methods; the DEFormer research deep dive contains the mechanism analysis and paper figures"),
+        },
         {
           title:T("以冻结表征建立可比较起点", "Establish a frozen-representation baseline"),
           body:T("使用冻结的 Qwen3-4B 编码商品信息、营销条件、价格与历史销量，经门控融合接入时序表征。冻结的是参数，输出表征仍随输入条件变化。使用同配置、未引入 Qwen3 的模型作为比较基线", "I encoded product information, marketing conditions, prices and historical sales with frozen Qwen3-4B, then used gated fusion with temporal representations. Parameters were frozen, while the representation remained input-dependent. Comparison used an otherwise identically configured model without Qwen3"),
@@ -891,6 +943,7 @@ const portfolio = {
       table:{
         headers:[T("方案 / 指标","Approach / measure"),T("比较基线","Baseline"),T("相对改善","Relative improvement")],
         rows:[
+          [T("DEFormer · 两个零售数据集 wMAPE","DEFormer · wMAPE on two retail datasets"),"PatchTST","↓ 12.7% / ↓ 5.6%"],
           [T("冻结 Qwen3 表征 · wMAPE","Frozen Qwen3 · wMAPE"),T("同配置，无 Qwen3 表征","Same configuration, without Qwen3"),"↓ 2.1%"],
           [T("LoRA SFT · wMAPE","LoRA SFT · wMAPE"),T("冻结表征方案","Frozen representations"),T("整体 ↓ 3.7% · 大促跃升 ↓ 6.2%","Overall ↓ 3.7% · Promotion jumps ↓ 6.2%")],
           ["RLVR / OPD · wMAPE",T("同一 SFT 基线","Same SFT baseline"),"↓ 2.9% / ↓ 3.1%"],
@@ -904,9 +957,9 @@ const portfolio = {
         {value:"+5.50%",label:T("子订单数","Sub-order count")},
         {value:"+4.51%",label:T("GMV 覆盖率","GMV coverage")},
       ],
-      outcome:T("上表给出不同模型及推理方案的离线结果。项目整体线上 A/B 结果则是多轮迭代相较初始版本的累计改善，支撑促销定价与补贴资源配置；不能据此单独归因到某一次后训练实验", "The table reports offline model and inference results. The overall online A/B figures are cumulative improvements across project iterations versus the initial version, supporting promotional pricing and subsidy allocation. They do not isolate the effect of one post-training experiment"),
+      outcome:T("上述结果分别衡量模型预测误差与推理稳定性。项目整体线上 A/B 结果是多轮迭代相较初始版本的累计改善，支撑促销定价与补贴资源配置；不能单独归因于 DEFormer、某次后训练实验或其他单个模块", "The results above evaluate forecasting error and inference stability separately. Overall online A/B figures are cumulative improvements across project iterations versus the initial version, supporting promotional pricing and subsidy allocation. They do not isolate the effect of DEFormer, an individual post-training experiment or any other single component"),
       learning:T("从大模型标签任务到业务预测，中间仍有完整的下游验证链。这个项目让我同时关注任务对齐、表征接入方式、评估基线和线上使用时的输出质量", "There is a full downstream validation chain between an LLM label task and business forecasting. This project brings task alignment, representation integration, evaluation baselines and output quality in use into the same engineering picture"),
-      tags:["Qwen3-4B","LoRA SFT","GRPO","OPD","Gated Fusion","Monte Carlo Dropout"],
+      tags:["DEFormer","SubAttention","Qwen3-4B","LoRA SFT","GRPO","OPD","Gated Fusion","Monte Carlo Dropout"],
       visualStory:"ali-forecast",related:"ali-short-term",
     },
     {
@@ -967,8 +1020,8 @@ const portfolio = {
           body:T("直接对原序列做差分会丢失水平信息，因此我保留原序列，并增加一阶差分支路。两路输入分别缩放、进行带符号的对数变换，再经独立线性投影相加，使输入表征同时保留水平与变化信息", "Differencing alone loses level information, so I retain raw values and add a first-difference path. Both paths are scaled, transformed with signed logarithms and independently projected before summation, preserving both levels and changes"),
         },
         {
-          title:T("目标与训练端：log-return、MMoE 与双任务监督", "Targets and training: log-return, MMoE and dual-task supervision"),
-          body:T("以最后一个历史值为参照，将未来销量转换为对数比值目标，改变直接预测原始销量的任务形态。Transformer 后接 MMoE（多门控专家混合），分别连接连续回归与辅助分类分支；MSE 与 Focal Loss 共同训练，让共享表征同时接受连续与离散监督", "Transform future sales into a log-ratio target relative to the last historical value, changing the task from directly predicting raw sales. MMoE (multi-gate mixture-of-experts) follows the Transformer and feeds regression and auxiliary classification heads; MSE and Focal Loss jointly provide continuous and discrete supervision"),
+          title:T("目标与训练端：log1p、MMoE 与双任务监督", "Targets and training: log1p, MMoE and dual-task supervision"),
+          body:T("以最后一个历史值为参照，对缩放后的未来销量进行 log1p 目标变换，改变直接预测原始销量的任务形态。Transformer 后接 MMoE（多门控专家混合），分别连接连续回归与辅助分类分支；MSE 与 Focal Loss 共同训练，让共享表征同时接受连续与离散监督", "Apply a log1p target transformation to future sales scaled by the last historical value, changing the task from directly predicting raw sales. MMoE (multi-gate mixture-of-experts) follows the Transformer and feeds regression and auxiliary classification heads; MSE and Focal Loss jointly provide continuous and discrete supervision"),
         },
         {
           title:T("验证：完整基线对照、逐模块消融与跨层分布", "Validation: full baselines, module ablations and layer-wise distributions"),
@@ -978,7 +1031,7 @@ const portfolio = {
       paperStudy:deformerStudy,
       outcome:T("在论文的两个零售数据集上，DEFormer 在四项指标中均优于所列对照。相较 PatchTST，Small / Large 的 wMAPE 相对下降 12.7% / 5.6%，WSC 提升 3.5 / 1.2 个百分点；这是离线预测与覆盖评估，不对应项目整体 GMV 的单模块归因。论文保持已投稿状态", "On both retail datasets in the paper, DEFormer leads the listed comparators on all four metrics. Relative to PatchTST, Small / Large wMAPE falls by 12.7% / 5.6%, and WSC rises by 3.5 / 1.2 percentage points. These are offline forecasting and coverage results, with no isolated attribution to overall project GMV. The manuscript remains submitted"),
       learning:T("方法设计与证据需要一起组织：输入端降低依赖、目标与监督端改变任务形态，再通过基线对照、模块消融和表征分布检查它们是否形成一致的改善。结论的适用范围是论文中的两个零售数据集与 14 天预测任务", "Method design and evidence belong together: reduce input dependence, change targets and supervision, then check whether baselines, ablations and representation distributions tell a consistent story. The reported findings apply to the paper’s two retail datasets and 14-day forecasting task"),
-      tags:["PatchTST","Decorrelation","MMoE","Log-return","Focal Loss","Stable Rank"],
+      tags:["PatchTST","Decorrelation","SubAttention","MMoE","log1p","Focal Loss","Stable Rank"],
       visualStory:"ali-deformer",related:"ali-short-term",
     },
     {
@@ -1011,8 +1064,8 @@ const portfolio = {
   ],
   skills:[
     {title:T("编程与框架","Programming & frameworks"),items:["Python","SQL","PyTorch","TensorFlow"]},
-    {title:T("大模型与后训练","LLMs & post-training"),items:["Qwen3","Transformers","LoRA SFT","RLVR / GRPO","On-Policy Distillation"]},
-    {title:T("Agent 与知识工作流","Agents & knowledge workflows"),items:["Tool Calling","Workflow Integration","Memory Storage",T("重试与回退","Retry & Fallback"),T("人工审核","Human Review"),T("证据追溯","Evidence Provenance")]},
+    {title:T("大模型与后训练","LLMs & post-training"),items:["Qwen3","Qwen3.5-35B-A3B","Transformers","LoRA SFT","RLVR / GRPO","On-Policy Distillation"]},
+    {title:T("Agent 与知识工作流","Agents & knowledge workflows"),items:["LangGraph","Tool Calling","SQL Memory",T("重试与回退","Retry & Fallback"),T("人工审核","Human Review"),T("证据追溯","Evidence Provenance")]},
     {title:T("研究与产品方法","Research & product methods"),items:[T("时序预测","Time-series Forecasting"),T("联邦学习","Federated Learning"),T("动态图","Dynamic Graphs"),T("实验与消融","Experiments & Ablations"),"A/B Testing",T("用户研究","User Research")]},
   ],
   education:[

@@ -3,3 +3,7 @@ Agent: operating feedback loop. Wiki: evidence workflow. Qwen: training tree.
 Ring: discovery-to-prototype flow. Review: generation/demand/grid flow.
 Chinese and English versions retain the on-page content and measured values.
 Captured on 2026-10-13 at 2x resolution. These are diagrams, not product photos.
+
+Agent and Qwen covers refreshed on 2026-10-20 from the bilingual local CV v7 update, at 2x resolution.
+Agent: forecasting tools, LangGraph/Qwen3.5 planning, human review, and SQL memory loop.
+Qwen: the Qwen3 frozen-feature, SFT, RLVR/OPD segment of the broader price-sales forecasting project. DEFormer and inference stability are detailed on the project page.

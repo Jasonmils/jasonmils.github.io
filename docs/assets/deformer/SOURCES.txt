@@ -19,3 +19,8 @@ the full original remains available through the image link.
 This is an illustration from another task, not a DEFormer experiment.
 Prediction-Feedback labels are preserved from the source image.
 The source publication was not supplied; no attribution is inferred.
+
+Diagnostic definitions verified against manuscript page 3, Equations (3)-(6), on 2026-10-20.
+Stable rank uses post-softmax attention matrices, squared Frobenius/spectral norms, and per-head averaging.
+Token similarity retains the expected-inner-product / second-moment normalization before averaging distinct ordered token pairs.
+The website adds singular-value equivalence and reading guidance; it does not assume a sampling axis for the manuscript expectation.
