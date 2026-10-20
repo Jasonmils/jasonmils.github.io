@@ -596,7 +596,7 @@ const portfolio = {
           label:T("时间跨度与决策范围的延伸", "A wider time horizon and decision scope"),
           stages:[
             {target:"ali-short-term",number:"01",horizon:T("单个档期 · 未来 14 天", "One campaign · Next 14 days"),title:T("短期 GMV 最大化", "Maximize near-term GMV"),action:T("不同价格下的未来 14 天逐日销量预测", "Daily sales forecasts over the next 14 days at different prices"),diagram:"price"},
-            {target:"ali-long-term",number:"02",horizon:T("跨营销周期 · 持续迭代", "Across cycles · Ongoing iteration"),title:T("长期商品成长", "Long-term product growth"),action:T("高潜孵化 · 成长层级防滑落", "Incubation · Growth-tier retention"),diagram:"growth"}
+            {target:"ali-long-term",number:"02",horizon:T("跨营销周期 · 反馈驱动迭代", "Across cycles · Feedback-driven iteration"),title:T("多档期 Agent 规划", "Multi-cycle Agent planning"),action:T("高潜商品孵化 · 成长层级维持", "Product incubation · Growth-tier retention"),diagram:"agent"}
           ],
           connection:T("预测能力复用", "Reuse the forecasting capability"),
           detail:T("优化后的价量预测模型，成为长期成长项目的 baseline", "The improved price–sales forecaster becomes the baseline for longer-term growth planning")

@@ -346,6 +346,30 @@
     innox: [{id:"innox",src:"assets/logos/innox.png"}],
     hust: [institutionLogos.hust,institutionLogos.psl]
   };
+  const renderProductGrowthCurve = () => {
+    const title = T("跨档期商品成长：高潜孵化与成长层级防滑落", "Product growth across campaigns: incubation and growth-tier retention");
+    const description = T("策略示意。横轴为档期，纵轴为成长层级；从当前商品状态出发，高潜商品进行孵化，有滑落风险的商品进行层级维持。虚线表示滑落风险，图中无实际业务数据", "Strategy illustration. Campaigns are on the horizontal axis and growth tier on the vertical axis. Incubate products with growth potential and retain the tier of products at risk. The dashed path denotes decline risk; no actual business data is plotted");
+    const svg = lang => {
+      const id = "journey-growth-" + lang;
+      const label = (x,y,value,cls,anchor = "start") => '<text x="' + x + '" y="' + y + '" class="' + cls +
+        '" text-anchor="' + anchor + '">' + escapeHTML(value[lang]) + '</text>';
+      return '<svg class="journey-chart journey-chart--growth" viewBox="0 0 300 186" width="300" height="186" role="img" aria-labelledby="' +
+        id + '-title ' + id + '-desc"><title id="' + id + '-title">' + escapeHTML(title[lang]) + '</title><desc id="' + id + '-desc">' +
+        escapeHTML(description[lang]) + '</desc><path class="journey-chart-axis" d="M34 32V154H278M30 38l4-6 4 6M272 150l6 4-6 4"/>' +
+        '<path class="journey-chart-history" d="M48 125C75 120 100 95 134 94"/>' +
+        '<path class="journey-chart-risk" data-path="risk" d="M134 94C176 102 214 128 252 132"/>' +
+        '<path class="journey-chart-incubation" data-path="incubation" d="M134 94C176 85 213 56 252 42"/>' +
+        '<path class="journey-chart-retention" data-path="retention" d="M134 94C176 91 213 90 252 94"/>' +
+        '<circle class="journey-chart-history-point" cx="48" cy="125" r="3"/><circle class="journey-chart-current" cx="134" cy="94" r="4"/>' +
+        '<circle class="journey-chart-growth-point" cx="252" cy="42" r="4"/><circle class="journey-chart-retention-point" cx="252" cy="94" r="4"/>' +
+        label(34,20,T("成长层级", "Growth tier"),"journey-chart-axis-label") + label(278,178,T("档期", "Campaigns"),"journey-chart-axis-label","end") +
+        label(134,176,T("当前", "Now"),"journey-chart-current-label","middle") + label(170,30,T("高潜孵化", "Incubation"),"journey-chart-incubation-label") +
+        label(225,79,T("防滑落", "Retain tier"),"journey-chart-retention-label") + label(252,147,T("滑落风险", "Decline risk"),"journey-chart-risk-label","end") + '</svg>';
+    };
+    return '<span class="agent-plan-growth"><span class="bi"><span class="zh" lang="zh-CN">' + svg("zh") +
+      '</span><span class="en" lang="en">' + svg("en") + '</span></span><span class="journey-chart-note">' +
+      bi(T("评估 → 运营 → 反馈 · 示意", "Assess → Act → Review · Illustration")) + '</span></span>';
+  };
   const renderGrowthDiagram = kind => {
     if (kind === "price") {
       // Illustrative daily forecasts only. GMV is derived from all 14 outputs at each price.
@@ -409,28 +433,24 @@
         '<strong class="pricing-decision-choice">' + bi(T("选择曲线峰值对应的价格 p*", "Choose p* at the peak of predicted GMV")) +
         '</strong><span class="journey-chart-note">' + bi(T("候选价格范围内的决策示意 · 非实际业务数据", "Decision within the candidate price range · Illustration only")) + '</span></span>';
     }
-    const title = T("跨档期商品成长：高潜孵化与成长层级防滑落", "Product growth across campaigns: incubation and growth-tier retention");
-    const description = T("策略示意。横轴为档期，纵轴为成长层级；从当前商品状态出发，高潜商品进行孵化，有滑落风险的商品进行层级维持。虚线表示滑落风险，图中无实际业务数据", "Strategy illustration. Campaigns are on the horizontal axis and growth tier on the vertical axis. Incubate products with growth potential and retain the tier of products at risk. The dashed path denotes decline risk; no actual business data is plotted");
-    const svg = lang => {
-      const id = "journey-" + kind + "-" + lang;
-      const label = (x,y,value,cls,anchor = "start") => '<text x="' + x + '" y="' + y + '" class="' + cls +
-        '" text-anchor="' + anchor + '">' + escapeHTML(value[lang] || value) + '</text>';
-      return '<svg class="journey-chart journey-chart--' + kind + '" viewBox="0 0 300 186" width="300" height="186" role="img" aria-labelledby="' +
-        id + '-title ' + id + '-desc"><title id="' + id + '-title">' + escapeHTML(title[lang]) + '</title><desc id="' + id + '-desc">' +
-        escapeHTML(description[lang]) + '</desc><path class="journey-chart-axis" d="M34 32V154H278M30 38l4-6 4 6M272 150l6 4-6 4"/>' +
-          '<path class="journey-chart-history" d="M48 125C75 120 100 95 134 94"/>' +
-          '<path class="journey-chart-risk" data-path="risk" d="M134 94C176 102 214 128 252 132"/>' +
-          '<path class="journey-chart-incubation" data-path="incubation" d="M134 94C176 85 213 56 252 42"/>' +
-          '<path class="journey-chart-retention" data-path="retention" d="M134 94C176 91 213 90 252 94"/>' +
-          '<circle class="journey-chart-history-point" cx="48" cy="125" r="3"/><circle class="journey-chart-current" cx="134" cy="94" r="4"/>' +
-          '<circle class="journey-chart-growth-point" cx="252" cy="42" r="4"/><circle class="journey-chart-retention-point" cx="252" cy="94" r="4"/>' +
-          label(34,20,T("成长层级", "Growth tier"),"journey-chart-axis-label") + label(278,178,T("档期", "Campaigns"),"journey-chart-axis-label","end") +
-          label(134,176,T("当前", "Now"),"journey-chart-current-label","middle") + label(170,30,T("高潜孵化", "Incubation"),"journey-chart-incubation-label") +
-          label(225,79,T("防滑落", "Retain tier"),"journey-chart-retention-label") + label(252,147,T("滑落风险", "Decline risk"),"journey-chart-risk-label","end") + '</svg>';
-    };
-    const note = T("评估 → 运营 → 反馈 · 示意", "Assess → Act → Review · Illustration");
-    return '<span class="growth-journey-diagram"><span class="bi journey-chart-translations"><span class="zh" lang="zh-CN">' + svg("zh") +
-      '</span><span class="en" lang="en">' + svg("en") + '</span></span><span class="journey-chart-note">' + bi(note) + '</span></span>';
+    const connector = '<span class="agent-plan-connector" aria-hidden="true"></span>';
+    // Three campaigns illustrate the planning horizon, not a fixed production schedule.
+    return '<span class="growth-journey-diagram agent-plan" role="group" aria-labelledby="agent-plan-title">' +
+      renderProductGrowthCurve() + '<span class="agent-plan-brief"><strong>' +
+      bi(T("整体运营目标 → 各档期目标", "Overall objective → Cycle goals")) + '</strong><span>' +
+      bi(T("价量预测工具 · 商品信号 · 历史记忆", "Forecasting tool · Product signals · Memory")) + '</span></span>' + connector +
+      '<span class="agent-plan-loop"><span class="agent-plan-engine"><strong id="agent-plan-title">' +
+      bi(T("Agent 生成多档期规划", "Agent plans across cycles")) + '</strong><span class="agent-plan-model">Qwen3.5-35B-A3B</span><span class="agent-plan-orchestration">' +
+      bi(T("LangGraph 工作流编排", "LangGraph orchestration")) + '</span></span>' + connector +
+      '<span class="agent-plan-campaigns">' + [1,2,3].map(number => '<span class="agent-plan-campaign"><span class="agent-plan-cycle">' +
+        bi(T("档期 0" + number, "Cycle 0" + number)) + '</span><strong>' + bi(T("周期目标", "Cycle goal")) +
+        '</strong><span class="agent-plan-cycle-arrow" aria-hidden="true">↓</span><span>' + bi(T("运营建议", "Action plan")) + '</span></span>').join('') +
+      '</span>' + connector + '<span class="agent-plan-review"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m7 12 3 3 7-7"/><rect x="3" y="3" width="18" height="18" rx="6"/></svg>' +
+      bi(T("人工审核 → 执行与反馈", "Human review → Act & observe")) + '</span>' + connector +
+      '<span class="agent-plan-memory"><strong>' + bi(T("反馈写入 SKU 记忆", "Feedback → SKU memory")) +
+      '</strong><span>' + bi(T("SQL · 更新摘要与运营记录", "SQL · Update summary & history")) +
+      '</span><span class="agent-plan-replan">' + bi(T("检索历史反馈，调整下一轮规划", "Retrieve feedback to refine the next plan")) + '</span></span></span>' +
+      '<span class="journey-chart-note">' + bi(T("多档期工作流示意 · 人工审核后执行", "Illustrative workflow · Execution after human review")) + '</span></span>';
   };
   const renderGrowthJourney = journey => '<nav class="growth-journey" aria-labelledby="' + escapeHTML(journey.stages[0].target) +
     '-journey-label"><p class="growth-journey-label" id="' + escapeHTML(journey.stages[0].target) + '-journey-label">' + bi(journey.label) + '</p><div class="growth-journey-route"><ol class="growth-journey-stages">' +
