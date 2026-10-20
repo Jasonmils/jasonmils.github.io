@@ -10,7 +10,7 @@ const deformerStudy = {
     sections:[
       {key:"context",title:T("背景", "Background"),heading:T("为促销定价提供未来 14 天的销量预测", "Forecast the next 14 days to support promotional pricing")},
       {key:"challenge",title:T("挑战", "Challenge"),heading:T("不同位置的注意力，为什么会趋向同一种模式？", "Why can attention at different positions converge on the same pattern?")},
-      {key:"approach",title:T("方案与贡献", "Solution & contributions"),nav:T("方案与贡献", "Solution"),heading:T("从机制诊断出发，分别改进输入与训练任务", "Use the diagnosis to redesign inputs and the training task")},
+      {key:"approach",title:T("方案与贡献", "Solution & contributions"),nav:T("方案与贡献", "Solution"),heading:T("从机制诊断出发，改进输入、注意力与训练任务", "Use the diagnosis to redesign inputs, attention and training")},
       {key:"results",title:T("结果", "Results"),heading:T("预测效果、模块作用与表征变化是否一致？", "Do forecasting, ablations and representations tell a consistent story?")}
     ],
     background:T("销量预测为促销定价提供需求估计。这个项目以 PatchTST 为基线，既关注预测误差，也关注有多少商品达到可用的误差标准：平均效果提升，还需要落实到足够多的商品上", "Sales forecasts provide demand estimates for promotional pricing. Starting from PatchTST, this project examines both forecast error and how many products meet an acceptable error threshold: better aggregate accuracy should also reach enough products"),
@@ -45,7 +45,25 @@ const deformerStudy = {
       reading:T("两者要结合看：stable rank 关注注意力模式的有效多样性，cos sim 关注 Token 表征的方向一致性。低稳定秩与高相似度共同提示退化风险；它们是机制诊断指标，不能直接替代预测误差或单独证明预测效果更好", "Read them together: stable rank captures effective diversity in attention patterns, while cosine similarity captures directional alignment of token representations. Low rank and high similarity jointly signal possible degradation. These are diagnostic measures, not substitutes for forecast error or standalone proof of better forecasts"),
     },
     contribution:T("我的贡献：以稳定秩与 Token 相似度开展分层诊断，提出原序列与差分的双路编码、log1p 目标变换及多任务训练，并提出 SubAttention 增强表达能力、缓解秩坍缩。下方论文图表展示双路编码与多任务训练的实验，未单列 SubAttention 的消融结果", "My contribution: layer-wise diagnosis using stable rank and token similarity; dual-path encoding, log1p targets and multi-task training; and SubAttention to improve expressiveness and mitigate rank collapse. The paper figures below document dual-path and multi-task experiments, without a separate SubAttention ablation"),
-    bridge:T("针对输入中的强自相关，在输入端增加差分支路；针对单一连续回归的监督形态，在目标与训练端引入变换和辅助分类。两项设计分别作用于模型读入的信息与模型学习的目标", "Add a differenced path to address strong autocorrelation in the inputs; introduce transformed targets and auxiliary classification to change continuous-regression-only supervision. The two designs act on what the model reads and what it learns to predict"),
+    bridge:T("针对输入中的强自相关，在输入端增加差分支路；在注意力计算中，SubAttention 在 softmax 前减去打分矩阵的列均值；在目标与训练端，引入变换和辅助分类。三处设计分别作用于输入信息、注意力分配与学习目标", "Add a differenced path to address strong input autocorrelation; subtract column means from attention scores before softmax with SubAttention; and introduce transformed targets and auxiliary classification. These changes act on the inputs, attention allocation and learning objectives"),
+    subattention:{
+      title:T("SubAttention · 在 softmax 前减去列均值", "SubAttention · Subtract column means before softmax"),
+      intro:T(String.raw`以单个注意力头为例，打分矩阵 \(S\in\mathbb R^{L\times L}\) 的行 \(i\) 对应 Query，列 \(j\) 对应 Key。标准 Self-Attention 直接对打分逐行做 softmax；SubAttention 先对每个 Key 扣除所有 Query 对它的平均打分，再进行相同的归一化`, String.raw`For one attention head, score matrix \(S\in\mathbb R^{L\times L}\) has queries along rows \(i\) and keys along columns \(j\). Standard self-attention applies softmax directly to each score row. SubAttention first subtracts each key's mean score across all queries, then applies the same normalization`),
+      equations:[
+        {
+          title:T("Self-Attention · 标准计算", "Self-attention · Standard computation"),
+          formula:String.raw`\begin{aligned}S &= \frac{QK^{\mathsf T}}{\sqrt{d_k}}\\[8pt]A_{\mathrm{self}} &= \operatorname{softmax}_{\mathrm{row}}(S)\\[6pt]Y_{\mathrm{self}} &= A_{\mathrm{self}}V\end{aligned}`,
+          note:T(String.raw`\(Q,K\in\mathbb R^{L\times d_k}\)，\(V\in\mathbb R^{L\times d_v}\)；\(L\) 是 Token 数，\(d_k\) 是 Key 维度。下标 row 表示每个 Query 在所有 Key 上归一化，每一行的注意力权重之和为 1`, String.raw`\(Q,K\in\mathbb R^{L\times d_k}\) and \(V\in\mathbb R^{L\times d_v}\), where \(L\) is the token count and \(d_k\) the key dimension. The row subscript means normalization over keys for each query, so each attention row sums to 1`),
+        },
+        {
+          title:T("SubAttention · 列去均值后再归一化", "SubAttention · Center columns, then normalize"),
+          formula:String.raw`\begin{aligned}\mu_j &= \frac{1}{L}\sum_{i=1}^{L}S_{ij}\\[8pt]\widetilde S_{ij} &= S_{ij}-\mu_j\\[8pt](A_{\mathrm{sub}})_{ij} &= \frac{\exp(\widetilde S_{ij})}{\sum_{k=1}^{L}\exp(\widetilde S_{ik})}\\[8pt]Y_{\mathrm{sub}} &= \operatorname{softmax}_{\mathrm{row}}(\widetilde S)V\end{aligned}`,
+          note:T(String.raw`固定列 \(j\)，沿 Query 维度对 \(S_{ij}\) 求均值得到 \(\mu_j\)，再从该列每个元素中减去它。操作发生在 softmax 之前：\(\widetilde S=S-\mathbf1\mu^{\mathsf T}\)，其中 \(\mu=(\mu_1,\ldots,\mu_L)^{\mathsf T}\)，\(\mathbf1\) 为全 1 列向量`, String.raw`For each fixed column \(j\), average \(S_{ij}\) across queries to obtain \(\mu_j\), then subtract it from every entry in that column. This happens before softmax: \(\widetilde S=S-\mathbf1\mu^{\mathsf T}\), where \(\mu=(\mu_1,\ldots,\mu_L)^{\mathsf T}\) and \(\mathbf1\) is an all-ones column vector`),
+        },
+      ],
+      interpretation:T("直观上，它去掉跨 Query 共享的 Key 打分偏好，让每个 Query 按自己相对该平均值的偏离分配注意力。不同列的均值通常不同，因此会改变同一行内各 Key 的相对打分", "Intuitively, this removes key-score preferences shared across queries, so each query allocates attention according to its deviations from those means. Column means generally differ, changing the relative scores of keys within a row"),
+      distinction:T("这里减的是列均值。如果对每一行减去该行均值，只相当于给这一行所有打分减去同一个常数，softmax 结果不变。列去均值本身也不保证稳定秩一定提高；其效果仍需结合诊断指标与预测实验验证", "The subtraction uses column means. Subtracting each row's own mean only shifts all scores in that row by the same constant, leaving softmax unchanged. Column centering alone does not guarantee higher stable rank; its effect needs diagnostic and forecasting evaluation"),
+    },
     equations:T("展开公式与符号说明", "Expand equations and notation"),
     resultHeadings:[T("预测效果：相较 PatchTST 是否改善？", "Forecasting: does it improve on PatchTST?"),T("模块消融：两个设计是否都有作用？", "Ablations: do both designs contribute?"),T("表征验证：是否呼应最初的诊断？", "Representations: do they support the original diagnosis?")],
     ablation:T("分别移除 De-corr、De-auto，两个数据集的 wMAPE 均高于完整 DEFormer；移除两者回到 PatchTST。该消融支持两个模块在这些实验中的作用，未将目标变换、MMoE 与分类监督分别拆分归因", "Removing either De-corr or De-auto increases wMAPE on both datasets; removing both returns to PatchTST. These ablations support both modules in these experiments, without isolating target transformation, MMoE and classification supervision individually"),

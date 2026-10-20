@@ -544,6 +544,11 @@
   const renderResearchEquation = equation => '<details class="paper-evidence research-equations"><summary>' +
     bi(T("展开公式与符号说明", "Expand equations and notation"),true) + toggle() + '</summary><div class="paper-disclosure-body">' +
     renderEquation(equation.title,equation.formula,equation.note) + '</div></details>';
+  const renderSubAttention = method => '<article class="research-method subattention-method"><h5>' + bi(method.title) +
+    '</h5><p>' + bi(method.intro) + '</p><div class="subattention-equations">' +
+    method.equations.map(equation => renderEquation(equation.title,equation.formula,equation.note)).join('') +
+    '</div><p class="research-insight">' + bi(method.interpretation) + '</p><p class="subattention-distinction">' +
+    bi(method.distinction) + '</p></article>';
   const renderAttentionPhenomenon = figure => '<figure class="paper-figure attention-phenomenon"><figcaption><span class="paper-figure-number">' +
     bi(T("现象示例 · 其他任务", "ILLUSTRATIVE EXAMPLE · OTHER TASK")) + '</span><strong>' + bi(figure.title) +
     '</strong></figcaption><p class="research-read-guide">' + bi(figure.guide) + '</p><div class="attention-panels">' +
@@ -568,6 +573,7 @@
           String.raw`\begin{aligned}\Delta X_t &= X_t-X_{t-1}\\[6pt]Z &= \phi(X)W+\phi(\Delta X)W_d\end{aligned}`,
           T(String.raw`\(\phi\) 为缩放后的带符号对数变换；\(W\)、\(W_d\) 是两路独立的线性投影`,
             String.raw`\(\phi\) is the signed-log transform after scaling; \(W\) and \(W_d\) are independent linear projections`))) +
+        renderSubAttention(story.subattention) +
         method(2,"multitask",equations(T("目标变换与多任务训练", "Target transform and multi-task training"),
           String.raw`\begin{aligned}Y_{\ln} &= \ln\!\left(1+\frac{Y}{X_L}\right)\\[8pt]\mathcal{L} &= \mathcal{L}_{\mathrm{reg}}+\beta\mathcal{L}_{\mathrm{cla}}\end{aligned}`,
           T(String.raw`\(X_L\) 是最后一个历史值；\(\beta\) 控制辅助分类损失的权重。回归使用 MSE，分类使用 Focal Loss`,

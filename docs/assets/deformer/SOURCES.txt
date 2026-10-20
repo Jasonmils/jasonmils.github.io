@@ -24,3 +24,9 @@ Diagnostic definitions verified against manuscript page 3, Equations (3)-(6), on
 Stable rank uses post-softmax attention matrices, squared Frobenius/spectral norms, and per-head averaging.
 Token similarity retains the expected-inner-product / second-moment normalization before averaging distinct ordered token pairs.
 The website adds singular-value equivalence and reading guidance; it does not assume a sampling axis for the manuscript expectation.
+
+SubAttention definition supplied by the website owner on 2026-10-20:
+subtract each attention-score column's mean across queries before applying row-wise softmax.
+The bilingual equations expand this definition for a single, unmasked self-attention head.
+This definition is distinct from the older manuscript's figures and ablation tables;
+no separate SubAttention result or guarantee of increased stable rank is inferred.
