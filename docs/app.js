@@ -44,7 +44,7 @@
   const dot = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>';
   const tagLogos = {
     Python:"python",PyTorch:"pytorch",TensorFlow:"tensorflow",Transformers:"huggingface",
-    Qwen3:"qwen","Qwen3-4B":"qwen","Qwen3.5-35B-A3B":"qwen","Qwen3-ASR":"qwen",Codex:"openai",
+    Qwen3:"qwen","Qwen3-4B":"qwen","Qwen3-27B":"qwen","Qwen3.5-35B-A3B":"qwen","Qwen3-ASR":"qwen",Codex:"openai",
     Gemini:"googlegemini",DeepSeek:"deepseek"
   };
   const tags = values => '<div class="tag-list">' + values.map(v => {
@@ -205,8 +205,8 @@
       takeaway: T("把模型输出接入可追踪、可迭代的业务流程", "Turn model outputs into a traceable, repeatable workflow")
     },
     "ali-forecast": {
-      tab: T("预测优化", "Forecasting"), title: T("时序建模 → 条件表征 → 后训练 → 稳定推理", "Temporal models, LLM features, post-training & stability"),
-      challenge: T("误差与稳定性分别衡量；后训练回到下游预测验证", "Evaluate accuracy and stability separately, then validate post-training downstream"),
+      tab: T("预测优化", "Forecasting"), title: T("时序建模 → 结构化推理 → 逐阶段后训练", "Temporal modeling → Structured reasoning → Staged post-training"),
+      challenge: T("SFT → RLVR → OPD；每一阶段都回到下游销量预测验证", "SFT → RLVR → OPD; validate every stage on downstream sales forecasts"),
       render: () => '<div class="forecast-research"><strong>' + bi(T("DEFormer · 时序表征优化", "DEFormer · Temporal representations")) +
         '</strong><p>' + bi(T("原序列与差分编码 · log1p 目标变换 · 回归与分类多任务", "Raw and differenced inputs · log1p targets · Regression and classification")) +
         '</p><div class="forecast-research-results"><b>↓ 12.7% / 5.6%</b><span>' +
@@ -214,20 +214,14 @@
         '</span></div><a class="text-link" href="#project-deformer" data-open-project="project-deformer" aria-controls="project-preview" aria-expanded="false">' +
         bi(T("查看机制研究与消融", "Explore mechanisms & ablations"),true) + arrow + '</a></div>' +
         '<div class="visual-section-label">' + bi(T("Qwen3 表征与后训练 · wMAPE 相对下降", "Qwen3 features & post-training · Relative wMAPE reduction")) +
-        '</div><div class="training-tree"><div class="training-node"><div><strong>' + bi(T("冻结 Qwen3 表征", "Frozen Qwen3 features")) +
-        '</strong><span>' + bi(T("对比：同配置、无 Qwen", "vs. same setup without Qwen")) + '</span></div><b>↓ 2.1%</b></div>' +
-        '<div class="tree-arrow" aria-hidden="true">↓</div><div class="training-node training-sft"><div><strong>LoRA SFT</strong><span>' +
-        bi(T("对比：冻结表征", "vs. frozen representations")) + '</span></div><div class="training-score"><b>↓ 3.7%</b><span>' +
-        bi(T("大促跃升样本 ↓ 6.2%", "Promotion jumps ↓ 6.2%")) + '</span></div></div>' +
-        '<div class="tree-split-label">' + bi(T("同一 SFT 基线 · 两条路线分别评估", "Same SFT baseline · evaluated separately")) + '</div>' +
-        '<div class="training-branches"><div class="training-branch"><strong>RLVR / GRPO</strong><b>↓ 2.9%</b><span>' +
-        bi(T("标签正确性奖励", "Verifiable label reward")) + '</span></div><div class="training-branch"><strong>OPD</strong><b>↓ 3.1%</b><span>' +
-        bi(T("任务教师概率指导", "Task-adapted teacher")) + '</span></div></div></div>' +
-        visualNote(T("每条后训练路线均重训下游预测器；各阶段降幅不相加", "Retrain the downstream forecaster for each post-training route. Reductions are not additive")) +
-        '<div class="stability-results"><div class="stability-heading"><strong>Monte Carlo Dropout</strong><span>' +
-        bi(T("多次采样 → 均值输出", "Repeated samples → mean output")) + '</span></div><div><b>↓ 11%</b><span>' +
-        bi(T("跨批次 CV", "Cross-batch CV")) + '</span></div><div><b>↓ 10%</b><span>' + bi(T("输入扰动敏感性", "Input sensitivity")) +
-        '</span></div></div>' + visualNote(T("下方两项衡量输出稳定性，不是预测准确率", "The two Monte Carlo measures capture output stability, not accuracy")),
+        '</div><div class="training-tree">' + qwenPostTrainingStages.map((stage,index) =>
+          (index ? '<div class="tree-arrow" aria-hidden="true">↓</div>' : '') +
+          '<div class="training-node' + (!index ? ' training-sft' : '') + '"><div><strong>' + bi(stage.title) +
+          '</strong><span>' + bi(T("对比：" + stage.baseline.zh, "vs. " + stage.baseline.en)) +
+          '</span><span>' + bi(stage.mechanism) + '</span>' + (stage.detail ? '<span>' + bi(stage.detail) + '</span>' : '') +
+          '</div><div class="training-score"><b>↓ ' + escapeHTML(stage.value) + '</b></div></div>'
+        ).join('') + '</div>' +
+        visualNote(T("各阶段表征接入下游预测网络，并沿用重训流程；百分比对应各自基线，不直接相加", "Integrate each stage’s representations with the downstream forecaster and retrain. Reductions use their respective baselines and are not additive")),
       takeaway: T("标签任务的提升，最终要在真实预测任务中成立", "A better label task must translate into better forecasting")
     },
     "ali-deformer": {
@@ -564,8 +558,7 @@
     const method = (index,key,equation) => '<article class="research-method"><h5>' + bi(project.decisions[index].title) + '</h5><p>' +
       bi(project.decisions[index].body) + '</p>' + renderDeformerFigure(key) + equation + '</article>';
     return '<div class="project-body deformer-narrative research-narrative">' +
-      section(0,'<p>' + bi(story.background) + '</p><div class="research-task"><p>' + bi(project.context) +
-        '</p></div><div class="project-role"><h5 class="small-label">' + bi(ui.role) + '</h5><div>' + bi(project.role) + '</div></div>') +
+      section(0,'<p>' + bi(story.background) + '</p>') +
       section(1,'<p>' + bi(story.intuition) + '</p>' + renderAttentionPhenomenon(story.phenomenon) + '<p>' + bi(project.challenge) +
         '</p><div class="research-task"><p>' + bi(story.measures) + '</p></div>' + renderDiagnosticMetrics(story.diagnosticMetrics) + renderDeformerFigure("diagnosis")) +
       section(2,'<div class="research-contribution"><p>' + bi(story.contribution) + '</p></div><p>' + bi(story.bridge) + '</p>' +
@@ -610,9 +603,9 @@
     renderProjectBody(project) + '</details>';
   const renderProjectBody = project => project.id === "project-deformer" ? renderDeformerBody(project) :
     project.researchStudy?.narrative ? renderResearchBody(project) :
-    '<div class="project-body"><div class="project-role"><h4 class="small-label">' + bi(ui.role) +
+    '<div class="project-body">' + (project.role ? '<div class="project-role"><h4 class="small-label">' + bi(ui.role) +
     '</h4><div>' + bi(project.role) +
-    '</div></div><div class="project-context"><div><h4 class="small-label">' + bi(ui.context) +
+    '</div></div>' : '') + '<div class="project-context"><div><h4 class="small-label">' + bi(ui.context) +
     '</h4><p>' + bi(project.context) +
     '</p></div><div><h4 class="small-label">' + bi(ui.challenge) +
     '</h4><p>' + bi(project.challenge) + '</p></div></div>' +
@@ -975,13 +968,29 @@
         outcome:story.result,learning:story.takeaway,tags:story.stack,metrics:undefined});
       body = wrapper.firstElementChild;
     } else body = document.getElementById(id).querySelector(".project-body").cloneNode(true);
-    // Keep copied document IDs unique.
-    body.querySelectorAll("[id]").forEach(element => { element.id = "preview-" + element.id; });
+    // Keep copied IDs and references within the preview consistent.
+    const previewIds = new Map();
+    body.querySelectorAll("[id]").forEach(element => {
+      const original = element.id;
+      element.id = "preview-" + original;
+      previewIds.set(original,element.id);
+    });
+    body.querySelectorAll("*").forEach(element => {
+      ["aria-labelledby","aria-describedby","aria-controls","aria-owns","aria-activedescendant","for","headers"].forEach(attribute => {
+        if (element.hasAttribute(attribute)) element.setAttribute(attribute,
+          element.getAttribute(attribute).split(/\s+/).map(id => previewIds.get(id) || id).join(" "));
+      });
+      ["href","xlink:href"].forEach(attribute => {
+        const value = element.getAttribute(attribute);
+        if (value?.startsWith("#") && previewIds.has(value.slice(1)))
+          element.setAttribute(attribute,"#" + previewIds.get(value.slice(1)));
+      });
+    });
     const narrative = body.classList.contains("research-narrative");
     if (!narrative) {
       const diagram = body.querySelector(".project-study") || body.querySelector(".flow");
       if (diagram) { body.prepend(diagram); diagram.dataset.previewAnchor = "diagram"; }
-      body.querySelector(".project-role").dataset.previewAnchor = "context";
+      (body.querySelector(".project-role") || body.querySelector(".project-context")).dataset.previewAnchor = "context";
       const decisions = body.querySelector(".decision-list");
       decisions.previousElementSibling.dataset.previewAnchor = "approach";
       decisions.nextElementSibling.dataset.previewAnchor = "results";

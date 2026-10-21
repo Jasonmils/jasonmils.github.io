@@ -7,3 +7,8 @@ Captured on 2026-10-13 at 2x resolution. These are diagrams, not product photos.
 Agent and Qwen covers refreshed on 2026-10-20 from the bilingual local CV v7 update, at 2x resolution.
 Agent: forecasting tools, LangGraph/Qwen3.5 planning, human review, and SQL memory loop.
 Qwen: the Qwen3 frozen-feature, SFT, RLVR/OPD segment of the broader price-sales forecasting project. DEFormer and inference stability are detailed on the project page.
+
+Qwen covers refreshed on 2026-10-21 from the bilingual CV v8 update, at 2x resolution (1230 x 994).
+Sequential SFT -> RLVR / GRPO -> OPD; relative offline wMAPE reductions use separate stage baselines: frozen features (3.7%), SFT (2.9%), and RLVR (1.1%).
+The OPD teacher is Qwen3-27B, with token-level distributions on student-sampled trajectories.
+Captured directly from the on-page training diagram. Earlier frozen-feature and Monte Carlo Dropout results remain supplementary text, outside the main graphic.
