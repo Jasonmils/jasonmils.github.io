@@ -185,6 +185,70 @@
       phase.adoption + '%"></span></div></div><div class="gmv-result"><strong>' + phase.growth + '%</strong><span>' +
       bi(T("GMV 增幅较该期对照组高", "Higher GMV growth than this phase’s control")) + '</span></div></div></article>'
     ).join('') + '</div>';
+  const renderForecastRoadmap = () => {
+    const node = key => {
+      const step = qwenOptimizationSteps[key];
+      return '<li><button type="button" class="forecast-node" data-forecast-step="' + key + '" aria-pressed="' +
+        (key === "deformer") + '"><span class="forecast-node-code">' + step.code + '</span><strong>' + bi(step.title) +
+        '</strong><span class="forecast-node-caption">' + bi(step.caption) + '</span></button></li>';
+    };
+    return '<div class="forecast-roadmap"><div class="forecast-map-toolbar"><button type="button" data-forecast-enlarge>' +
+      bi(T("放大路线图", "Enlarge roadmap"),true) + diagonal + '</button></div><div class="forecast-lane forecast-lane--upstream"><div class="forecast-lane-heading"><h5>' +
+      bi(T("主线 B · Qwen3 后训练", "Track B · Qwen3 post-training")) + '</h5><span>' +
+      bi(T("任务推理与表征", "Task reasoning & features")) + '</span></div><ol class="forecast-nodes forecast-nodes--upstream">' +
+      ["sft","rlvr","opd"].map(node).join('') + '</ol></div>' +
+      '<div class="forecast-transfer"><svg viewBox="0 0 100 52" preserveAspectRatio="none" aria-hidden="true">' +
+      '<path d="M16.7 0V10Q16.7 15 23 15H56.5Q62.5 15 62.5 22M50 0V15M83.3 0V10Q83.3 15 77 15H62.5M62.5 42V50"/>' +
+      '</svg><span>' + bi(T("各阶段 embedding → 融合 + 下游重训", "Each stage’s embeddings → Fusion + downstream retraining")) +
+      '</span><i aria-hidden="true"></i></div>' +
+      '<div class="forecast-lane forecast-lane--downstream"><div class="forecast-lane-heading"><h5>' +
+      bi(T("主线 A · DEFormer 价量预估", "Track A · DEFormer price–sales forecasting")) + '</h5><span>' +
+      bi(T("wMAPE ↓ · 稳定性 ↑", "wMAPE ↓ · Stability ↑")) + '</span></div><ol class="forecast-nodes forecast-nodes--downstream">' +
+      ["deformer","frozen","adapted","stability"].map(node).join('') + '</ol></div>' +
+      '<div class="forecast-legend"><span class="forecast-legend-evolution">' + bi(T("模型优化路径", "Model optimization")) +
+      '</span><span class="forecast-legend-transfer">' + bi(T("表征供给下游", "Features to downstream")) + '</span></div>' +
+      '<p class="forecast-reading-guide">' + bi(T("从 A1、A2 起讲 → 转到 B1–B3 → 回到 A3 验证、A4 稳定性", "Start at A1–A2 → Follow B1–B3 → Return to A3 validation and A4 stability")) + '</p>' +
+      '<p class="forecast-interaction-hint">' + bi(T("点击节点，查看改动与验证", "Select a node for the change and its validation")) + '</p>' +
+      '<div class="forecast-step-panels" aria-live="polite">' + Object.entries(qwenOptimizationSteps).map(([key,step]) =>
+        '<section class="forecast-step-panel" data-forecast-panel="' + key + '"' + (key === "deformer" ? '' : ' hidden') +
+        '><h5><span>' + step.code + '</span>' + bi(step.heading) + '</h5><p>' + bi(step.change) + '</p><p class="forecast-step-evidence">' +
+        bi(step.evidence) + '</p>' + (step.link ? '<a class="text-link" href="#project-deformer" data-open-project="project-deformer" aria-controls="project-preview" aria-expanded="false">' +
+        bi(T("查看 DEFormer 机制与消融", "Explore DEFormer mechanisms & ablations"),true) + arrow + '</a>' : '') + '</section>'
+      ).join('') + '</div></div>';
+  };
+  const renderAgentWorkflow = () => {
+    const node = key => {
+      const step = agentWorkflowSteps[key];
+      return '<button type="button" class="agent-node agent-node--' + key + '" data-agent-step="' + key +
+        '" aria-pressed="' + (key === "planner") + '"><span class="agent-node-top">' + diagramIcon(step.icon) +
+        '<span>' + step.label + '</span></span><strong>' + bi(step.title) + '</strong><span class="agent-node-caption">' +
+        bi(step.caption) + '</span></button>';
+    };
+    return '<div class="agent-workflow"><div class="forecast-map-toolbar"><button type="button" data-agent-enlarge>' +
+      bi(T("放大流程图", "Enlarge workflow"),true) + diagonal + '</button></div>' +
+      '<div class="agent-canvas"><div class="agent-orchestration"><span><i aria-hidden="true"></i>LangGraph</span><strong>' +
+      bi(T("批量工作流编排", "Batch workflow orchestration")) + '</strong><span>' +
+      bi(T("商品 × 场景 × 轮次", "Product × Scenario × Round")) + '</span></div>' +
+      '<div class="agent-graph-main"><svg class="agent-connections" viewBox="0 0 1000 422" preserveAspectRatio="none" aria-hidden="true">' +
+      '<g class="agent-context-lines"><path d="M160 100V120Q160 130 170 130H490Q500 130 500 140V145M500 100V145M840 100V120Q840 130 830 130H510Q500 130 500 140"/>' +
+      '<path class="agent-arrowhead" d="m495 143 5 7 5-7zM495 108l5-8 5 8z"/></g>' +
+      '<g class="agent-output-lines"><path d="M500 272V288Q500 298 490 298H170Q160 298 160 308V317"/>' +
+      '<path class="agent-arrowhead" d="m155 315 5 7 5-7z"/></g>' +
+      '<g class="agent-feedback-lines"><path d="M1000 372H1010Q1024 372 1024 358V64Q1024 50 1010 50H1005"/>' +
+      '<path class="agent-arrowhead" d="m1007 45-7 5 7 5z"/></g></svg>' +
+      '<span class="agent-tool-link-label">' + bi(T("调用 / 返回", "Call / Return")) + '</span>' +
+      '<div class="agent-resource-row">' + ["signals","forecast","memory"].map(node).join('') + '</div>' +
+      '<div class="agent-core-row">' + node("planner") + '</div>' +
+      '<div class="agent-action-row">' + ["plan","review","feedback"].map(node).join('') + '</div></div>' +
+      '<div class="agent-loop-caption"><span aria-hidden="true">↶</span>' + bi(T("执行反馈 → 更新记忆 → 下一轮规划", "Execution feedback → Update memory → Plan the next round")) + '</div>' +
+      '<div class="agent-guardrails">' + diagramIcon("execute") + '<strong>' + bi(T("执行保障", "Safeguards")) + '</strong><span>' +
+      bi(T("失败重试 · 流程回退 · 人工监督", "Retry failures · Fall back · Human oversight")) + '</span></div></div>' +
+      '<p class="forecast-interaction-hint">' + bi(T("点击节点，查看它在工作流中的职责", "Select a node to explore its role in the workflow")) + '</p>' +
+      '<div class="agent-step-panels" aria-live="polite">' + Object.entries(agentWorkflowSteps).map(([key,step]) =>
+        '<section class="forecast-step-panel" data-agent-panel="' + key + '"' + (key === "planner" ? '' : ' hidden') +
+        '><h5>' + bi(step.heading) + '</h5><p>' + bi(step.body) + '</p><p class="forecast-step-evidence">' +
+        bi(step.note) + '</p></section>').join('') + '</div></div>';
+  };
   const visualStories = {
     "wiki-system": {
       tab:T("证据工作流", "Evidence workflow"),title:T("从多模态证据到可核对的知识更新", "From multimodal evidence to checkable knowledge updates"),
@@ -192,36 +256,15 @@
       render: () => '<div class="paper-methods">' + wikiStudy.figures.map(renderWikiFigure).join('') + '</div>'
     },
     "ali-agent": {
-      tab: T("Agent 闭环", "Agent loop"), title: T("从预测到运营闭环", "From forecasts to an operating loop"),
-      challenge: T("LangGraph 批量编排 · Qwen3.5-35B-A3B 多档期规划 · SQL 跨轮次记忆", "LangGraph batch workflows · Qwen3.5-35B-A3B planning · SQL memory across rounds"),
-      render: () => diagramFlow([
-        ["forecast", T("预测工具", "Forecast"), T("价量模型", "Price–sales tools")],
-        ["decision", T("多档期规划", "Cycle planning"), T("LangGraph · Qwen3.5", "LangGraph · Qwen3.5")],
-        ["execute", T("执行保障", "Execution checks"), T("重试 · 回退 · 人审", "Retry · Fallback · Review")],
-        ["memory", T("SKU 记忆", "SKU memory"), T("SQL 摘要 / 运营记录", "SQL summary / history")]
-      ], T("规划前检索历史反馈 → 反馈回收后更新记忆", "Retrieve feedback before planning → Update memory after feedback")) +
-        '<div class="visual-section-label">' + bi(T("两期线上 A/B 实验", "Two online A/B phases")) + '</div>' +
-        renderGrowthAB() + visualNote(productGrowthABResults.note),
+      tab: T("Agent 闭环", "Agent loop"), title: T("运营 Agent · 从规划到反馈闭环", "Operations Agent · From plans to a feedback loop"),
+      challenge: T("结合信号、工具与记忆生成规划，经人工审核后执行，再用反馈调整下一轮", "Plan with signals, tools and memory; review before execution, then use feedback in the next round"),
+      render: renderAgentWorkflow,
       takeaway: T("把模型输出接入可追踪、可迭代的业务流程", "Turn model outputs into a traceable, repeatable workflow")
     },
     "ali-forecast": {
-      tab: T("预测优化", "Forecasting"), title: T("时序建模 → 结构化推理 → 逐阶段后训练", "Temporal modeling → Structured reasoning → Staged post-training"),
-      challenge: T("SFT → RLVR → OPD；每一阶段都回到下游销量预测验证", "SFT → RLVR → OPD; validate every stage on downstream sales forecasts"),
-      render: () => '<div class="forecast-research"><strong>' + bi(T("DEFormer · 时序表征优化", "DEFormer · Temporal representations")) +
-        '</strong><p>' + bi(T("原序列与差分编码 · log1p 目标变换 · 回归与分类多任务", "Raw and differenced inputs · log1p targets · Regression and classification")) +
-        '</p><div class="forecast-research-results"><b>↓ 12.7% / 5.6%</b><span>' +
-        bi(T("两个零售数据集的离线 wMAPE · 相对 PatchTST", "Offline wMAPE on two retail datasets · vs. PatchTST")) +
-        '</span></div><a class="text-link" href="#project-deformer" data-open-project="project-deformer" aria-controls="project-preview" aria-expanded="false">' +
-        bi(T("查看机制研究与消融", "Explore mechanisms & ablations"),true) + arrow + '</a></div>' +
-        '<div class="visual-section-label">' + bi(T("Qwen3 表征与后训练 · wMAPE 相对下降", "Qwen3 features & post-training · Relative wMAPE reduction")) +
-        '</div><div class="training-tree">' + qwenPostTrainingStages.map((stage,index) =>
-          (index ? '<div class="tree-arrow" aria-hidden="true">↓</div>' : '') +
-          '<div class="training-node' + (!index ? ' training-sft' : '') + '"><div><strong>' + bi(stage.title) +
-          '</strong><span>' + bi(T("对比：" + stage.baseline.zh, "vs. " + stage.baseline.en)) +
-          '</span><span>' + bi(stage.mechanism) + '</span>' + (stage.detail ? '<span>' + bi(stage.detail) + '</span>' : '') +
-          '</div><div class="training-score"><b>↓ ' + escapeHTML(stage.value) + '</b></div></div>'
-        ).join('') + '</div>' +
-        visualNote(T("各阶段表征接入下游预测网络，并沿用重训流程；百分比对应各自基线，不直接相加", "Integrate each stage’s representations with the downstream forecaster and retrain. Reductions use their respective baselines and are not additive")),
+      tab: T("预测优化", "Forecasting"), title: T("LLM 增强价量预估 · 双线优化路径", "LLM-enhanced forecasting · Two optimization tracks"),
+      challenge: T("上游优化推理与表征，下游完成融合、预测与稳定性优化", "Improve reasoning and features upstream; optimize fusion, forecasts and stability downstream"),
+      render: renderForecastRoadmap,
       takeaway: T("标签任务的提升，最终要在真实预测任务中成立", "A better label task must translate into better forecasting")
     },
     "ali-deformer": {
@@ -588,8 +631,7 @@
     }).join('');
     const publication = story.publication;
     return '<div class="project-body research-narrative">' +
-      section(0,'<p>' + bi(story.background) + '</p><div class="research-task"><p>' + bi(story.context) + '</p></div>' +
-        '<div class="project-role"><h5 class="small-label">' + bi(ui.role) + '</h5><div>' + bi(project.role) + '</div></div>') +
+      section(0,'<p>' + bi(story.background) + '</p><div class="research-task"><p>' + bi(story.context) + '</p></div>') +
       section(1,'<div class="research-challenges">' + story.challenges.map(item => '<article><h5>' + bi(item.title) + '</h5><p>' +
         bi(item.body) + '</p></article>').join('') + '</div>') +
       section(2,'<div class="research-contribution"><p>' + bi(story.contribution) + '</p></div><p>' + bi(story.bridge) + '</p>' + methods) +
@@ -603,21 +645,20 @@
     renderProjectBody(project) + '</details>';
   const renderProjectBody = project => project.id === "project-deformer" ? renderDeformerBody(project) :
     project.researchStudy?.narrative ? renderResearchBody(project) :
-    '<div class="project-body">' + (project.role ? '<div class="project-role"><h4 class="small-label">' + bi(ui.role) +
-    '</h4><div>' + bi(project.role) +
-    '</div></div>' : '') + '<div class="project-context"><div><h4 class="small-label">' + bi(ui.context) +
+    '<div class="project-body"><div class="project-context"><div><h4 class="small-label">' + bi(ui.context) +
     '</h4><p>' + bi(project.context) +
     '</p></div><div><h4 class="small-label">' + bi(ui.challenge) +
     '</h4><p>' + bi(project.challenge) + '</p></div></div>' +
     (project.visualStories ? project.visualStories.map(id => renderProjectStudy(project,id)).join('') :
       project.visualStory ? renderProjectStudy(project) : '<ol class="flow" aria-label="Workflow">' + project.flow.map((step,i) => '<li class="flow-step"><span class="flow-index">0' +
     (i+1) + '</span>' + bi(step) + '</li>').join('') + '</ol>') +
-    '<h4 class="small-label">' + bi(ui.decisions) +
-    '</h4><div class="decision-list">' + project.decisions.map((d,i) =>
+    '<h4 class="small-label">' + bi(["project-qwen","project-agent"].includes(project.id) ? T("技术细节 · 按需展开", "Technical details · Expand as needed") : ui.decisions) +
+    '</h4><div class="decision-list' + (["project-qwen","project-agent"].includes(project.id) ? ' forecast-details' : '') + '">' + project.decisions.map((d,i) =>
+      ["project-qwen","project-agent"].includes(project.id) ? '<details class="forecast-detail"><summary>' + bi(d.title,true) + toggle() + '</summary><p>' + bi(d.body) + '</p></details>' :
       '<div class="decision"><span class="number">' + String(i+1).padStart(2,"0") + '</span><div><h4>' + bi(d.title) + '</h4><p>' +
       bi(d.body) + '</p></div></div>').join('') + '</div>' +
     '<h4 class="small-label">' + bi(ui.result) +
-    '</h4>' + (project.wikiStudy ? renderWikiResults(project.wikiStudy) : project.researchStudy ? renderResearchResults(project.researchStudy) : project.paperStudy ? renderPaperResults(project.paperStudy) : project.table && !project.visualStory ? renderTable(project.table) : '') +
+    '</h4>' + (project.id === "project-agent" ? renderTable(project.table) : project.wikiStudy ? renderWikiResults(project.wikiStudy) : project.researchStudy ? renderResearchResults(project.researchStudy) : project.paperStudy ? renderPaperResults(project.paperStudy) : project.table && !project.visualStory ? renderTable(project.table) : '') +
     (project.metrics ? renderMetrics(project.metrics) : '') + '<p class="project-outcome">' + bi(project.outcome) + '</p>' +
     '<div class="project-footer">' + tags(project.tags) + (project.related ?
       '<a class="text-link" href="#' + project.related + '">' + bi(ui.workLink, true) + arrow + '</a>' : '') + '</div></div>';
@@ -920,6 +961,9 @@
     window.scrollTo({left:previewPagePosition.x,top,behavior:"instant"});
   }
   function setPreviewLayout() {
+    // Keep the enlarged diagram above the preview while crossing a breakpoint.
+    // Apply the preview's new layout after the diagram closes.
+    if (document.querySelector(".forecast-dialog[open]")) return;
     const desktop = desktopComparison.matches;
     const detailScroll = previewScroll.scrollTop;
     // The desktop dialog is a normal grid column. Only narrow screens are modal.
@@ -990,14 +1034,14 @@
     if (!narrative) {
       const diagram = body.querySelector(".project-study") || body.querySelector(".flow");
       if (diagram) { body.prepend(diagram); diagram.dataset.previewAnchor = "diagram"; }
-      (body.querySelector(".project-role") || body.querySelector(".project-context")).dataset.previewAnchor = "context";
+      body.querySelector(".project-context").dataset.previewAnchor = "context";
       const decisions = body.querySelector(".decision-list");
       decisions.previousElementSibling.dataset.previewAnchor = "approach";
       decisions.nextElementSibling.dataset.previewAnchor = "results";
     }
     const sections = narrative ? (project.paperStudy || project.researchStudy).narrative.sections : [
-      {key:"diagram",title:T("图解", "Visuals")},{key:"context",title:T("背景", "Context")},
-      {key:"approach",title:T("方案", "Approach")},{key:"results",title:T("结果", "Results")}
+      {key:"diagram",title:project.id === "project-agent" ? T("工作流", "Workflow") : project.id === "project-qwen" ? T("路线图", "Roadmap") : T("图解", "Visuals")},{key:"context",title:T("背景", "Context")},
+      {key:"approach",title:["project-qwen","project-agent"].includes(project.id) ? T("细节", "Details") : T("方案", "Approach")},{key:"results",title:T("结果", "Results")}
     ];
     const returnLink = body.querySelector(".project-footer .text-link");
     if (returnLink) {
@@ -1120,9 +1164,34 @@
       if (perspectiveButton.dataset.perspective !== document.body.dataset.perspective) setPerspective(perspectiveButton.dataset.perspective);
       return;
     }
+    const forecastEnlarge = event.target.closest("[data-forecast-enlarge],[data-agent-enlarge]");
+    if (forecastEnlarge) {
+      const isAgent = forecastEnlarge.hasAttribute("data-agent-enlarge");
+      const dialog = document.createElement("dialog");
+      dialog.className = "forecast-dialog" + (isAgent ? " agent-workflow-dialog" : "");
+      dialog.setAttribute("aria-labelledby","forecast-dialog-title");
+      dialog.innerHTML = '<header><div><h2 id="forecast-dialog-title">' +
+        bi(isAgent ? T("运营 Agent · 从规划到反馈闭环", "Operations Agent · From plans to a feedback loop") : T("LLM 增强价量预估 · 双线优化路径", "LLM-enhanced forecasting · Two optimization tracks")) +
+        '</h2><p>' + bi(isAgent ? T("工具提供预测，Agent 组织规划，人工把关执行", "Tools forecast, the Agent plans, humans approve execution") : T("Qwen3 提供任务表征，DEFormer 完成价量预测", "Qwen3 supplies task features; DEFormer forecasts price–sales responses")) +
+        '</p></div><button type="button" data-forecast-close autofocus>' + bi(T("关闭", "Close"),true) + '</button></header>';
+      const roadmap = forecastEnlarge.closest(isAgent ? ".agent-workflow" : ".forecast-roadmap").cloneNode(true);
+      roadmap.querySelector(".forecast-map-toolbar").remove();
+      dialog.append(roadmap);
+      document.body.append(dialog);
+      dialog.addEventListener("close",() => {
+        dialog.remove();
+        if (preview.open) setPreviewLayout();
+        forecastEnlarge.focus({preventScroll:true});
+      },{once:true});
+      dialog.showModal();
+      return;
+    }
+    const forecastClose = event.target.closest("[data-forecast-close]");
+    if (forecastClose) { forecastClose.closest("dialog").close(); return; }
     const projectTrigger = event.target.closest("[data-open-project]");
     if (projectTrigger && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
       event.preventDefault();
+      projectTrigger.closest(".forecast-dialog")?.close();
       openProjectPreview(projectTrigger.dataset.openProject, projectTrigger);
       return;
     }
@@ -1130,6 +1199,26 @@
     if (previewClose) { event.preventDefault(); closeProjectPreview(); return; }
     const previewProject = event.target.closest("[data-preview-project]");
     if (previewProject) { openProjectPreview(previewProject.dataset.previewProject,undefined,previewProject.dataset.previewView); return; }
+    const agentStep = event.target.closest("[data-agent-step]");
+    if (agentStep) {
+      const workflow = agentStep.closest(".agent-workflow");
+      workflow.querySelectorAll("[data-agent-step]").forEach(button =>
+        button.setAttribute("aria-pressed",String(button === agentStep)));
+      workflow.querySelectorAll("[data-agent-panel]").forEach(panel =>
+        panel.hidden = panel.dataset.agentPanel !== agentStep.dataset.agentStep);
+      scheduleReadingUpdate();
+      return;
+    }
+    const forecastStep = event.target.closest("[data-forecast-step]");
+    if (forecastStep) {
+      const roadmap = forecastStep.closest(".forecast-roadmap");
+      roadmap.querySelectorAll("[data-forecast-step]").forEach(button =>
+        button.setAttribute("aria-pressed",String(button === forecastStep)));
+      roadmap.querySelectorAll("[data-forecast-panel]").forEach(panel =>
+        panel.hidden = panel.dataset.forecastPanel !== forecastStep.dataset.forecastStep);
+      scheduleReadingUpdate();
+      return;
+    }
     const previewSection = event.target.closest("[data-preview-section]");
     if (previewSection) {
       const anchor = previewContent.querySelector('[data-preview-anchor="' + previewSection.dataset.previewSection + '"]');
@@ -1173,6 +1262,8 @@
     }
   });
   document.addEventListener("keydown", event => {
+    // The enlarged roadmap owns its native Escape handling and focus trap.
+    if (document.querySelector(".forecast-dialog[open]")) return;
     if ((preview.open || previewMotion.pending) && event.key === "Escape") {
       event.preventDefault(); closeProjectPreview(); return;
     }

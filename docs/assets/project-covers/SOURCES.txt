@@ -12,3 +12,11 @@ Qwen covers refreshed on 2026-10-21 from the bilingual CV v8 update, at 2x resol
 Sequential SFT -> RLVR / GRPO -> OPD; relative offline wMAPE reductions use separate stage baselines: frozen features (3.7%), SFT (2.9%), and RLVR (1.1%).
 The OPD teacher is Qwen3-27B, with token-level distributions on student-sampled trajectories.
 Captured directly from the on-page training diagram. Earlier frozen-feature and Monte Carlo Dropout results remain supplementary text, outside the main graphic.
+
+Qwen covers refreshed on 2026-10-24 from the bilingual interactive optimization roadmap (1000 x 448).
+Upper track: Qwen3 SFT -> RLVR / GRPO -> OPD. Lower track: DEFormer architecture, frozen-feature fusion, post-training feature fusion with downstream retraining, and inference stability.
+Dashed connectors represent embeddings supplied to the downstream forecaster. Captured from the enlarged on-page roadmap; per-stage evidence is available through its interactive nodes.
+
+Agent covers refreshed on 2026-10-24 from the bilingual interactive Agent workflow (998 x 564).
+Product signals, a DEFormer forecasting tool and a memory module feed the Qwen3.5-35B-A3B planner. Recommendations pass human review before execution; feedback updates memory for subsequent rounds.
+LangGraph orchestrates the workflow; retries, fallbacks and human oversight remain explicit. The proposed joint GMV(B,P) model stays in the separate pending-validation details.

@@ -14,7 +14,7 @@ const deformerStudy = {
       {key:"results",title:T("结果", "Results"),heading:T("预测效果 · 模块消融 · 表征验证", "Forecasts · Ablations · Representations")}
     ],
     background:T("以 PatchTST 为基线，同时改善预测误差与商品达标覆盖，为促销定价提供依据", "Starting from PatchTST, improve forecast error and accepted-product coverage to support promotional pricing"),
-    intuition:T("每行表示一个 Query 对各 Key 的关注权重。行越相似，不同位置读取的信息越接近，注意力多样性越低；Token 表征是否趋同需另行检查", "Each row gives one query’s weights over keys. Similar rows read similar information, reducing attention diversity; token homogenization needs a separate check"),
+    intuition:T("每行表示一个 Query 对各 Key 的关注权重。行越相似，不同位置读取的信息越接近，注意力多样性越低", "Each row gives one query’s weights over keys. Similar rows read similar information, reducing attention diversity"),
     phenomenon:{src:"assets/deformer/attention-collapse-example.png",width:1408,height:910,
       title:T("现象图解：关注趋同与模式差异", "Visual intuition: similar vs. distinct patterns"),
       guide:T("纵轴 Query，横轴 Key：比较各行的关注位置。两图色标不同，应比较模式而非亮度", "Rows: queries; columns: keys. Compare attention locations across rows. Color scales differ, so compare patterns, not brightness"),
@@ -406,11 +406,11 @@ const wikiStudy = {
 const projectCovers = {
   "project-agent": {
     "src": {
-      "zh": "assets/project-covers/project-agent-zh.png?v=cv-v7-20261020",
-      "en": "assets/project-covers/project-agent-en.png?v=cv-v7-20261020"
+      "zh": "assets/project-covers/project-agent-zh.png?v=agent-workflow-20261024",
+      "en": "assets/project-covers/project-agent-en.png?v=agent-workflow-20261024"
     },
-    "width": 1230,
-    "height": 386
+    "width": 998,
+    "height": 564
   },
   "project-wiki": {
     "src": {"zh":"assets/wiki/architecture-zh.svg","en":"assets/wiki/architecture-en.svg"},
@@ -418,11 +418,11 @@ const projectCovers = {
   },
   "project-qwen": {
     "src": {
-      "zh": "assets/project-covers/project-qwen-zh.png?v=cv-v8-20261021",
-      "en": "assets/project-covers/project-qwen-en.png?v=cv-v8-20261021"
+      "zh": "assets/project-covers/project-qwen-zh.png?v=forecast-roadmap-20261024",
+      "en": "assets/project-covers/project-qwen-en.png?v=forecast-roadmap-20261024"
     },
-    "width": 1230,
-    "height": 994
+    "width": 1000,
+    "height": 448
   },
   "project-ring": {
     "src": {
@@ -494,6 +494,81 @@ const qwenPostTrainingStages = [
     detail:T("CoT 质量 · 趋势判断稳定性", "CoT quality · Trend stability")},
 ];
 const qwenPostTrainingNote = T("依次开展 SFT → RLVR → OPD，接入表征并重训下游预测器；数值为各阶段相对其基线的离线 wMAPE 降幅，不直接相加", "SFT → RLVR → OPD, with representation fusion and downstream retraining. Values are relative offline wMAPE reductions against each stage’s baseline and are not directly additive");
+const agentWorkflowSteps = {
+  signals:{label:"CONTEXT",icon:"scope",title:T("商品信号", "Product signals"),caption:T("营销 · 广告 · 搜索", "Marketing · Ads · Search"),
+    heading:T("读懂当前状态与周期目标", "Read the current state and cycle goals"),
+    body:T("结合商品状态、营销活动、广告与搜索信号，围绕高潜商品孵化和层级维持，识别本轮需要解决的问题。", "Combine product state, marketing, advertising and search signals to frame this round’s growth and tier-retention objectives."),
+    note:T("规划对象：商品 × 场景 × 轮次。", "Planning context: product × scenario × round.")},
+  forecast:{label:"TOOL",icon:"forecast",title:T("预测工具", "Forecast tool"),caption:T("DEFormer · 价量预估", "DEFormer · Price–sales"),
+    heading:T("调用模型工具，获得可用的预测依据", "Call the model tool for forecasting evidence"),
+    body:T("复用 DEFormer 价量预测能力，为商品评估与运营规划提供预测结果；计算由模型工具完成，Agent 结合返回结果组织建议。", "Reuse DEFormer price–sales forecasts for product assessment and planning. The model tool performs the calculation; the Agent uses its outputs to formulate recommendations."),
+    note:T("分工：工具负责预测，Agent 负责结合上下文规划。", "Roles: the tool forecasts; the Agent plans with context.")},
+  memory:{label:"MEMORY",icon:"memory",title:T("记忆模块", "Memory module"),caption:T("历史反馈 · 运营记录", "Past feedback · History"),
+    heading:T("规划前检索，反馈后更新", "Retrieve before planning, update after feedback"),
+    body:T("保存 SKU 级记忆摘要与运营记录。规划前按商品、场景和轮次检索历史反馈；执行反馈回收后更新记忆，为下一轮调整提供依据。", "Keep SKU-level summaries and operating history. Retrieve feedback by product, scenario and round before planning, then update memory with execution feedback for the next round."),
+    note:T("回路：执行反馈 → 更新记忆 → 下一轮规划。", "Loop: execution feedback → memory update → next-round planning.")},
+  planner:{label:"PLANNING AGENT",icon:"decision",title:T("多档期规划 Agent", "Multi-cycle planning Agent"),caption:"Qwen3.5-35B-A3B",
+    heading:T("把信号、预测和历史反馈组织成规划", "Turn signals, forecasts and feedback into a plan"),
+    body:T("LangGraph 编排批量工作流，Qwen3.5-35B-A3B 结合商品信号、预测结果与历史反馈，围绕周期目标生成多档期运营建议。", "LangGraph orchestrates batch workflows. Qwen3.5-35B-A3B combines product signals, forecasts and history to propose multi-cycle operating plans around cycle goals."),
+    note:T("规划由模型生成；运营建议经人工审核后执行。", "The model proposes plans; human review precedes execution.")},
+  plan:{label:"OUTPUT",icon:"scope",title:T("多档期建议", "Multi-cycle plan"),caption:T("高潜孵化 · 层级维持", "Growth · Tier retention"),
+    heading:T("从单期动作扩展到多档期目标", "Connect actions to goals across cycles"),
+    body:T("将预测与商品评估结果转为围绕高潜孵化、层级维持的多档期建议，交给运营审核并推进。", "Translate forecasts and product assessments into multi-cycle recommendations for growth and tier retention, then pass them to operations for review."),
+    note:T("输出是待审核的运营建议。", "The output is an operating recommendation awaiting review.")},
+  review:{label:"HUMAN REVIEW",icon:"people",title:T("人工审核", "Human review"),caption:T("确认后进入执行", "Approval before execution"),
+    heading:T("在执行前保留人工判断", "Keep human judgment before execution"),
+    body:T("运营建议经人工审核后再执行。工具或流程失败时重试、回退，异常保留人工监督。", "Review recommendations before execution. Retry or fall back on tool/workflow failures, with human oversight for exceptions."),
+    note:T("LangGraph 组织流程，人工审核保留执行边界。", "LangGraph organizes the workflow; human review gates execution.")},
+  feedback:{label:"FEEDBACK",icon:"execute",title:T("执行与反馈", "Execution & feedback"),caption:T("按档期推进 · 回收效果", "Run each cycle · Collect results"),
+    heading:T("把本轮结果带回下一轮", "Carry this round’s results into the next"),
+    body:T("审核后推进运营，回收采纳情况与效果记录，再更新 SKU 记忆。后续规划结合新反馈继续调整。", "Carry out reviewed operations, collect adoption and outcome records, and update SKU memory. Subsequent plans incorporate the new feedback."),
+    note:T("实验结果见“结果”页签；两期各有对照，衡量阶段方案整体效果。", "See the Results tab for experiments; each phase uses its own control and measures the full approach.")}
+};
+const qwenOptimizationSteps = {
+  deformer:{
+    code:"A1",title:T("DEFormer 结构", "DEFormer design"),caption:T("去相关 · 多任务", "Decorrelation · Multi-task"),
+    heading:T("先优化下游：缓解时序表征退化", "Start downstream: reduce representation collapse"),
+    change:T("原序列 + 一阶差分；log1p 目标；回归 / 分类多任务；SubAttention。", "Raw + differenced inputs, log1p targets, regression/classification tasks and SubAttention."),
+    evidence:T("对比 PatchTST：两个零售数据集的离线 wMAPE 分别下降 12.7% / 5.6%。", "Versus PatchTST: offline wMAPE falls 12.7% / 5.6% on two retail datasets."),
+    link:true
+  },
+  frozen:{
+    code:"A2",title:T("冻结表征融合", "Frozen features"),caption:T("Qwen3 · 门控融合", "Qwen3 · Gated fusion"),
+    heading:T("引入语义信息：冻结 Qwen3，优化下游融合", "Add semantics: frozen Qwen3, trainable downstream fusion"),
+    change:T("提取冻结 Qwen3-4B 表征，经门控融合接入 DEFormer 价量预估模型。", "Extract frozen Qwen3-4B features and integrate them into the DEFormer forecaster through gated fusion."),
+    evidence:T("对比同配置、无 Qwen3 表征的方案：离线 wMAPE 下降 2.1%。", "Versus the same setup without Qwen3 features: offline wMAPE falls 2.1%.")
+  },
+  adapted:{
+    code:"A3",title:T("后训练表征融合", "Adapted features"),caption:T("逐阶段接入 · 重训", "Fuse · Retrain each stage"),
+    heading:T("回到下游验证：每阶段表征接入并重训", "Validate downstream: fuse and retrain at every stage"),
+    change:T("SFT、RLVR、OPD 各自产生任务表征；沿用表征融合与 DEFormer 重训流程，预测候选价格下未来 14 天销量。", "Fuse the features from each SFT, RLVR and OPD stage, retrain DEFormer, and forecast 14-day sales at candidate prices."),
+    evidence:T("离线 wMAPE：SFT ↓3.7% → RLVR ↓2.9% → OPD ↓1.1%；分别对比冻结表征、SFT、RLVR，不相加。", "Offline wMAPE: SFT −3.7% → RLVR −2.9% → OPD −1.1%, versus frozen, SFT and RLVR features respectively; not additive.")
+  },
+  stability:{
+    code:"A4",title:T("推理稳定性", "Stable inference"),caption:T("MC Dropout · 均值", "MC Dropout · Mean"),
+    heading:T("补强下游推理：减小预测波动", "Strengthen downstream inference: reduce prediction variation"),
+    change:T("在价量预估模型推理侧使用 MC Dropout，多次采样后取均值；独立评估稳定性。", "Use MC Dropout with repeated sampling and mean aggregation in the price–sales forecaster; assess stability separately."),
+    evidence:T("对比原线上推理：逐样本跨批次预测 CV ↓11%；受控输入扰动下的预测相对变化 ↓10%。", "Versus original online inference: per-sample cross-batch CV −11%; relative prediction change under controlled input perturbations −10%.")
+  },
+  sft:{
+    code:"B1",title:"LoRA SFT",caption:T("六类标签 · 任务对齐", "Six labels · Task alignment"),
+    heading:T("SFT：让 Qwen3 理解销量变化任务", "SFT: align Qwen3 with sales-change prediction"),
+    change:T("按销量涨跌方向与幅度构建六类监督标签，通过 LoRA 微调 Qwen3-4B，形成任务适配表征。", "Build six labels from sales-change direction and magnitude; adapt Qwen3-4B with LoRA to produce task-specific features."),
+    evidence:T("表征接入并重训下游后，相较冻结表征：整体 wMAPE ↓3.7%，大促跃升样本 ↓6.2%。", "After feature fusion and downstream retraining, versus frozen features: wMAPE −3.7% overall and −6.2% on promotion-jump samples.")
+  },
+  rlvr:{
+    code:"B2",title:"RLVR / GRPO",caption:T("结果奖励 · 推理探索", "Outcome reward · Exploration"),
+    heading:T("RLVR：从监督路径走向采样探索", "RLVR: explore beyond supervised reasoning paths"),
+    change:T("在 SFT 基础上采用 GRPO，以最终销量变化标签是否正确提供可验证奖励。", "Apply GRPO after SFT, with verifiable rewards based on final sales-change label correctness."),
+    evidence:T("表征接入并重训下游后，相较 SFT 表征：离线 wMAPE ↓2.9%。", "After feature fusion and downstream retraining, versus SFT features: offline wMAPE −2.9%.")
+  },
+  opd:{
+    code:"B3",title:"OPD",caption:T("27B 教师 · 逐 Token", "27B teacher · Token-level"),
+    heading:T("OPD：用教师概率分布补充过程监督", "OPD: add process supervision from teacher probabilities"),
+    change:T("学生自采样轨迹 → Qwen3-27B 教师提供逐 Token 概率分布 → 优化学生推理与表征。", "Student-sampled trajectories → Qwen3-27B token-level probability distributions → improved student reasoning and features."),
+    evidence:T("表征接入并重训下游后，相较 RLVR 表征：离线 wMAPE ↓1.1%。", "After feature fusion and downstream retraining, versus RLVR features: offline wMAPE −1.1%.")
+  }
+};
 const portfolio = {
   name: T("丁逸洲", "Yizhou Ding"),
   alias: "Jason",
@@ -548,7 +623,6 @@ const portfolio = {
     collapse: T("收起", "Collapse"),
     expandAll: T("展开全部", "Expand all"),
     collapseAll: T("收起全部", "Collapse all"),
-    role: T("我的角色", "My role"),
     context: T("背景与目标", "Context & objective"),
     challenge: T("核心挑战", "The challenge"),
     decisions: T("方案与技术决策", "Approach & decisions"),
@@ -658,7 +732,7 @@ const portfolio = {
       company:T("阿里巴巴", "Alibaba Group"),
       entity:T("浙江天猫技术有限公司 · 营销算法团队", "Zhejiang Tmall Technology Co., Ltd. · Marketing Algorithms Team"),
       role:T("AI 算法工程师 · 绩效 E & A+", "AI Algorithm Engineer · Performance ratings E & A+"), date:"2024.07 — 2026.08",
-      overview:T("以 DEFormer、Qwen3 表征与后训练优化价量预测，支持当期定价；复用预测工具，以 LangGraph 与 SQL 记忆支持多档期规划", "Improved price–sales forecasts with DEFormer, Qwen3 features and post-training for pricing; reused the tools with LangGraph and SQL memory for multi-cycle planning"),
+      overview:T("以 DEFormer、Qwen3 表征与后训练优化价量预测，支持当期定价；复用预测工具，以 LangGraph 与记忆模块支持多档期规划", "Improved price–sales forecasts with DEFormer, Qwen3 features and post-training for pricing; reused the tools with LangGraph and a memory module for multi-cycle planning"),
       focus:[T("价量预测", "Price–sales forecasting"), T("短期增长", "Near-term growth"), T("长期商品成长", "Long-term product growth")],
       strategy:{
         title:T("从短期交易增长，到长期商品成长", "From near-term GMV to long-term product growth"),
@@ -882,7 +956,7 @@ const portfolio = {
       description:T("LangGraph 多档期规划 · SKU 记忆 · 反馈迭代", "LangGraph multi-cycle plans · SKU memory · Feedback"),
       context:T("复用价量预测，结合营销、广告与搜索信号，支持高潜孵化和主搜爆品层级维持；从模型辅助运营，推进到结合历史反馈的多档期 Agent 规划", "Combined price–sales forecasts with marketing, advertising and search signals for product growth and tier retention, progressing from forecast-assisted operations to feedback-informed multi-cycle Agent plans"),
       challenge:T("商品状态持续变化，价格与预算共同影响结果；需明确模型假设、预算与 ROI 约束，并支持失败处理和人工审核", "Changing product states and coupled price–budget decisions require explicit model assumptions, budget/ROI constraints, failure handling and human review"),
-      flow:[T("商品信号与预测工具","Signals & forecasting tools"),T("LangGraph 多档期规划","LangGraph multi-cycle plans"),T("人工审核与执行","Review & execution"),T("SQL 记忆与再规划","SQL memory & replanning")],
+      flow:[T("商品信号与预测工具","Signals & forecasting tools"),T("LangGraph 多档期规划","LangGraph multi-cycle plans"),T("人工审核与执行","Review & execution"),T("记忆模块与再规划","Memory module & replanning")],
       decisions:[
         {
           title:T("预测工具与商品评估", "Forecasting tools & product assessment"),
@@ -894,28 +968,27 @@ const portfolio = {
         },
         {
           title:T("SKU 记忆与跨轮次调整", "SKU memory & cross-round adaptation"),
-          body:T("SQL 分表保存 SKU 记忆摘要与运营记录；规划前按商品、场景和轮次检索反馈，新反馈回收后更新记忆", "Separate SQL tables store SKU summaries and activity records. Retrieve feedback by product, scenario and round before planning; update memory when new feedback arrives"),
+          body:T("记忆模块保存 SKU 记忆摘要与运营记录；规划前按商品、场景和轮次检索反馈，新反馈回收后更新记忆", "The memory module stores SKU summaries and activity records. Retrieve feedback by product, scenario and round before planning; update memory when new feedback arrives"),
         },
         {
           title:T("重试、回退与人工审核", "Retries, fallbacks and human review"),
           body:T("工具或流程失败时重试、回退；运营建议经人工审核后执行，异常保留人工监督", "Retry or fall back on tool/workflow failures. Execute recommendations after human review, retaining human oversight for exceptions"),
         },
         {
-          title:T("联合模型：设计与验证边界", "Joint model: design & validation scope"),
+          title:T("扩展设计 · 联合模型（待验证）", "Exploration · Joint model (validation pending)"),
           body:T("以基线归一化对齐价量与预算–GMV 模型，设计预算、ROI 约束下的 GMV(B,P)，明确适用范围、标定及端到端回退条件；价格与预算同时变化的样本验证仍待开展", "Designed baseline-normalized price–sales and budget–GMV models as GMV(B,P), with budget/ROI constraints, applicability, recalibration and end-to-end fallback criteria. Validation on joint price–budget changes remains pending"),
         },
       ],
       table:productGrowthABResults,
       outcome:T("完成预测工具、批量编排与记忆闭环。两期分别对照人工运营、第一期方案，评估建议采纳率与 GMV 增幅", "Implemented forecasting tools, batch orchestration and memory. The two phases measured adoption and GMV growth against manual operations and the Phase 1 approach, respectively"),
       learning:T("预测、记忆、失败处理与审核各有分工；联合模型的结构假设仍需真实样本验证", "Forecasting, memory, failure handling and review have distinct roles; joint-model assumptions still need validation on real samples"),
-      tags:["LangGraph","Qwen3.5-35B-A3B","SQL Memory","Tool Calling","Human Review","GMV(B,P)"],
+      tags:["LangGraph","Qwen3.5-35B-A3B",T("记忆模块","Memory Module"),"Tool Calling","Human Review","GMV(B,P)"],
       visualStory:"ali-agent",related:"ali-long-term",
     },
     {
       id:"project-wiki",index:"02",category:T("个人项目 · 多模态知识工程", "Independent project · Multimodal knowledge engineering"),
       title:T("AITradingWiki", "AITradingWiki"),
       description:T("将文档与视频转为带来源定位的研究页面，串联多模态摄入、有界检索、具名审批与写后验证", "Turn documents and videos into locator-bound research pages through multimodal ingestion, bounded retrieval, exact-page approval and post-write verification"),
-      role:T("独立开发者 · 需求定义、Codex Skills 与 Python 工具编排、视频桥接、完整性验证", "Independent developer · Requirements, Codex Skills and Python orchestration, video integration and integrity checks"),
       context:T("投资研究资料分散在 PDF、Office 文档、长视频和历史研究页面中。项目以 Codex 调用 Skills 和确定性 Python 工具组织证据处理，并以 Obsidian 浏览 Markdown 知识页、链接和图谱，让后续研究能够追溯到原文、视频时间点与画面，同时保留观点归属和未覆盖范围", "Investment research spans PDFs, Office files, long videos and existing research pages. Codex invokes Skills and deterministic Python tools to process evidence, while Obsidian browses Markdown pages, links and graphs. Subsequent research can trace claims to source text, video times and visuals while retaining attribution and coverage gaps"),
       challenge:T("文档结构、音频转录与幻灯片需要不同的预处理和定位方式；ASR、OCR 和模型整理的证据状态也需要分别记录。视频涉及音频和派生文字的独立传输授权，知识更新涉及精确批准范围、并发编辑与写入完成验证。资料规模增长时，还需要控制每次检索进入上下文的内容量", "Document structure, audio transcripts and slides need different preprocessing and locators, with separate evidence states for ASR, OCR and model refinement. Video introduces independent authorization for audio and derived-text transfers; knowledge updates require exact approval scope, concurrency checks and completion verification. Retrieval must also control context size as the collection grows"),
       visualStory:"wiki-system",wikiStudy:wikiStudy,
@@ -947,30 +1020,29 @@ const portfolio = {
     {
       id:"project-qwen",index:"03",category:T("大模型 × 时序预测", "LLMs × Time-series forecasting"),
       title:T("Qwen3 结构化推理与后训练增强的价量时序预测", "Price–sales forecasting with Qwen3 structured reasoning & post-training"),
-      description:T("DEFormer 时序建模与 SFT → RLVR → OPD 连续迭代，支撑促销定价和补贴配置", "DEFormer temporal modeling and sequential SFT → RLVR → OPD for promotional pricing and subsidy allocation"),
-      role:T("阿里营销算法团队 · DEFormer 研究、结构化推理、表征融合与后训练", "Alibaba Marketing Algorithms Team · DEFormer research, structured reasoning, feature fusion and post-training"),
+      description:T("DEFormer 结构、表征融合与推理优化 × Qwen3 SFT → RLVR → OPD 后训练", "DEFormer architecture, feature fusion and inference × Qwen3 SFT → RLVR → OPD"),
       context:T("面向营销活动与价格调整，结合时序建模与大模型业务推理，预估不同候选价格下一个营销周期的逐日销量（以未来 14 天为例），为促销定价与资源配置提供依据", "Combine temporal modeling and LLM business reasoning for marketing campaigns and price changes, forecasting daily sales at candidate prices over a campaign cycle, e.g. the next 14 days to support pricing and resource allocation"),
       challenge:T("强自相关输入可能导致浅层表征退化；静态语义表征难以捕捉营销条件下的销量响应。SFT、RLVR 与 OPD 依次处理任务对齐、推理探索和过程监督问题，并以真实下游预测检验效果", "Strong autocorrelation can degrade shallow representations, while static semantics miss sales responses to marketing conditions. SFT, RLVR and OPD successively address task alignment, reasoning exploration and process supervision, with downstream forecasting validation"),
       flow:[T("DEFormer 时序建模","DEFormer temporal modeling"),T("SFT 任务对齐","SFT task alignment"),T("RLVR 结果奖励","RLVR outcome rewards"),T("OPD 概率监督","OPD probability supervision")],
       decisions:[
         {
-          title:T("时序表征退化研究与模型优化", "Representation degradation & model improvement"),
+          title:T("下游 DEFormer：结构与训练优化", "Downstream DEFormer: architecture & training"),
           body:T("主导 Transformer 秩坍缩研究，用 Attention 稳定秩与表征余弦相似度定位浅层退化及强自相关下的同质化。提出 DEFormer，融合原序列与一阶差分、log1p 目标变换、回归／分类多任务及 SubAttention，通过逐模块消融验证；完整机制与论文图表见 DEFormer 研究详解", "I led Transformer rank-collapse research using attention stable rank and representation cosine similarity to diagnose shallow degradation and homogenization under strong autocorrelation. DEFormer combines raw/differenced inputs, log1p targets, regression/classification tasks and SubAttention, validated through component ablations; the research deep dive contains the mechanisms and paper figures"),
         },
         {
-          title:T("SFT：任务导向的结构化推理与表征融合", "SFT: task-oriented structured reasoning & feature fusion"),
+          title:T("上游 SFT：六类标签与任务对齐", "Upstream SFT: six labels & task alignment"),
           body:T("基于真实销量涨跌方向与幅度构建六类监督标签，通过 LoRA 微调 Qwen3-4B，将通用语义能力对齐至销量变化预测任务，再把任务适配表征融合至下游预测网络；以冻结表征方案为对照，分别评估整体样本与大促销量跃升样本", "I built six supervised labels from real sales-change direction and magnitude and fine-tuned Qwen3-4B with LoRA to align general semantics with sales-change prediction. Task-adapted features feed the downstream network, evaluated against frozen representations on overall samples and promotion-driven sales jumps"),
         },
         {
-          title:T("RLVR：以可验证奖励探索推理路径", "RLVR: explore reasoning paths with verifiable rewards"),
+          title:T("上游 RLVR / GRPO：结果奖励与推理探索", "Upstream RLVR / GRPO: outcome rewards & exploration"),
           body:T("针对 SFT 推理路径探索不足，在 SFT 基础上采用 GRPO，以最终销量变化标签的正确性构建可验证奖励，通过采样探索与结果反馈优化业务判断；将 RLVR 后的表征接入价量模型，相较 SFT 表征方案评估", "To address limited reasoning exploration after SFT, I used GRPO with verifiable rewards for final sales-change label correctness. Sampled exploration and outcome feedback improved business judgments; RLVR representations were integrated into the price–sales model and evaluated against SFT features"),
         },
         {
-          title:T("OPD：Qwen3-27B 教师提供逐 Token 概率监督", "OPD: token-level probability supervision from Qwen3-27B"),
+          title:T("上游 OPD：27B 教师与逐 Token 监督", "Upstream OPD: 27B teacher & token-level supervision"),
           body:T("针对 RLVR 结果奖励稀疏、过程监督不足与误判问题，由 Qwen3-27B 强教师对学生自采样轨迹提供 Token-level 概率分布监督，提升 CoT 推理质量与趋势判断稳定性；沿用相同的表征融合与下游重训流程，在 RLVR 之后继续验证预测改善", "To address sparse RLVR rewards, limited process supervision and misclassification, a Qwen3-27B teacher provided token-level probability distributions on student-sampled trajectories, improving CoT reasoning quality and trend stability. The same representation-fusion and downstream-retraining workflow evaluated further forecasting gains after RLVR"),
         },
         {
-          title:T("补充工程实践：早期表征基线与推理稳定性", "Supplementary engineering: early feature baseline & inference stability"),
+          title:T("下游模型：门控表征融合与推理稳定性", "Downstream model: gated feature fusion & inference stability"),
           body:T("早期实验将冻结 Qwen3-4B 表征经门控融合接入时序模型，相对同配置、无 Qwen3 表征方案，wMAPE 下降 2.1%。另以 Monte Carlo Dropout 多次采样后取均值，相对原线上推理方案，逐样本跨批次预测 CV 下降 11%，受控输入扰动下的预测相对变化下降 10%；后两项独立衡量稳定性", "Earlier experiments fused frozen Qwen3-4B features through a gate, reducing wMAPE by 2.1% versus the same setup without Qwen3. Separately, Monte Carlo Dropout with mean aggregation reduced per-sample cross-batch prediction CV by 11% and relative prediction changes under controlled input perturbations by 10% versus the original online inference approach; those two metrics measure stability independently"),
         },
       ],
@@ -996,7 +1068,6 @@ const portfolio = {
       id:"project-ring",index:"04",category:T("产品实践 · 智能硬件", "Product development · Smart hardware"),
       title:T("智能戒指：从用户需求到首代样机", "Smart ring: from user needs to a first prototype"),
       description:T("把市场调研、需求优先级、工程可行性与原型反馈串起来", "Connecting discovery, priorities, engineering feasibility and prototype feedback"),
-      role:T("初创团队产品经理 · 深圳科创学院 · 2024.01 — 2024.06", "Startup product manager · Shenzhen InnoX Academy · 2024.01 — 2024.06"),
       context:T("项目从智能戒指概念出发，围绕健康监测开展产品定义。我的任务是推动首代方案成形：识别用户需求，制定功能优先级，并与软硬件工程师共同评估实现路径", "The project began with a smart-ring concept focused on health monitoring. I worked to shape a first-generation product: identify user needs, prioritize features and assess implementation paths with software and hardware engineers"),
       challenge:T("首代产品的范围需要在用户需求与技术可行性之间形成清晰选择。样机测试还需要真实用户参与，并将反馈转为下一轮迭代输入，避免调研、开发与运营彼此脱节", "First-generation scope requires clear choices across user needs and technical feasibility. Prototype testing needs real users and a path for feedback to enter the next iteration, connecting discovery, development and operations"),
       flow:[T("市场调研 / 访谈","Research / interviews"),T("需求与功能优先级","Requirements / priorities"),T("可行性与首代样机","Feasibility / prototype"),T("用户测试与迭代","User testing / iteration")],
@@ -1066,7 +1137,6 @@ const portfolio = {
       id:"project-hust-wind",index:"R2",sourceStory:"hust-wind",
       category:T("研究详解 · 联邦学习与动态图", "Research · Federated learning & dynamic graphs"),
       title:T("FedGIN / CPLF：个性化联邦与可学习特征图", "FedGIN / CPLF: personalized federation and learned feature graphs"),
-      role:T("主要研究成员 · 方法设计、实现与实验分析 · 共同第一作者", "Core research contributor · Method design, implementation and analysis · Co-first author"),
       context:T("多风电场预测需要协同学习，又受原始数据本地保存与各场站时间模式异构的约束。GIN 在本地学习特征图和时间表征，CPLF 只聚合空间模块参数；所给修订稿用加州 NW 8 场站、SE 19 场站的 NREL 数据开展 30 分钟至 2 小时预测实验", "Multi-farm forecasts need collaboration under raw-data locality and heterogeneous temporal behavior. GIN learns feature graphs and temporal representations locally; CPLF aggregates spatial-module parameters. The supplied revision evaluates 30-minute to 2-hour forecasts using NREL data from 8 NW and 19 SE California farms"),
       researchStudy:windResearchStudy,
       decisionTitles:[T("本地 GIN：图表征与时间建模", "Local GIN: graph and temporal representations"),T("SiDGI：生成有向结构并校准边权", "SiDGI: directed graph generation and edge calibration"),T("CPLF：空间共享、时间个性化", "CPLF: shared spatial modules and temporal personalization"),T("分开检验协作与图模块的收益", "Test collaboration and graph components separately")],
@@ -1075,7 +1145,6 @@ const portfolio = {
       id:"project-hust-price",index:"R3",sourceStory:"hust-price",
       category:T("研究详解 · 点预测与区间预测", "Research · Point & interval forecasting"),
       title:T("Dense Skip Attention：日前电价点预测与区间预测", "Dense Skip Attention: point and interval day-ahead prices"),
-      role:T("主要研究成员 · 方法设计、代码实现与实验分析 · 第二作者", "Core research contributor · Method design, implementation and analysis · Second author"),
       context:T("面向日前市场中的报价、购售电与风险评估需求，研究使用瑞典、挪威、丹麦、芬兰 2018–2019 年小时数据。输入涵盖价格、功率交换、发电与用电、容量，以及丹麦、芬兰的风电特征；时间建模与特征加权共同服务于点预测和区间预测", "For day-ahead market bidding, energy purchases/sales and risk assessment, the study uses hourly 2018–2019 data from Sweden, Norway, Denmark and Finland. Inputs cover prices, power exchanges, generation and consumption, capacity, and wind features in Denmark and Finland. Temporal modeling and feature weighting support point and interval forecasts"),
       researchStudy:priceResearchStudy,
       decisionTitles:[T("ARUCNN–GRU：时间建模与正则化", "ARUCNN–GRU: temporal modeling and regularization"),T("Dense Skip Attention：特征轴加权与旁路", "Dense Skip Attention: feature-axis weighting and skip path"),T("按输出任务选择损失与评估指标", "Select losses and metrics for the output task"),T("验证精度、区间质量与计算取舍", "Validate accuracy, interval quality and computation")],
@@ -1084,7 +1153,6 @@ const portfolio = {
       id:"project-hust-review",index:"R4",sourceStory:"hust-review",
       category:T("研究详解 · 新能源电力系统运行综述", "Research · Renewable power system operation review"),
       title:T("新能源电力系统：AI 预测、调度、控制与市场", "AI for renewable power system operation"),
-      role:T("第二作者 · 相关章节文献研究、英文写作与修订", "Second author · Literature research, writing and revision of the relevant sections"),
       context:T("论文以高比例新能源接入带来的不确定性为背景，将预测、调度、控制和电力市场作为四个关键运行环节。综述将 ML、DL 与 RL 方法放入各自任务、决策变量与物理约束中，讨论计算效率、适用条件及后续研究方向", "Against uncertainty from high renewable penetration, the paper identifies forecasts, dispatch, control and electricity markets as four key operational components. It places ML, DL and RL within their tasks, decision variables and physical constraints to discuss computation, applicability and future research"),
       researchStudy:reviewResearchStudy,
       decisionTitles:[T("预测：建模机制与计算取舍", "Forecasts: modeling mechanisms and computation"),T("调度：任务分类与运行约束", "Dispatch: tasks and operational constraints"),T("控制：系统状态与动作空间", "Control: system states and action spaces"),T("市场：多参与者交互与研究展望", "Markets: participant interactions and outlook")],
