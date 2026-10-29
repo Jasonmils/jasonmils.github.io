@@ -499,12 +499,12 @@
       '<span class="journey-chart-note">' + bi(T("多档期工作流示意 · 人工审核后执行", "Illustrative workflow · Execution after human review")) + '</span></span>';
   };
   const renderGrowthJourney = journey => '<nav class="growth-journey" aria-labelledby="' + escapeHTML(journey.stages[0].target) +
-    '-journey-label"><p class="growth-journey-label" id="' + escapeHTML(journey.stages[0].target) + '-journey-label">' + bi(journey.label) + '</p><div class="growth-journey-route"><ol class="growth-journey-stages">' +
+    '-journey-label"><p class="sr-only" id="' + escapeHTML(journey.stages[0].target) + '-journey-label">' + bi(journey.label) + '</p><div class="growth-journey-route"><ol class="growth-journey-stages">' +
     journey.stages.map((stage,i) => '<li>' + (i ? '<span class="growth-journey-direction" aria-hidden="true">' + arrow + '</span>' : '') + '<a class="growth-journey-stage growth-journey-stage--' + (i ? 'long' : 'short') + '" href="#' +
       escapeHTML(stage.target) + '"><span class="growth-journey-top"><span class="growth-journey-number" aria-hidden="true">' + stage.number +
       '</span><span class="growth-journey-horizon">' + bi(stage.horizon) + '</span></span><strong>' + bi(stage.title) +
       '</strong><span class="growth-journey-action">' + bi(stage.action) + '</span>' + (stage.diagram ? renderGrowthDiagram(stage.diagram) : '') + '<span class="growth-journey-link">' +
-      bi(T("查看阶段", "Explore stage"),true) + arrow + '</span></a></li>').join('') +
+      arrow + '</span></a></li>').join('') +
     '</ol></div><div class="growth-journey-foundation">' +
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h11l-3-3M19 16H8l3 3M19 8v4M5 16v-4"/></svg><div><strong>' +
     bi(journey.connection) + '</strong><p>' + bi(journey.detail) + '</p></div></div></nav>';
@@ -517,12 +517,11 @@
       '</p><h5 id="' + phase.id + '-title">' + bi(phase.title) + '</h5></div></header>' +
       '<dl class="strategy-points"><div><dt>' + bi(strategy.goalLabel) + '</dt><dd>' + bi(phase.goal) + '</dd></div></dl>' +
       '<div class="strategy-contributions"><div class="contribution-heading"><h6>' + bi(strategy.contributionLabel) +
-      '</h6><span>' + bi(T("点击贡献，查看项目", "Select a contribution"),true) + '</span></div>' +
+      '</h6></div>' +
       '<div class="contribution-list">' + phase.links.map((link,j) => '<a class="contribution-link" href="#' + (link.view || link.target) + '" data-open-project="' + link.target + '" data-project-view="' + (link.view || '') + '" aria-controls="project-preview" aria-expanded="false">' +
         '<span class="contribution-index" aria-hidden="true">0' + (j+1) + '</span><span class="contribution-copy"><strong>' + bi(link.label) +
-        '</strong><span class="contribution-action">' + bi(link.action) + '</span><span class="contribution-state"><span class="contribution-idle">' +
-        bi(T("查看项目", "Explore project"),true) + '</span><span class="contribution-selected">' + bi(T("正在对照", "In view"),true) +
-        '</span></span></span><span class="contribution-arrow" aria-hidden="true">' + arrow + '</span></a>').join('') + '</div></div>' +
+        '</strong><span class="contribution-action">' + bi(link.action) + '</span><span class="contribution-state">' +
+        bi(T("正在对照", "In view"),true) + '</span></span><span class="contribution-arrow" aria-hidden="true">' + arrow + '</span></a>').join('') + '</div></div>' +
       '<div class="strategy-impact"><strong>' + bi(phase.result) + '</strong>' +
       (phase.resultTable ? renderTable(phase.resultTable) : '<p>' + bi(phase.resultNote) + '</p>') + '</div></section>'
     ).join('') + '</div></div>';
@@ -641,7 +640,7 @@
   };
   const renderProject = project => '<details class="project-card" id="' + project.id + '"><summary class="project-summary">' +
     projectVisual(project) + '<div class="project-heading"><div class="eyebrow">' + bi(project.category) +
-    '</div><h3>' + bi(project.title) + '</h3><p>' + bi(project.description) + '</p>' + tags(project.tags.slice(0,3)) + '</div>' + toggle() + '</summary>' +
+    '</div><h3>' + bi(project.title) + '</h3><p>' + bi(project.description) + '</p></div>' + toggle() + '</summary>' +
     renderProjectBody(project) + '</details>';
   const renderProjectBody = project => project.id === "project-deformer" ? renderDeformerBody(project) :
     project.researchStudy?.narrative ? renderResearchBody(project) :
@@ -652,7 +651,7 @@
     (project.visualStories ? project.visualStories.map(id => renderProjectStudy(project,id)).join('') :
       project.visualStory ? renderProjectStudy(project) : '<ol class="flow" aria-label="Workflow">' + project.flow.map((step,i) => '<li class="flow-step"><span class="flow-index">0' +
     (i+1) + '</span>' + bi(step) + '</li>').join('') + '</ol>') +
-    '<h4 class="small-label">' + bi(["project-qwen","project-agent"].includes(project.id) ? T("技术细节 · 按需展开", "Technical details · Expand as needed") : ui.decisions) +
+    '<h4 class="small-label">' + bi(["project-qwen","project-agent"].includes(project.id) ? T("技术细节", "Technical details") : ui.decisions) +
     '</h4><div class="decision-list' + (["project-qwen","project-agent"].includes(project.id) ? ' forecast-details' : '') + '">' + project.decisions.map((d,i) =>
       ["project-qwen","project-agent"].includes(project.id) ? '<details class="forecast-detail"><summary>' + bi(d.title,true) + toggle() + '</summary><p>' + bi(d.body) + '</p></details>' :
       '<div class="decision"><span class="number">' + String(i+1).padStart(2,"0") + '</span><div><h4>' + bi(d.title) + '</h4><p>' +
@@ -673,19 +672,15 @@
     (technology.resultTable ? renderTable(technology.resultTable) : '<p>' + bi(technology.evidence) + '</p>') + '</div>' +
     '<div class="technology-projects">' + technology.links.map(link => '<a class="contribution-link technology-project-link" href="#' +
       link.target + '" data-open-project="' + link.target + '" aria-controls="project-preview" aria-expanded="false">' +
-      '<span class="contribution-copy"><strong>' + bi(link.label) + '</strong><span class="contribution-state"><span class="contribution-idle">' +
-      bi(ui.viewProject,true) + '</span><span class="contribution-selected">' + bi(T("正在对照", "In view"),true) +
-      '</span></span></span><span class="contribution-arrow" aria-hidden="true">' + arrow + '</span></a>').join('') + '</div></article>';
-  const renderTechnologyRoute = () => '<nav class="technology-route" aria-labelledby="technology-route-title"><p id="technology-route-title">' +
+      '<span class="contribution-copy"><strong>' + bi(link.label) + '</strong><span class="contribution-state">' +
+      bi(T("正在对照", "In view"),true) + '</span></span><span class="contribution-arrow" aria-hidden="true">' + arrow + '</span></a>').join('') + '</div></article>';
+  const renderTechnologyRoute = () => '<nav class="technology-route" aria-labelledby="technology-route-title"><p class="sr-only" id="technology-route-title">' +
     bi(ui.technologyRoute) + '</p><ol>' + data.technologies.map((technology,index) => '<li><a href="#' + technology.id + '"><span aria-hidden="true">' +
     String(index+1).padStart(2,"0") + '</span><strong>' + escapeHTML(technology.name) + '</strong>' + arrow + '</a></li>').join('') + '</ol></nav>';
-  const heading = (index, title, description, controls = false, count = false, category = ["EXPERIENCE","PROJECTS","SKILLS","EDUCATION"][index-1]) => '<div class="section-top"><div>' +
-    '<div class="eyebrow">0' + index + ' / ' + category +
-    '</div><h2 class="section-title">' + bi(title) + '</h2><p class="section-description">' + bi(description) + '</p></div>' +
+  const heading = (title, controls = false) => '<div class="section-top"><h2 class="section-title">' + bi(title) + '</h2>' +
     (controls ? '<div class="section-controls"><button class="quiet-button" type="button" data-expand-all>' +
-      bi(index === 1 ? ui.expandNotes : ui.expandAll, true) + '</button><button class="quiet-button" type="button" data-collapse-all>' +
-      bi(index === 1 ? ui.collapseNotes : ui.collapseAll, true) + '</button></div>' : '') +
-    (count ? '<span class="project-count">' + bi(ui.projectCount, true) + '</span>' : '') + '</div>';
+      bi(ui.expandAll, true) + '</button><button class="quiet-button" type="button" data-collapse-all>' +
+      bi(ui.collapseAll, true) + '</button></div>' : '') + '</div>';
   document.getElementById("app").innerHTML =
     '<a class="skip-link" href="#main">' + bi(ui.skip, true) + '</a>' +
     '<div class="ambient-light" aria-hidden="true"></div><div class="reading-line" aria-hidden="true"></div>' +
@@ -704,18 +699,17 @@
     data.email + diagonal + '</a><a class="profile-scholar" href="' + data.scholar + '" target="_blank" rel="noopener noreferrer">' +
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5-10-5m4 3v5l6 3 6-3v-5M22 9v7"/></svg>Google Scholar' + diagonal +
     '</a></div></aside><nav class="mobile-index" aria-label="Page sections">' + navLinks() + '</nav><main class="main-content" id="main">' +
-    '<section class="section" id="experience">' + heading(1,ui.workTitle,ui.workDesc) + data.experience.map(renderExperience).join('') + '</section>' +
-    '<section class="section technology-view" id="technology" hidden>' + heading(1,ui.technologyTitle,ui.technologyDesc,false,false,"AI TECHNOLOGY") +
+    '<section class="section" id="experience">' + heading(ui.workTitle) + data.experience.map(renderExperience).join('') + '</section>' +
+    '<section class="section technology-view" id="technology" hidden>' + heading(ui.technologyTitle) +
     renderTechnologyRoute() + '<div class="technology-list">' + data.technologies.map(renderTechnology).join('') + '</div></section>' +
-    '<section class="section" id="projects">' + heading(2,ui.projectTitle,ui.projectDesc,true,true) +
-    data.projects.map(renderProject).join('') + '<div class="research-collection" id="research-projects"><div class="research-collection-heading"><div class="eyebrow">RESEARCH / ' + String(researchProjects.length).padStart(2,'0') + '</div><h3>' +
-    bi(T("相关研究详解", "Research deep dives")) + '</h3><p>' + bi(T("从 Transformer 机制研究，到电力系统预测与 AI 应用", "From Transformer mechanisms to power-system forecasting and AI applications")) +
-    '</p></div>' + researchProjects.map(renderProject).join('') + '</div></section>' +
-    '<section class="section" id="skills">' + heading(3,ui.skillsTitle,ui.skillsDesc) +
+    '<section class="section" id="projects">' + heading(ui.projectTitle,true) +
+    data.projects.map(renderProject).join('') + '<div class="research-collection" id="research-projects"><div class="research-collection-heading"><h3>' +
+    bi(T("相关研究详解", "Research deep dives")) + '</h3></div>' + researchProjects.map(renderProject).join('') + '</div></section>' +
+    '<section class="section" id="skills">' + heading(ui.skillsTitle) +
     '<div class="skill-grid">' + data.skills.map(group => '<div class="skill-group"><h3>' + bi(group.title) + '</h3>' + tags(group.items) + '</div>').join('') +
     '<div class="skill-group skill-group--language"><h3>' + bi(T("语言能力", "Languages")) + '</h3>' +
     tags([data.language]) + '</div></div></section>' +
-    '<section class="section" id="education">' + heading(4,ui.educationTitle,ui.educationDesc) +
+    '<section class="section" id="education">' + heading(ui.educationTitle) +
     '<div class="education-list">' + data.education.map(ed => '<div class="education-row"><div class="education-school">' +
       institutionLogo(institutionLogos[ed.id],"education-logo") + '<div class="education-copy"><h3>' + bi(ed.name) +
       '</h3><p>' + bi(ed.degree) + '</p>' + (ed.note ? '<div class="education-note">' + bi(ed.note) + '</div>' : '') +
@@ -725,7 +719,7 @@
     diagonal + '</a></div><div class="paper-list">' + data.papers.map(paper =>
       '<div class="paper"><div class="paper-title">' + escapeHTML(paper.title) + '</div><div class="paper-venue">' +
       bi(paper.venue) + '</div></div>').join('') + '</div><p class="honors">' + bi(data.honors) + '</p></div></section>' +
-    '<div class="bottom-bar"><span>' + bi(ui.source) + '</span><a href="#top">© 2026 Jason Ding' + up + '</a></div></main></div></div>';
+    '<div class="bottom-bar"><a href="#top">© 2026 Jason Ding' + up + '</a></div></main></div></div>';
   document.getElementById("app").insertAdjacentHTML("beforeend",
     '<div class="comparison-bar"><span class="comparison-identity">JASON DING</span><span class="comparison-divider" aria-hidden="true">/</span>' +
     '<span class="comparison-company"></span><span class="comparison-label">' + bi(T("经历总览", "Experience"),true) + '</span></div>' +
