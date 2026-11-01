@@ -241,7 +241,7 @@
       '<div class="agent-core-row">' + node("planner") + '</div>' +
       '<div class="agent-action-row">' + ["plan","review","feedback"].map(node).join('') + '</div></div>' +
       '<div class="agent-loop-caption"><span aria-hidden="true">↶</span>' + bi(T("执行反馈 → 更新记忆 → 下一轮规划", "Execution feedback → Update memory → Plan the next round")) + '</div>' +
-      '<div class="agent-guardrails">' + diagramIcon("execute") + '<strong>' + bi(T("执行保障", "Safeguards")) + '</strong><span>' +
+      '<div class="agent-guardrails">' + diagramIcon("execute") + '<strong>' + bi(T("基础异常处理", "Basic exception handling")) + '</strong><span>' +
       bi(T("失败重试 · 流程回退 · 人工监督", "Retry failures · Fall back · Human oversight")) + '</span></div></div>' +
       '<p class="forecast-interaction-hint">' + bi(T("点击节点，查看它在工作流中的职责", "Select a node to explore its role in the workflow")) + '</p>' +
       '<div class="agent-step-panels" aria-live="polite">' + Object.entries(agentWorkflowSteps).map(([key,step]) =>
@@ -256,10 +256,10 @@
       render: () => '<div class="paper-methods">' + wikiStudy.figures.map(renderWikiFigure).join('') + '</div>'
     },
     "ali-agent": {
-      tab: T("Agent 闭环", "Agent loop"), title: T("运营 Agent · 从规划到反馈闭环", "Operations Agent · From plans to a feedback loop"),
-      challenge: T("结合信号、工具与记忆生成规划，经人工审核后执行，再用反馈调整下一轮", "Plan with signals, tools and memory; review before execution, then use feedback in the next round"),
+      tab: T("Agent 闭环", "Agent loop"), title: T("运营 Agent MVP · 从规划到反馈", "Operations Agent MVP · From planning to feedback"),
+      challenge: T("多个节点采用简化实现，先跑通预测、建议、人工审核与反馈流程", "Several nodes use simplified implementations to establish a workflow from forecasts and recommendations to human review and feedback"),
       render: renderAgentWorkflow,
-      takeaway: T("把模型输出接入可追踪、可迭代的业务流程", "Turn model outputs into a traceable, repeatable workflow")
+      takeaway: T("工具提供预测，Agent 整理建议，运营人员审核后推进执行", "Tools provide forecasts, the Agent prepares recommendations, and operations staff review them before execution")
     },
     "ali-forecast": {
       tab: T("预测优化", "Forecasting"), title: T("LLM 增强价量预估 · 双线优化路径", "LLM-enhanced forecasting · Two optimization tracks"),
@@ -798,13 +798,20 @@
   const previewScroll = preview.querySelector(".preview-scroll");
   const previewContent = preview.querySelector(".preview-content");
   const desktopComparison = window.matchMedia("(min-width: 1024px)");
+  const comparisonGlass = document.createElement("div");
+  comparisonGlass.className = "comparison-glass";
+  comparisonGlass.setAttribute("aria-hidden","true");
+  document.body.append(comparisonGlass);
   let previewOrigin = null;
+  let previewReturnOrigin = null;
+  let comparisonSource = null;
+  let comparisonGlassFrame = 0;
   let previewPagePosition = {x:0,y:0};
   let previewReturnAnchor = null;
   let previewReturnOffset = 0;
   let previewFramePending = false;
   const previewMotion = {transition:null,animations:[],pending:null,cleanup:null,version:0};
-  const previewTiming = {duration:500,easing:"cubic-bezier(.22,1,.36,1)"};
+  const previewTiming = {duration:400,easing:"cubic-bezier(.22,1,.36,1)"};
   const previewNames = {
     "project-deformer": T("DEFormer", "DEFormer"),
     "project-qwen": T("预测优化", "Forecasting"),
@@ -861,6 +868,41 @@
     if (previewOrigin?.matches(".contribution-link") && matches(previewOrigin) && previewOrigin.getClientRects().length) return previewOrigin;
     return Array.from(document.querySelectorAll(".contribution-link")).find(link => matches(link) && link.getClientRects().length);
   }
+  function updateComparisonGlass() {
+    comparisonGlassFrame = 0;
+    const source = preview.open && desktopComparison.matches ? currentContribution() : null;
+    if (source !== comparisonSource) {
+      comparisonSource?.classList.remove("comparison-focus");
+      comparisonSource = source;
+      comparisonSource?.classList.add("comparison-focus");
+    }
+    comparisonGlass.classList.toggle("is-active",!!source);
+    if (!source) return;
+    // Clip a rounded opening out of one glass layer, keeping the real card
+    // sharp and interactive without blurring any of its ancestors.
+    const rect = source.getBoundingClientRect();
+    const width = Math.max(0,preview.getBoundingClientRect().left);
+    const height = window.innerHeight;
+    const pad = 5;
+    const left = rect.left-pad, top = rect.top-pad;
+    const right = rect.right+pad, bottom = rect.bottom+pad;
+    const radius = Math.min(parseFloat(getComputedStyle(source).borderRadius)+pad,rect.width/2,rect.height/2);
+    const hole = rect.bottom > 0 && rect.top < height ?
+      ` M${left+radius} ${top} H${right-radius} Q${right} ${top} ${right} ${top+radius}` +
+      ` V${bottom-radius} Q${right} ${bottom} ${right-radius} ${bottom}` +
+      ` H${left+radius} Q${left} ${bottom} ${left} ${bottom-radius}` +
+      ` V${top+radius} Q${left} ${top} ${left+radius} ${top} Z` : "";
+    comparisonGlass.style.width = width + "px";
+    comparisonGlass.style.clipPath = `path(evenodd, "M0 0 H${width} V${height} H0 Z${hole}")`;
+  }
+  function scheduleComparisonGlass() {
+    if (preview.open && !comparisonGlassFrame) comparisonGlassFrame = requestAnimationFrame(updateComparisonGlass);
+  }
+  const comparisonResizeObserver = new ResizeObserver(scheduleComparisonGlass);
+  comparisonResizeObserver.observe(document.querySelector(".page-shell"));
+  comparisonResizeObserver.observe(preview);
+  window.addEventListener("scroll",scheduleComparisonGlass,{passive:true});
+  window.addEventListener("resize",scheduleComparisonGlass);
   function settlePreviewMotion() {
     // Commit the latest destination before starting another interaction.
     previewMotion.transition?.skipTransition();
@@ -873,26 +915,31 @@
   function runPreviewMotion(change, kind, immediate = false) {
     const version = ++previewMotion.version;
     const root = document.documentElement;
-    const source = desktopComparison.matches ? previewReturnAnchor : null;
+    const source = desktopComparison.matches && kind !== "switch" ?
+      (kind === "open" ? previewOrigin : currentContribution() || previewOrigin) : null;
     document.querySelector(".preview-motion-source")?.classList.remove("preview-motion-source");
     source?.classList.add("preview-motion-source");
     root.dataset.previewMotion = kind;
     root.dataset.previewMotionLayout = desktopComparison.matches ? "split" : "sheet";
     let changed = false;
+    let exitLayer = null;
     const update = () => {
       if (changed) return;
       changed = true;
       previewMotion.pending = null;
       change();
+      updateComparisonGlass();
     };
     const cleanup = () => {
       if (version !== previewMotion.version) return;
       source?.classList.remove("preview-motion-source");
+      exitLayer?.remove();
       delete root.dataset.previewMotion;
       delete root.dataset.previewMotionLayout;
       previewMotion.transition = null;
       previewMotion.animations = [];
       previewMotion.cleanup = null;
+      scheduleComparisonGlass();
     };
     previewMotion.cleanup = cleanup;
     previewMotion.pending = update;
@@ -906,7 +953,7 @@
       transition.finished.then(cleanup,cleanup);
       return;
     }
-    // Older browsers use the same timing, with a geometry-based fallback.
+    // Older browsers restore the layout while an inert copy of the panel exits.
     const animate = (element,frames,duration = previewTiming.duration) => {
       const animation = element.animate(frames,{...previewTiming,duration});
       previewMotion.animations.push(animation);
@@ -924,20 +971,29 @@
       ]);
     };
     if (kind === "close") {
-      const animation = animate(preview,[{opacity:1,transform:"none"},{opacity:0,transform:offset}],300);
-      animation.finished.then(() => {
-        update();
-        const returning = moveSource();
-        if (returning) returning.finished.then(cleanup,cleanup);
-        else cleanup();
-      },() => {});
+      const rect = preview.getBoundingClientRect();
+      exitLayer = document.createElement("div");
+      exitLayer.className = "preview-exit-layer" + (desktopComparison.matches ? " project-compare-open" : "");
+      exitLayer.setAttribute("aria-hidden","true");
+      exitLayer.inert = true;
+      const outgoing = preview.cloneNode(true);
+      [outgoing,...outgoing.querySelectorAll("[id]")].forEach(element => element.removeAttribute("id"));
+      Object.assign(outgoing.style,{position:"fixed",inset:"auto",left:rect.left+"px",top:rect.top+"px",
+        width:rect.width+"px",height:rect.height+"px",margin:"0"});
+      exitLayer.append(outgoing);
+      document.body.append(exitLayer);
+      outgoing.querySelector(".preview-scroll").scrollTop = previewScroll.scrollTop;
+      update();
+      moveSource();
+      animate(outgoing,[{opacity:1,transform:"none"},{opacity:0,transform:offset}],previewTiming.duration);
+      Promise.allSettled(previewMotion.animations.map(animation => animation.finished)).then(cleanup);
       return;
     }
     update();
     if (kind === "open") moveSource();
     animate(kind === "switch" ? preview.querySelector(".preview-detail") : preview,
       [{opacity:kind === "switch" ? .25 : 0,transform:kind === "switch" ? "translateY(8px)" : offset},
-       {opacity:1,transform:"none"}],kind === "switch" ? 260 : 500);
+       {opacity:1,transform:"none"}],kind === "switch" ? 260 : previewTiming.duration);
     Promise.allSettled(previewMotion.animations.map(animation => animation.finished)).then(cleanup);
   }
   function alignComparisonSource() {
@@ -976,6 +1032,7 @@
       restoreExperiencePosition();
     }
     previewScroll.scrollTop = detailScroll;
+    updateComparisonGlass();
   }
   function openProjectPreview(id, origin, requestedView = "") {
     const project = projectCatalog.find(item => item.id === id);
@@ -986,16 +1043,23 @@
     settlePreviewMotion();
     const wasOpen = preview.open;
     if (wasOpen && preview.dataset.project === id && (preview.dataset.view || "") === view) {
+      if (origin && !preview.contains(origin)) {
+        previewOrigin = origin;
+        renderPreviewContext(project);
+        updateComparisonGlass();
+      }
       preview.querySelector(".preview-scroll").focus({preventScroll:true});
       return;
     }
     const fromProjectSwitcher = !!document.activeElement?.closest(".preview-mobile-projects");
     if (!wasOpen) {
       previewOrigin = origin;
+      previewReturnOrigin = origin;
       previewPagePosition = {x:window.scrollX,y:window.scrollY,width:window.innerWidth};
       previewReturnAnchor = origin?.closest(".technology-card") || origin?.closest(".strategy-phase") || origin?.closest(".story-panel") || origin;
       previewReturnOffset = previewReturnAnchor?.getBoundingClientRect().top || 0;
     }
+    if (origin && !preview.contains(origin)) previewOrigin = origin;
     // A contribution can select a specific chapter of a shared project.
     let body;
     if (viewInfo) {
@@ -1072,7 +1136,7 @@
         link.setAttribute("aria-expanded","false");
         link.removeAttribute("aria-current");
       });
-      previewOrigin?.focus({preventScroll:true});
+      previewReturnOrigin?.focus({preventScroll:true});
       restoreExperiencePosition();
     },"close",immediate);
   }
@@ -1165,8 +1229,8 @@
       dialog.className = "forecast-dialog" + (isAgent ? " agent-workflow-dialog" : "");
       dialog.setAttribute("aria-labelledby","forecast-dialog-title");
       dialog.innerHTML = '<header><div><h2 id="forecast-dialog-title">' +
-        bi(isAgent ? T("运营 Agent · 从规划到反馈闭环", "Operations Agent · From plans to a feedback loop") : T("LLM 增强价量预估 · 双线优化路径", "LLM-enhanced forecasting · Two optimization tracks")) +
-        '</h2><p>' + bi(isAgent ? T("工具提供预测，Agent 组织规划，人工把关执行", "Tools forecast, the Agent plans, humans approve execution") : T("Qwen3 提供任务表征，DEFormer 完成价量预测", "Qwen3 supplies task features; DEFormer forecasts price–sales responses")) +
+        bi(isAgent ? T("运营 Agent MVP · 从规划到反馈", "Operations Agent MVP · From planning to feedback") : T("LLM 增强价量预估 · 双线优化路径", "LLM-enhanced forecasting · Two optimization tracks")) +
+        '</h2><p>' + bi(isAgent ? T("多个节点采用简化实现：工具提供预测，Agent 组织建议，人工审核后执行", "Several nodes use simplified implementations: tools forecast, the Agent proposes recommendations, and humans review them before execution") : T("Qwen3 提供任务表征，DEFormer 完成价量预测", "Qwen3 supplies task features; DEFormer forecasts price–sales responses")) +
         '</p></div><button type="button" data-forecast-close autofocus>' + bi(T("关闭", "Close"),true) + '</button></header>';
       const roadmap = forecastEnlarge.closest(isAgent ? ".agent-workflow" : ".forecast-roadmap").cloneNode(true);
       roadmap.querySelector(".forecast-map-toolbar").remove();

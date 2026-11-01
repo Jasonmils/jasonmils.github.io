@@ -1017,19 +1017,23 @@ summary:hover .toggle-plus,details[open]>summary .toggle-plus{background:#e3e9f6
 :root{--preview-ease:cubic-bezier(.22,1,.36,1)}
 .project-preview{view-transition-name:project-detail;transform-origin:center}
 .preview-motion-source{view-transition-name:project-source}
+html[data-preview-motion]{scroll-behavior:auto;overflow-anchor:none}
+.preview-exit-layer{position:fixed;inset:0;z-index:80;pointer-events:none}
 .contribution-link:active{transform:scale(.985);transition:transform .12s var(--preview-ease)}
 .contribution-link .contribution-arrow .icon{transition:transform .3s var(--preview-ease)}
 .contribution-link[aria-current] .contribution-arrow .icon{transform:translateX(2px)}
 ::view-transition{pointer-events:none}
-::view-transition-group(project-source),::view-transition-group(project-detail){animation-duration:500ms;animation-timing-function:var(--preview-ease)}
-::view-transition-image-pair(project-source){border-radius:22px;overflow:hidden;isolation:isolate}
+::view-transition-group(project-source),::view-transition-group(project-detail){animation-duration:400ms;animation-timing-function:var(--preview-ease)}
+::view-transition-image-pair(project-source){border-radius:15px;overflow:hidden;isolation:isolate}
 ::view-transition-old(project-source){animation:none;opacity:0}
 ::view-transition-new(project-source){animation:none;opacity:1;mix-blend-mode:normal}
 ::view-transition-old(root){animation:preview-fade-out 140ms ease both;mix-blend-mode:normal}
 ::view-transition-new(root){animation:preview-fade-in 240ms ease both;mix-blend-mode:normal}
 ::view-transition-old(project-detail),::view-transition-new(project-detail){mix-blend-mode:normal}
-html[data-preview-motion="open"]::view-transition-new(project-detail){animation:preview-detail-in 420ms var(--preview-ease) 80ms both}
-html[data-preview-motion="close"]::view-transition-old(project-detail){animation:preview-detail-out 320ms cubic-bezier(.4,0,.2,1) both}
+html[data-preview-motion="open"]::view-transition-new(project-detail){animation:preview-detail-in 400ms var(--preview-ease) both}
+html[data-preview-motion="close"]::view-transition-old(project-detail){animation:preview-detail-out 400ms var(--preview-ease) both}
+html[data-preview-motion="close"]::view-transition-old(root){animation:preview-fade-out 400ms var(--preview-ease) both}
+html[data-preview-motion="close"]::view-transition-new(root){animation:preview-fade-in 400ms var(--preview-ease) both}
 html[data-preview-motion="switch"]::view-transition-group(project-detail){animation-duration:260ms}
 html[data-preview-motion="switch"]::view-transition-old(project-detail){animation:preview-content-out 180ms ease both}
 html[data-preview-motion="switch"]::view-transition-new(project-detail){animation:preview-content-in 260ms var(--preview-ease) both}
@@ -1048,7 +1052,11 @@ html[data-preview-motion-layout="sheet"][data-preview-motion="close"]::view-tran
  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}
 }
 /* Both columns belong to the page layout: the original experience remains live. */
+.comparison-glass{position:fixed;inset:0 auto 0 0;z-index:35;pointer-events:none;opacity:0;visibility:hidden;background:linear-gradient(135deg,#f5f7fb80,#eaf0fa66);backdrop-filter:blur(5px) saturate(.8);-webkit-backdrop-filter:blur(5px) saturate(.8);transition:opacity .4s var(--preview-ease),visibility .4s;}
+html[data-preview-motion] .comparison-glass{transition:none}
 @media(min-width:1024px){
+ .comparison-glass.is-active{opacity:1;visibility:visible}
+ .project-compare-open .contribution-link.comparison-focus{border-color:#a9b9fa;background:linear-gradient(135deg,#f0f3ff,#fff);box-shadow:0 0 0 1px #4662e514,0 8px 26px -12px #253fc740}
  body.project-compare-open{background:var(--paper)}
  .project-compare-open #app{display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);align-items:start}
  .project-compare-open .page-shell{grid-column:1;grid-row:1;min-width:0;width:100%;max-width:none;margin:0;padding:90px 28px 56px;overflow-anchor:none}
@@ -1092,6 +1100,8 @@ html[data-preview-motion-layout="sheet"][data-preview-motion="close"]::view-tran
  .project-compare-open .preview-scroll{padding-left:40px;padding-right:40px}
 }
 @media(prefers-reduced-transparency:reduce){.project-compare-open .comparison-bar,.project-compare-open .preview-toolbar{background:#f8f9fc;backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media(prefers-reduced-transparency:reduce){.comparison-glass{background:#eef1f9c9;backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media print{.comparison-glass,.preview-exit-layer{display:none!important}}
 /* The two perspectives share project details, skills and education. */
 .language-dock{display:flex;align-items:center;gap:10px}
 .perspective-switch{display:flex;gap:4px;padding:4px;width:218px;border:1px solid var(--line);border-radius:999px;background:#ffffffdc;box-shadow:inset 0 1px 0 #fff,0 6px 20px #3448730a;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
