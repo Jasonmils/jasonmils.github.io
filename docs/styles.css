@@ -43,7 +43,7 @@ h3 .zh,h4 .zh,.profile-role .zh,.experience-role .zh,.section-nav .zh,.mobile-in
 .profile h1{font-size:56px;letter-spacing:-.03em;line-height:1.12;font-weight:500;margin-top:18px;font-family:var(--font-display)}
 .profile h1 .zh{letter-spacing:0;font-weight:600}
 .profile-role{font-size:21px;letter-spacing:-.02em;line-height:1.5;font-weight:500;margin-top:17px;color:var(--ink);font-family:var(--font-display)}
-.profile-tagline{font-size:16px;line-height:1.85;color:var(--muted);max-width:310px;margin-top:22px;text-wrap:pretty}
+.profile-tagline{font-size:16px;line-height:1.85;color:var(--muted);max-width:310px;margin-top:22px}
 .section-nav{display:flex;flex-direction:column;gap:4px;margin-top:40px;margin-left:-12px;width:200px;max-width:100%;align-items:stretch}
 .section-nav a{display:flex;gap:14px;align-items:center;min-height:44px;padding:9px 11px;border:1px solid transparent;border-radius:6px;font-size:15px;font-weight:500;line-height:1.6;letter-spacing:0;color:var(--muted);transition:color .14s,background-color .14s,border-color .14s}
 .nav-line{width:24px;flex:0 0 24px;height:1px;border-radius:2px;background:#d6d6d6;opacity:1;transition:background-color .14s,opacity .14s}
@@ -1163,6 +1163,34 @@ html[data-preview-motion-layout="sheet"][data-preview-motion="close"]::view-tran
  .technology-evidence .result-table th:first-child{width:26%}
  .technology-evidence .result-table th:nth-child(2){width:24%}
 }
+/* Shared text layout: progressive enhancements, with existing measures unchanged. */
+:where(p,.action-list>li,.strategy-points dd,.technology-work dd,.contribution-action){text-wrap:pretty}
+:where(h1,h2,h3,h4,h5,h6,.profile-role,.contribution-copy>strong){text-wrap:balance}
+
+/* Only short controls stay on one line; workflow cards retain multiline labels. */
+:where(.language-switch button,.quiet-button,.preview-back,.preview-tabs button,.forecast-map-toolbar button,.forecast-dialog header button,.perspective-switch button){white-space:nowrap}
+
+/* Keep this after component font shorthands, which reset font-variant. */
+.metric-value,.result-table td,.paper-result-summary strong,.discovery-metric>strong,.milestone-results b,.stability-results b{font-variant-numeric:tabular-nums}
+
+/* Language follows the actual translated text, including mixed-language pages. */
+:where(:lang(zh)){text-autospace:var(--text-autospace,normal);text-spacing-trim:var(--text-spacing-trim,trim-start)}
+:where(:lang(en)){text-spacing-trim:var(--text-spacing-trim,normal)}
+
+/* Inherited tokens also protect nested translations and math descendants. */
+:where(code,pre,kbd,samp,input,textarea,.katex,.math-scroll,svg,
+ .profile-kicker,.eyebrow,.date,.tab-index,.phase-label,.forecast-node-code,
+ .forecast-step-panel h5>span:first-child,.agent-node-top>span,.dataset-heading>span,
+ .comparison-row>b,.paper-result-year,.visual-top,.visual-label,.flow-index,
+ .paper-figure-number,.paper-result-summary>div>span,.strategy-number,
+ .contribution-index,.growth-journey-number,.agent-plan-model,.research-section-number,
+ .comparison-identity,.technology-route a>span,.technology-number){
+ --text-autospace:no-autospace;
+ --text-spacing-trim:normal;
+ text-autospace:no-autospace;
+ text-spacing-trim:normal;
+}
+
 @media(prefers-reduced-transparency:reduce){.perspective-switch,.technology-route,.technology-card{background:#f9faff;backdrop-filter:none;-webkit-backdrop-filter:none}}
 @media print{
  .context-disclosure,.story-notes,.project-card,.strategy-phase,.skill-group,.technology-card{box-shadow:none;background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;border-color:#ddd}
