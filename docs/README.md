@@ -23,7 +23,11 @@ GitHub Pages publishes only the `/docs` directory of the `master` branch. `.noje
 
 - `content.js`: Chinese and English content
 - `styles.css`: layout and appearance
+- `themes.css`: dark-theme colors for page components
+- `theme.js`: theme initialization, controls and saved preference
 - `app.js`: navigation, language switching and project panels
 - `assets/`: bundled fonts, licenses and institution logos
 
 No installation, API, external asset service or runtime build is required. The portfolio includes a professional email address and Google Scholar link, with no phone number or CV download.
+
+Light/dark controls appear in the page header and project toolbar. The first visit follows the system appearance; an explicit choice is saved locally and shared across language routes. `theme.js` runs before styles load to avoid a light flash on a saved dark theme. Research artwork retains its original colors, and printing uses the light styles.

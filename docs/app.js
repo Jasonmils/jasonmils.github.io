@@ -681,13 +681,18 @@
     (controls ? '<div class="section-controls"><button class="quiet-button" type="button" data-expand-all>' +
       bi(ui.expandAll, true) + '</button><button class="quiet-button" type="button" data-collapse-all>' +
       bi(ui.collapseAll, true) + '</button></div>' : '') + '</div>';
+  const themeSwitch = () => '<div class="theme-switch" role="group" aria-label="颜色主题">' +
+    '<button type="button" data-theme-choice="light" aria-label="浅色主题" aria-pressed="false">' +
+    '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>' +
+    '<button type="button" data-theme-choice="dark" aria-label="深色主题" aria-pressed="false">' +
+    '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 14.6A9 9 0 0 1 9.4 3.6 9 9 0 1 0 20.4 14.6Z"/></svg></button></div>';
   document.getElementById("app").innerHTML =
     '<a class="skip-link" href="#main">' + bi(ui.skip, true) + '</a>' +
     '<div class="ambient-light" aria-hidden="true"></div><div class="reading-line" aria-hidden="true"></div>' +
     '<div class="language-dock"><div class="perspective-switch" role="group" aria-label="Portfolio perspective / 浏览视角">' +
     '<button type="button" data-perspective="experience" aria-controls="experience technology" aria-pressed="true">' + bi(ui.experienceView,true) + '</button>' +
     '<button type="button" data-perspective="technology" aria-controls="experience technology" aria-pressed="false">' + bi(ui.technologyView,true) + '</button>' +
-    '</div><div class="language-switch" role="group" aria-label="Language / 语言">' +
+    '</div>' + themeSwitch() + '<div class="language-switch" role="group" aria-label="Language / 语言">' +
     '<button type="button" data-language="zh" lang="zh-CN" aria-label="切换到中文">中</button>' +
     '<button type="button" data-language="en" lang="en" aria-label="Switch to English">EN</button></div></div>' +
     '<div class="page-shell" id="top"><div class="site-layout"><aside class="profile">' +
@@ -726,9 +731,9 @@
     '<dialog class="project-preview" id="project-preview" aria-labelledby="preview-project-title">' +
     '<div class="preview-toolbar"><button class="preview-back" type="button" data-preview-close>' +
     '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg>' +
-    '<span class="preview-mobile-label">' + bi(T("返回经历", "Back to experience"), true) + '</span><span class="preview-desktop-label">' +
+    '<span class="preview-mobile-label">' + bi(T("返回经历", "Back to experience"), true) + '</span><span class="preview-compact-label">' + bi(T("返回", "Back"),true) + '</span><span class="preview-desktop-label">' +
     bi(T("恢复布局", "Restore layout"),true) + '</span></button><div class="preview-breadcrumb"></div>' +
-    '<div class="preview-toolbar-actions"><div class="language-switch" role="group" aria-label="Language / 语言">' +
+    '<div class="preview-toolbar-actions">' + themeSwitch() + '<div class="language-switch" role="group" aria-label="Language / 语言">' +
     '<button type="button" data-language="zh" lang="zh-CN" aria-label="切换到中文">中</button>' +
     '<button type="button" data-language="en" lang="en" aria-label="Switch to English">EN</button></div>' +
     '<button class="preview-close" type="button" data-preview-close aria-label="关闭项目详情">' +
@@ -759,6 +764,7 @@
       button.setAttribute("aria-pressed", String(button.dataset.language === lang)));
     document.querySelector(".preview-close").setAttribute("aria-label", lang === "zh" ? "关闭项目详情" : "Close project details");
     document.querySelector(".perspective-switch").setAttribute("aria-label", ui.perspective[lang]);
+    window.portfolioTheme?.syncControls();
     if (persist) { try { localStorage.setItem("jason-portfolio-language",lang); } catch (_) {} }
     const path = persist ? window.portfolioLanguage.pathnameFor(lang) : location.pathname;
     const url = path + location.search + location.hash;
@@ -1288,6 +1294,8 @@
     }
     const languageButton = event.target.closest("[data-language]");
     if (languageButton) { settlePreviewMotion(); setLanguage(languageButton.dataset.language); }
+    const themeButton = event.target.closest("[data-theme-choice]");
+    if (themeButton) { settlePreviewMotion(); window.portfolioTheme?.set(themeButton.dataset.themeChoice); }
     const storyTab = event.target.closest("[data-story-tab]");
     if (storyTab) selectStory(storyTab.dataset.storyTab);
     const control = event.target.closest("[data-expand-all],[data-collapse-all]");

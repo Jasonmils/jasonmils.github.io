@@ -1173,6 +1173,42 @@ html[data-preview-motion] .comparison-glass{transition:none}
  .technology-evidence .result-table th:first-child{width:26%}
  .technology-evidence .result-table th:nth-child(2){width:24%}
 }
+/* The same explicit light/dark controls remain available inside project details. */
+.theme-switch{display:flex;flex:none;align-items:center;gap:2px;padding:4px;border:1px solid var(--glass-border);border-radius:999px;background:var(--glass-surface);box-shadow:var(--glass-shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.theme-switch button{display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--muted);transition:background-color .15s,color .15s}
+.theme-switch .icon{width:17px;height:17px}
+.theme-switch button:hover{background:#ffffff80;color:var(--ink)}
+.theme-switch button[aria-pressed="true"]{background:#fff;color:#242936;box-shadow:0 1px 5px #2429381a}
+.theme-switch button:focus-visible{outline-offset:2px;border-radius:50%}
+.preview-toolbar .theme-switch{padding:3px;box-shadow:none}
+.preview-toolbar .theme-switch button{width:28px;height:28px}
+.preview-compact-label{display:none}
+@media(max-width:600px){
+ .language-dock{gap:6px}
+ .language-dock .perspective-switch{min-width:0}
+ .language-dock .perspective-switch button{padding:0 5px;font-size:10px}
+ .language-dock .language-switch{width:68px;gap:2px;padding:3px;margin-left:0}
+ .language-dock .theme-switch{gap:0;padding:3px}
+ .language-dock .theme-switch button{width:27px;height:32px}
+ .preview-toolbar-actions{gap:7px}
+ .preview-toolbar .language-switch{width:72px}
+}
+@media(max-width:360px){
+ .language-dock{left:12px;right:12px;gap:4px}
+ .preview-toolbar{gap:6px;padding-left:12px;padding-right:12px}
+ .preview-toolbar-actions{gap:4px}
+ .preview-back{font-size:11px}
+ .preview-toolbar .theme-switch button{width:25px}
+}
+@media(max-width:480px){
+ .preview-back .preview-mobile-label{display:none}
+ .preview-back .preview-compact-label{display:inline}
+}
+@media screen{
+ html[data-theme="dark"] .theme-switch button:hover{background:#ffffff12;color:#f4f5f7}
+ html[data-theme="dark"] .theme-switch button[aria-pressed="true"]{background:#424852;color:#fff;box-shadow:0 1px 6px #0005}
+}
+@media(prefers-reduced-transparency:reduce){.theme-switch{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none}}
 /* Shared text layout: progressive enhancements, with existing measures unchanged. */
 :where(p,.action-list>li,.strategy-points dd,.technology-work dd,.contribution-action){text-wrap:pretty}
 :where(h1,h2,h3,h4,h5,h6,.profile-role,.contribution-copy>strong){text-wrap:balance}
@@ -1203,6 +1239,7 @@ html[data-preview-motion] .comparison-glass{transition:none}
 
 @media(prefers-reduced-transparency:reduce){.perspective-switch,.technology-route,.technology-card{background:#f9faff;backdrop-filter:none;-webkit-backdrop-filter:none}}
 @media print{
+ html{color-scheme:light!important}
  .context-disclosure,.story-notes,.project-card,.strategy-phase,.skill-group,.technology-card{box-shadow:none;background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;border-color:#ddd}
  body{background:#fff}.ambient-light,.language-dock,.reading-line,.section-nav,.mobile-index,.detail-toggle,.section-controls{display:none!important}
  .page-shell{padding:0}.site-layout{display:block}.profile{position:static;min-height:0;margin:0;padding:15px 0 28px}.profile h1{font-size:38px}.profile-tagline{max-width:600px}.profile-footer{padding-top:20px;flex-direction:row;gap:24px}.main-content{padding-top:20px}

@@ -1,0 +1,149 @@
+/* Dark surfaces are explicit: source figures and brand artwork keep their colors. */
+@media screen {
+  html[data-theme="dark"] {
+    color-scheme:dark;
+    --paper:#111214;
+    --ink:#f0f1f4;
+    --muted:#a9adb7;
+    --accent:#9aafff;
+    --accent-deep:#c4d0ff;
+    --line:#ffffff1c;
+    --soft:#26282e;
+    --theme-panel:#1b1d22;
+    --theme-raised:#24272e;
+    --theme-body:#c5c8d0;
+    --theme-blue:#202a40;
+    --glass-surface:linear-gradient(145deg,#25272be6,#1b1d22d9);
+    --glass-border:#ffffff1f;
+    --glass-shadow:inset 0 1px 0 #ffffff0b,0 12px 36px -20px #0009,0 2px 6px #0003;
+  }
+  html[data-theme="dark"] ::selection {background:#8ea6ff;color:#111827}
+  html[data-theme="dark"] .ambient-light {background:radial-gradient(ellipse at 8% 12%,#202b4540,transparent 48%),radial-gradient(ellipse at 90% 40%,#32283d33,transparent 48%),radial-gradient(ellipse at 40% 95%,#1e35302e,transparent 48%)}
+  html[data-theme="dark"] .skip-link {background:var(--ink);color:var(--paper)}
+
+  /* Main reading surfaces and component text. */
+  html[data-theme="dark"] :is(.context-disclosure,.story-notes,.project-card,.strategy-phase,.skill-group,.technology-card,.technology-route,.language-switch,.perspective-switch,.mobile-index,.story-tabs) {background:var(--glass-surface);border-color:var(--glass-border);box-shadow:var(--glass-shadow)}
+  html[data-theme="dark"] :is(.experience-overview,.context-grid p,.story-block p,.action-list,.visual-takeaway,.project-context p,.flow-step,.decision p,.result-table td,.project-outcome,.learning-box,.paper-title,.strategy-points dd,.technology-work dd,.research-section>p,.research-method>p,.research-task p,.research-contribution p,.research-narrative .paper-results>p,.attention-panel p,.diagnostic-metrics>p,.diagnostic-interpretation,.research-challenges p,.research-result-block>p,.research-narrative .research-results>p,.research-method-detail p,.review-results .paper-result-table td,.wiki-results .paper-result-table td) {color:var(--theme-body)}
+  html[data-theme="dark"] .takeaway-text {color:var(--theme-body)!important}
+  html[data-theme="dark"] :is(.context-summary,.small-label,.notes-summary,.story-original-title,.decision h4,.strategy-points dt,.strategy-bridge strong,.forecast-lane-heading h5,.forecast-node strong) {color:var(--ink)}
+  html[data-theme="dark"] :is(.story-heading h4,.dataset-heading,.prediction-outputs strong,.stability-heading strong) {color:var(--theme-body)}
+  html[data-theme="dark"] :is(.story-original-brief,.strategy-horizon,.strategy-impact p,.strategy-bridge p,.contribution-action,.contribution-index,.technology-card-header p,.technology-evidence h4,.technology-evidence>p,.technology-evidence .metric-label,.preview-project-header>p,.preview-breadcrumb,.comparison-identity,.comparison-label,.preview-tabs button,.preview-mobile-projects button,.detail-toggle) {color:var(--muted)}
+  html[data-theme="dark"] :is(.context-summary:hover,.notes-summary:hover) {background:#ffffff07;color:var(--ink)}
+  html[data-theme="dark"] :is(.context-grid>div+div,.project-context>div+div,.story-body>.story-block,.story-footer,.project-body,.project-footer,.context-disclosure[open]>.context-summary,.story-notes[open]>.notes-summary,.flow-step+.flow-step,.metric+.metric) {border-color:var(--line)}
+  html[data-theme="dark"] :is(.project-card:focus-within,.context-disclosure:focus-within,.story-notes:focus-within,.project-card:hover,.technology-card:target) {border-color:#8a9ec96b;box-shadow:var(--glass-shadow)}
+  html[data-theme="dark"] :is(.tag,.technology-route a,.contribution-link) {background:#ffffff06;border-color:#ffffff15;color:var(--theme-body);box-shadow:inset 0 1px 0 #ffffff05}
+  html[data-theme="dark"] :is(.technology-route a:hover,.contribution-link:hover) {background:#ffffff0d;border-color:#8d9ed05c;box-shadow:none}
+  html[data-theme="dark"] :is(.toggle-plus,.contribution-arrow,.strategy-number,.growth-journey-number,.action-list li:before,.decision>.number) {background:var(--theme-raised);color:var(--muted);border-color:var(--line);box-shadow:inset 0 1px 0 #ffffff08}
+  html[data-theme="dark"] :is(summary:hover .toggle-plus,details[open]>summary .toggle-plus) {background:#333744;color:var(--ink);border-color:#ffffff1f}
+  html[data-theme="dark"] .strategy-number {color:var(--accent)}
+  html[data-theme="dark"] :is(.section-nav a:hover,.section-nav a:focus-visible,.section-nav a.active,.mobile-index>a.active) {background:#ffffff0a;border-color:var(--line);box-shadow:none}
+  html[data-theme="dark"] .mobile-index>a {color:var(--muted)}
+  html[data-theme="dark"] .mobile-index>a.active {color:var(--accent)}
+  html[data-theme="dark"] .nav-line {background:#555966}
+  html[data-theme="dark"] :is(.section-nav a.active,.section-nav a:hover,.section-nav a:focus-visible) .nav-line {background:var(--accent)}
+  html[data-theme="dark"] :is(.story-tabs button:hover,.story-tabs button[aria-selected="true"],.perspective-switch button[aria-pressed="true"]) {background:#353b4c;color:var(--accent-deep);border-color:#ffffff19;box-shadow:none}
+  html[data-theme="dark"] .language-switch button[aria-pressed="true"] {background:#3c4e80;color:#f4f6ff;box-shadow:inset 0 1px 0 #ffffff12}
+  html[data-theme="dark"] .language-switch button {color:var(--muted)}
+  html[data-theme="dark"] .contribution-link[aria-current] {background:linear-gradient(135deg,#25314c,#242936);border-color:#8da6ef7a}
+  html[data-theme="dark"] .contribution-link[aria-current] .contribution-arrow {background:var(--accent);color:#18213a}
+  html[data-theme="dark"] .project-compare-open .contribution-link.comparison-focus {background:linear-gradient(135deg,#26334f,#222733);border-color:#91a9f5;box-shadow:0 0 0 1px #a8b9ff1f,0 8px 26px -12px #0009}
+
+  /* Evidence, tables, formulas and secondary cards. */
+  html[data-theme="dark"] :is(.strategy-impact,.result-box,.learning-box,.diagram-flow li,.ab-phase,.training-node,.training-branch,.comparison-chart,.milestone-results>div,.forecast-research,.outcome-strip,.prediction-model,.prediction-outputs>div,.flow,.metric-row,.paper-figure,.paper-equation,.paper-result-summary>div,.paper-metric-key,.paper-table-scroll,.paper-ablation,.paper-evidence,.review-outlook-grid article,.wiki-output-grid article,.research-task,.research-contribution,.technology-evidence) {background:var(--theme-panel);border-color:var(--line);box-shadow:inset 0 1px 0 #ffffff05}
+  html[data-theme="dark"] :is(.research-insight,.research-source-note) {background:#202737;color:var(--theme-body);border-left-color:#718ed5}
+  html[data-theme="dark"] .result-box {color:var(--theme-body)}
+  html[data-theme="dark"] :is(.result-table th,.paper-result-table thead th) {background:var(--theme-raised);color:var(--ink)}
+  html[data-theme="dark"] :is(.table-wrap,.paper-result,.qualitative-results>span,.training-branches:before,.prediction-outputs:before,.comparison-axis,.comparison-track,.diagram-return,.stability-results>div:not(.stability-heading)) {border-color:var(--line)}
+  html[data-theme="dark"] .paper-result-table .paper-best-row {background:#28344f;color:var(--accent-deep)}
+  html[data-theme="dark"] .paper-result-table .paper-best-row th {color:var(--accent-deep)}
+  html[data-theme="dark"] .result-table td:last-child {color:var(--accent)}
+  html[data-theme="dark"] .technology-evidence .metric-value {color:var(--accent)}
+  html[data-theme="dark"] .technology-evidence :is(.metric-row,.metric) {background:transparent;box-shadow:none}
+  html[data-theme="dark"] :is(.adoption-track,.legend-baseline,.bar-baseline) {background:#555d70}
+  html[data-theme="dark"] .math-scroll {scrollbar-color:#5e6677 transparent}
+  html[data-theme="dark"] :is(.project-visual,.paper-figure-image,.attention-panel svg) {background:#fff;border-color:#ffffff26}
+  html[data-theme="dark"] .project-visual {--muted:#656c7a;--accent:#3659c4}
+
+  /* Project sheet and the glass spotlight use the same dark material. */
+  html[data-theme="dark"] :is(.project-preview,.project-compare-open .project-preview) {background:#1b1d22f5;border-color:#ffffff20;box-shadow:inset 0 1px 0 #ffffff08,0 24px 70px #0007}
+  html[data-theme="dark"] .preview-detail {background:var(--theme-panel)}
+  html[data-theme="dark"] :is(.preview-toolbar,.project-compare-open .preview-toolbar,.project-compare-open .comparison-bar) {background:#202228bf;border-color:var(--line)}
+  html[data-theme="dark"] .preview-toolbar .language-switch {background:#ffffff08;border-color:var(--line);box-shadow:none}
+  html[data-theme="dark"] .preview-toolbar .language-switch button[aria-pressed="true"] {background:#3b4254;color:var(--ink);box-shadow:none}
+  html[data-theme="dark"] .preview-back {color:var(--theme-body)}
+  html[data-theme="dark"] .preview-back:hover {color:var(--accent)}
+  html[data-theme="dark"] .preview-close {background:#33363e;color:var(--muted)}
+  html[data-theme="dark"] .preview-close:hover {background:#424754;color:var(--ink)}
+  html[data-theme="dark"] .preview-tabs {border-color:var(--line)}
+  html[data-theme="dark"] :is(.preview-tabs button:hover,.preview-mobile-projects button[aria-pressed="true"]) {background:#2c303a;color:var(--ink);border-color:var(--line);box-shadow:none}
+  html[data-theme="dark"] .preview-tabs button[aria-current] {background:#29334d;color:var(--accent-deep)}
+  html[data-theme="dark"] .preview-mobile-projects {background:transparent}
+  html[data-theme="dark"] .comparison-glass {background:linear-gradient(135deg,#10121699,#191d2673)}
+  html[data-theme="dark"] :is(.project-preview,.forecast-dialog)::backdrop {background:#05070bb3}
+  html[data-theme="dark"] .forecast-dialog {background:var(--theme-panel);border-color:var(--line);box-shadow:0 24px 100px #0008}
+
+  /* Interactive forecasting lanes and the Agent graph. */
+  html[data-theme="dark"] :is(.forecast-map-toolbar button,.forecast-dialog header button) {background:var(--theme-raised);border-color:var(--line);color:var(--theme-body)}
+  html[data-theme="dark"] .forecast-lane--upstream {--lane-color:#b99be9;--lane-border:#64507f;background:#282230;border-color:#58466d}
+  html[data-theme="dark"] .forecast-lane--downstream {--lane-color:#8bbbe7;--lane-border:#395d79;background:#1c2934;border-color:#3a5269}
+  html[data-theme="dark"] .forecast-node {background:#202329;border-color:var(--lane-border)}
+  html[data-theme="dark"] .forecast-node:is(:hover,[aria-pressed="true"]) {border-color:var(--lane-color)}
+  html[data-theme="dark"] :is(.forecast-node-caption,.forecast-legend,.forecast-reading-guide,.forecast-interaction-hint,.forecast-step-panel p,.forecast-step-panel h5>span:first-child) {color:var(--muted)}
+  html[data-theme="dark"] .forecast-transfer {color:#d49c7e}
+  html[data-theme="dark"] .forecast-transfer>span {background:var(--theme-panel)}
+  html[data-theme="dark"] :is(.forecast-step-panel,.forecast-detail) {background:#21242b;border-color:var(--line)}
+  html[data-theme="dark"] .forecast-step-panel .forecast-step-evidence {color:#b6c9f0;border-color:var(--line)}
+  html[data-theme="dark"] .agent-canvas {background:radial-gradient(ellipse at 50% 47%,#2e283c 0%,#20242b 55%,#1b1d22 100%);border-color:var(--line)}
+  html[data-theme="dark"] :is(.agent-orchestration,.agent-orchestration>span:first-child,.agent-guardrails,.agent-guardrails>strong,.agent-node-caption) {color:var(--muted)}
+  html[data-theme="dark"] .agent-orchestration i {background:#ab95e2;box-shadow:0 0 0 3px #a58cdf1a}
+  html[data-theme="dark"] .agent-node {background:#252932;border-color:#4c5262;color:var(--ink);box-shadow:0 3px 9px #0002}
+  html[data-theme="dark"] .agent-node-top {color:#a6b7d1}
+  html[data-theme="dark"] .agent-node--memory {background:#302c24;border-color:#6a5c40}
+  html[data-theme="dark"] .agent-node--memory .agent-node-top {color:#cfb884}
+  html[data-theme="dark"] .agent-node--forecast {background:#222e3b}
+  html[data-theme="dark"] .agent-node--forecast .agent-node-top {color:#91bbe2}
+  html[data-theme="dark"] .agent-node--review {background:#22322e;border-color:#46675b}
+  html[data-theme="dark"] .agent-node--review .agent-node-top {color:#91c3ae}
+  html[data-theme="dark"] .agent-node--feedback .agent-node-top {color:#8ec8bd}
+  html[data-theme="dark"] .agent-node--planner {background:linear-gradient(135deg,#6b579b,#4b416e);border-color:#ac97df;color:#fff;box-shadow:0 9px 25px #0003}
+  html[data-theme="dark"] .agent-node--planner :is(.agent-node-top,.agent-node-caption) {color:#e5ddf7}
+  html[data-theme="dark"] .agent-node:hover,html[data-theme="dark"] .agent-node[aria-pressed="true"] {border-color:#c4adf1;box-shadow:0 0 0 3px #ac8ce82b}
+  html[data-theme="dark"] .agent-tool-link-label {color:#bba8d9}
+  html[data-theme="dark"] .agent-loop-caption {color:#91c3b8}
+  html[data-theme="dark"] .agent-guardrails {border-color:var(--line)}
+
+  /* Compact overview charts keep distinct series colors against dark surfaces. */
+  html[data-theme="dark"] :is(.growth-journey-stage,.growth-journey-stage--long) {background:linear-gradient(145deg,#252c39,#20232d);border-color:var(--line);box-shadow:inset 0 1px 0 #ffffff06}
+  html[data-theme="dark"] .growth-journey-stage--long {background:linear-gradient(145deg,#2c2636,#25232d)}
+  html[data-theme="dark"] .growth-journey-stage:hover {border-color:#91a8da70;box-shadow:var(--glass-shadow)}
+  html[data-theme="dark"] :is(.growth-journey-stage>strong,.growth-journey-stage--long>strong,.growth-detail #ali-long-term h5,.growth-journey-foundation strong) {color:var(--ink)}
+  html[data-theme="dark"] :is(.growth-journey-horizon,.growth-journey-action,.growth-journey-foundation p,.journey-chart-note,.agent-plan,.agent-plan-brief>span,.agent-plan-model,.agent-plan-orchestration,.agent-plan-campaign>strong,.agent-plan-memory>span) {color:var(--muted)}
+  html[data-theme="dark"] :is(.growth-journey-link,.growth-journey-stage--long .growth-journey-link,.pricing-step-label,.pricing-forecast-output,.pricing-formula,.pricing-formula-arrow) {color:#afc4f7}
+  html[data-theme="dark"] :is(.growth-journey-number,.growth-journey-stage--long .growth-journey-number,.growth-detail #ali-long-term .strategy-number) {background:#343447;color:#bdcafa;border-color:var(--line)}
+  html[data-theme="dark"] :is(.growth-journey-direction,.growth-journey-foundation,.agent-plan-engine,.agent-plan-campaign,.agent-plan-review,.agent-plan-memory,.pricing-decision-choice) {background:#ffffff07;border-color:#ffffff24;box-shadow:inset 0 1px 0 #ffffff05}
+  html[data-theme="dark"] :is(.agent-plan-brief,.agent-plan-engine>strong,.agent-plan-memory>strong,.agent-plan-memory .agent-plan-replan) {color:#ceb8e9}
+  html[data-theme="dark"] .agent-plan-cycle {background:#b493dc17;color:#ceb8e9}
+  html[data-theme="dark"] .agent-plan-review {color:#9cc2d0}
+  html[data-theme="dark"] .pricing-decision-choice {color:#c3d4ff}
+  html[data-theme="dark"] :is(.agent-plan-growth,.agent-plan-memory .agent-plan-replan,.pricing-formula) {border-color:var(--line)}
+  html[data-theme="dark"] :is(.journey-chart-axis-label,.journey-chart-current-label,.pricing-curve-axis-label) {fill:#aeb8ce}
+  html[data-theme="dark"] :is(.journey-chart-incubation-label,.journey-chart-retention-label,.pricing-curve-maximum,.pricing-curve-price) {fill:#b7c9f9}
+  html[data-theme="dark"] .journey-chart-risk-label {fill:#a8a4b8}
+  html[data-theme="dark"] .pricing-scenario {color:#85bbc3}
+  html[data-theme="dark"] .pricing-scenario--selected {color:#9eb7ff}
+  html[data-theme="dark"] .pricing-scenario--higher {color:#c4aedb}
+  html[data-theme="dark"] .pricing-curve-line {stroke:#9eb7ff}
+  html[data-theme="dark"] .pricing-scenario .pricing-curve-line {stroke:currentColor}
+  html[data-theme="dark"] .pricing-curve-point {fill:#a4baff;stroke:var(--theme-panel)}
+  html[data-theme="dark"] :is(.journey-chart-current,.journey-chart-growth-point,.journey-chart-retention-point,.pricing-daily-point) {stroke:var(--theme-panel)}
+  html[data-theme="dark"] :is(.growth-detail .strategy-phase:before,.growth-detail #ali-long-term:before,.technology-card:before,.technology-card:nth-child(n+4):before,.technology-card:nth-child(n+7):before) {border-color:#242733;box-shadow:0 0 0 3px #33394b}
+  html[data-theme="dark"] .technology-list:before {background:linear-gradient(#576c9e,#67567e,#4e7276)}
+  html[data-theme="dark"] .growth-detail .strategy-phases:before {background:linear-gradient(#576c9e,#67567e)}
+}
+
+/* Respect the platform's transparency preference without losing the spotlight. */
+@media screen and (prefers-reduced-transparency:reduce) {
+  html[data-theme="dark"] :is(.language-switch,.perspective-switch,.mobile-index,.story-tabs,.context-disclosure,.story-notes,.project-card,.strategy-phase,.skill-group,.technology-route,.technology-card,.project-preview,.project-compare-open .project-preview,.preview-toolbar,.project-compare-open .preview-toolbar,.project-compare-open .comparison-bar) {background:var(--theme-panel);backdrop-filter:none;-webkit-backdrop-filter:none}
+  html[data-theme="dark"] :is(.tag,.contribution-link) {background:var(--theme-raised)}
+  html[data-theme="dark"] .comparison-glass {background:#12151cd9;backdrop-filter:none;-webkit-backdrop-filter:none}
+}
