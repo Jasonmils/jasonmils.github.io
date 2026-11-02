@@ -136,9 +136,8 @@
   html[data-theme="dark"] .pricing-scenario .pricing-curve-line {stroke:currentColor}
   html[data-theme="dark"] .pricing-curve-point {fill:#a4baff;stroke:var(--theme-panel)}
   html[data-theme="dark"] :is(.journey-chart-current,.journey-chart-growth-point,.journey-chart-retention-point,.pricing-daily-point) {stroke:var(--theme-panel)}
-  html[data-theme="dark"] :is(.growth-detail .strategy-phase:before,.growth-detail #ali-long-term:before,.technology-card:before,.technology-card:nth-child(n+4):before,.technology-card:nth-child(n+7):before) {border-color:#242733;box-shadow:0 0 0 3px #33394b}
+  html[data-theme="dark"] :is(.technology-card:before,.technology-card:nth-child(n+4):before,.technology-card:nth-child(n+7):before) {border-color:#242733;box-shadow:0 0 0 3px #33394b}
   html[data-theme="dark"] .technology-list:before {background:linear-gradient(#576c9e,#67567e,#4e7276)}
-  html[data-theme="dark"] .growth-detail .strategy-phases:before {background:linear-gradient(#576c9e,#67567e)}
 }
 
 /* Respect the platform's transparency preference without losing the spotlight. */

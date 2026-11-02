@@ -820,7 +820,7 @@ const portfolio = {
       company:T("深圳科创学院", "Shenzhen InnoX Academy"),
       shortCompany:T("深圳科创学院", "Shenzhen InnoX"),
       entity:T("创业孵化器 · 智能戒指初创团队", "Startup incubator · Smart-ring venture"),
-      role:T("初级产品经理（实习）", "Junior Product Manager Intern"),date:"2024.01 — 2024.06",
+      role:T("产品经理（实习）", "Product Manager Intern"),date:"2024.01 — 2024.06",
       overview:T("主导智能戒指从概念到首代样机的产品开发，通过 200+ 用户访谈定义需求，并协同软硬件工程师和天使用户推进原型验证与迭代", "Led product development of a smart ring from concept to its first prototype, defining requirements through 200+ user interviews and coordinating engineering work, early-adopter testing and iteration"),
       focus:[T("用户研究", "User Research"), T("产品定义", "Product Definition"), T("智能硬件", "Smart Hardware")],
       strategy:{
