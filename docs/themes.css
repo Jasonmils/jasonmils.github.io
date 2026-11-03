@@ -113,8 +113,8 @@
   html[data-theme="dark"] .agent-guardrails {border-color:var(--line)}
 
   /* Compact overview charts keep distinct series colors against dark surfaces. */
-  html[data-theme="dark"] :is(.growth-journey-stage,.growth-journey-stage--long) {background:linear-gradient(145deg,#252c39,#20232d);border-color:var(--line);box-shadow:inset 0 1px 0 #ffffff06}
-  html[data-theme="dark"] .growth-journey-stage--long {background:linear-gradient(145deg,#2c2636,#25232d)}
+  html[data-theme="dark"] :is(.growth-journey-stage,.growth-journey-stage--long) {background:var(--theme-panel);border-color:var(--line);box-shadow:inset 0 1px 0 #ffffff06}
+  html[data-theme="dark"] .growth-journey-stage--long {background:var(--theme-panel)}
   html[data-theme="dark"] .growth-journey-stage:hover {border-color:#91a8da70;box-shadow:var(--glass-shadow)}
   html[data-theme="dark"] :is(.growth-journey-stage>strong,.growth-journey-stage--long>strong,.growth-detail #ali-long-term h5,.growth-journey-foundation strong) {color:var(--ink)}
   html[data-theme="dark"] :is(.growth-journey-horizon,.growth-journey-action,.growth-journey-foundation p,.journey-chart-note,.agent-plan,.agent-plan-brief>span,.agent-plan-model,.agent-plan-orchestration,.agent-plan-campaign>strong,.agent-plan-memory>span) {color:var(--muted)}

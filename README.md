@@ -14,6 +14,7 @@
 | `docs/content.js` | 中英文内容 |
 | `docs/styles.css` | 样式和排版 |
 | `docs/themes.css` | 深色主题的组件配色 |
+| `docs/materials.css` | 卡片磨砂玻璃质感与透明度适配 |
 | `docs/theme.js` | 主题初始化、切换与偏好保存 |
 | `docs/app.js` | 导航、语言切换和项目面板 |
 | `docs/index.html` | 网站入口 |

@@ -24,6 +24,7 @@ GitHub Pages publishes only the `/docs` directory of the `master` branch. `.noje
 - `content.js`: Chinese and English content
 - `styles.css`: layout and appearance
 - `themes.css`: dark-theme colors for page components
+- `materials.css`: shared frosted card surfaces and transparency fallbacks
 - `theme.js`: theme initialization, controls and saved preference
 - `app.js`: navigation, language switching and project panels
 - `assets/`: bundled fonts, licenses and institution logos
