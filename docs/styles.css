@@ -35,7 +35,8 @@ h3 .zh,h4 .zh,.profile-role .zh,.experience-role .zh,.section-nav .zh,.mobile-in
 .language-switch button[aria-pressed="true"]{color:#fff;background:var(--accent);box-shadow:none}
 .language-switch button:active{transform:none}
 .page-shell{max-width:1280px;padding:0 52px;margin:auto}
-.site-layout{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.4fr);gap:88px;align-items:start}
+/* Keep the total grid weight at 2.26; the reading column is 10% wider. */
+.site-layout{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.54fr);gap:88px;align-items:start}
 .profile{position:sticky;top:96px;min-height:calc(100svh - 176px);display:flex;flex-direction:column;align-self:start;padding-bottom:2px;margin-top:96px}
 .profile-main{max-width:380px}
 .profile-name{display:inline-block}
@@ -973,7 +974,7 @@ body.project-preview-open{overflow:hidden}
  --glass-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.4),0 12px 36px -20px rgba(45,63,103,.25),0 2px 6px rgba(45,63,103,.04);
 }
 body{isolation:isolate}
-.ambient-light{display:block;background:radial-gradient(ellipse at 8% 12%,#dce8ff99,transparent 48%),radial-gradient(ellipse at 90% 40%,#e9e2ff80,transparent 48%),radial-gradient(ellipse at 40% 95%,#d9eeef73,transparent 48%)}
+.ambient-light{display:block;background:radial-gradient(ellipse at 5% 10%,#fac9cf99,transparent 52%),radial-gradient(ellipse at 95% 40%,#bfd8ff99,transparent 54%),linear-gradient(135deg,#fff9fa,#ffffff 48%,#f3f8ff)}
 .language-switch,.mobile-index,.story-tabs{
  background:var(--glass-surface);border-color:var(--glass-border);border-radius:999px;box-shadow:var(--glass-shadow);
  backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);
@@ -1011,7 +1012,7 @@ summary:hover .toggle-plus,details[open]>summary .toggle-plus{background:#e3e9f6
 .preview-mobile-projects button[aria-pressed="true"],.preview-tabs button[aria-selected="true"]{background:#ffffffb3;border-color:#ffffff;box-shadow:0 2px 8px #3448730d}
 @media(hover:hover){.project-card:hover{border-color:#ffffff;box-shadow:inset 0 1px 0 #fff,0 18px 42px -22px #2d3f6747,0 2px 8px #2d3f6708}}
 @media(max-width:600px){
- .ambient-light{background:radial-gradient(ellipse at 0 8%,#dce8ff99,transparent 60%),radial-gradient(ellipse at 100% 65%,#e9e2ff80,transparent 60%)}
+ .ambient-light{background:radial-gradient(ellipse at 0 8%,#fac9cf99,transparent 60%),radial-gradient(ellipse at 100% 65%,#bfd8ff99,transparent 60%),linear-gradient(135deg,#fff9fa,#ffffff 48%,#f3f8ff)}
  .context-disclosure,.story-notes,.project-card,.strategy-phase{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
  .skill-group{padding:20px}.mobile-index{border-radius:999px}
 }
