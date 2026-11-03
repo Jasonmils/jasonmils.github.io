@@ -129,13 +129,24 @@
   html[data-theme="dark"] :is(.journey-chart-axis-label,.journey-chart-current-label,.pricing-curve-axis-label) {fill:#aeb8ce}
   html[data-theme="dark"] :is(.journey-chart-incubation-label,.journey-chart-retention-label,.pricing-curve-maximum,.pricing-curve-price) {fill:#b7c9f9}
   html[data-theme="dark"] .journey-chart-risk-label {fill:#a8a4b8}
-  html[data-theme="dark"] .pricing-scenario {color:#85bbc3}
+  html[data-theme="dark"] .pricing-scenario {color:#e4b48c}
+  html[data-theme="dark"] .pricing-scenario--lowest {color:#e9bd75}
   html[data-theme="dark"] .pricing-scenario--selected {color:#9eb7ff}
   html[data-theme="dark"] .pricing-scenario--higher {color:#c4aedb}
+  html[data-theme="dark"] .pricing-scenario--highest {color:#b49dce}
+  html[data-theme="dark"] .pricing-scenario-band {fill-opacity:.30}
+  html[data-theme="dark"] :is(.pricing-forecast-context,.pricing-scenario-key,.pricing-scenario-note) {color:#aeb8ce}
+  html[data-theme="dark"] .pricing-scenario-key b {color:#9eb7ff}
+  html[data-theme="dark"] .pricing-period-label {fill:#aeb8ce}
+  html[data-theme="dark"] .pricing-history-line {stroke:#929db2}
+  html[data-theme="dark"] .pricing-history-point {fill:#ceb09a;stroke:var(--theme-panel)}
+  html[data-theme="dark"] .pricing-today-guide {stroke:#78849b}
+  html[data-theme="dark"] .pricing-today-point {fill:var(--theme-panel);stroke:#b5c0d4}
   html[data-theme="dark"] .pricing-curve-line {stroke:#9eb7ff}
   html[data-theme="dark"] .pricing-scenario .pricing-curve-line {stroke:currentColor}
   html[data-theme="dark"] .pricing-curve-point {fill:#a4baff;stroke:var(--theme-panel)}
-  html[data-theme="dark"] :is(.journey-chart-current,.journey-chart-growth-point,.journey-chart-retention-point,.pricing-daily-point) {stroke:var(--theme-panel)}
+  html[data-theme="dark"] :is(.journey-chart-current,.journey-chart-growth-point,.journey-chart-retention-point) {stroke:var(--theme-panel)}
+  html[data-theme="dark"] .pricing-daily-point {fill:var(--theme-panel);stroke:currentColor}
   html[data-theme="dark"] :is(.technology-card:before,.technology-card:nth-child(n+4):before,.technology-card:nth-child(n+7):before) {border-color:#242733;box-shadow:0 0 0 3px #33394b}
   html[data-theme="dark"] .technology-list:before {background:linear-gradient(#576c9e,#67567e,#4e7276)}
 }

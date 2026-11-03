@@ -419,44 +419,69 @@
   const renderGrowthDiagram = kind => {
     if (kind === "price") {
       // Illustrative daily forecasts only. GMV is derived from all 14 outputs at each price.
-      const dailyProfile = [0.72,0.76,0.68,0.84,0.91,1.06,0.96,0.82,0.78,0.89,1.03,1.18,1.08,1.13];
+      const dailyProfile = [0.66,0.61,0.83,0.77,0.91,1.07,1.00,0.94,1.14,1.08,1.30,1.17,1.23,1.32];
       const forecast = price => dailyProfile.map(value => value * Math.exp(-0.5 * price * price));
       const predictedGMV = price => price * forecast(price).reduce((sum,value) => sum + value,0);
       const gmv = price => predictedGMV(price) / predictedGMV(1);
-      const scenarios = [{price:0.55,label:"p₁",kind:"lower"},{price:1,label:"p*",kind:"selected"},{price:1.55,label:"p₃",kind:"higher"}];
+      const scenarios = [
+        {price:0.55,label:"p₁",kind:"lowest"},
+        {price:0.78,label:"p₂",kind:"lower"},
+        {price:1,label:"p*",kind:"selected"},
+        {price:1.28,label:"p₄",kind:"higher"},
+        {price:1.55,label:"p₅",kind:"highest"}
+      ];
       const priceX = price => 40 + 116 * price;
-      const dayX = index => 40 + 232 * index / 13;
+      const todayX = 77;
+      const dayX = index => 91 + 153 * index / 13;
       const gmvY = price => 108 - 63 * gmv(price);
-      const dailyY = value => 128 - 78 * value;
+      const dailyY = value => 180 - 104 * value;
+      const history = [0.38,0.32,0.40,0.54,0.45,0.50,0.61];
+      const point = (x,y) => x.toFixed(2) + " " + y.toFixed(2);
+      const today = point(todayX,dailyY(history[history.length - 1]));
+      const scenarioPoints = scenario => forecast(scenario.price).map((value,i) => point(dayX(i),dailyY(value)));
       const gmvPath = Array.from({length:81}, (_,i) => (i ? "L" : "M") + priceX(i / 40).toFixed(2) + " " + gmvY(i / 40).toFixed(2)).join(" ");
       const svg = (lang,chart) => {
         const isSales = chart === "sales";
         const id = "journey-price-" + chart + "-" + lang;
-        const height = isSales ? 160 : 142;
+        const height = isSales ? 214 : 142;
         const label = (x,y,text,cls,anchor = "start") => '<text x="' + x + '" y="' + y + '" class="' + cls + '" text-anchor="' + anchor + '">' + escapeHTML(text) + '</text>';
         const title = isSales ? T("不同候选价格下，未来 14 天每天的销量预测", "Daily sales forecasts for the next 14 days at different candidate prices") :
           T("汇总逐日预测，选择预测 GMV 最大的价格", "Aggregate daily forecasts to select the price with maximum predicted GMV");
         const description = isSales ? T(
-          "横轴为未来第 1 至第 14 天，纵轴为每日预测销量。每条曲线对应一个候选价格，并包含 14 个日预测值，模型输出 Y(p) 属于 R14。蓝色曲线为下图最优价格 p* 对应的完整逐日预测序列。曲线及其形状仅为示意，并非普遍规律或实际业务数据",
-          "The horizontal axis is future day 1 through day 14; the vertical axis is predicted daily units. Each curve represents a candidate price and contains 14 daily predictions: model output Y(p) is a vector in R14. The blue trajectory is the complete daily forecast at p*, the selected price in the lower chart. The curves and their shapes are illustrative, not universal relationships or actual business data"
+          "Sales = f(Price, other)。固定其他输入，比较不同价格下的未来 14 天销量。虚线左侧为历史销量，右侧为逐日预测；各价格曲线从今天的同一个历史点接出。候选价格依次为 p₁ < p₂ < p* < p₄ < p₅。相邻价格曲线之间填充颜色，展示价格情景的差异，不表示置信区间或销量叠加。蓝色 p* 曲线包含 14 个日预测值，对应下图预测 GMV 最大的价格。图中所有数据和价量关系均为示意",
+          "Sales = f(Price, other). Hold other inputs fixed to compare the next 14 days at different prices. Historical sales are to the left of the dashed line; daily forecasts are to the right, connected to the same historical point today. Candidate prices are ordered p₁ < p₂ < p* < p₄ < p₅. Color fills between adjacent price trajectories show scenario differences, not confidence intervals or stacked sales. The blue p* curve contains 14 daily predictions and matches the price with maximum predicted GMV below. All data and price–sales relationships are illustrative"
         ) : T(
           "横轴为候选价格，纵轴为预测 GMV。模型先为每个价格输出 14 个逐日销量预测；在决策环节，将这 14 个日预测值求和后乘以该价格，得到预测 GMV。曲线峰值对应候选范围内预测 GMV 最高的价格 p*，蓝色峰值与上图蓝色逐日预测曲线对应。此示意中每个候选价格在 14 天内保持不变",
           "The horizontal axis is candidate price; the vertical axis is predicted GMV. The model first outputs 14 daily sales predictions for each price. The decision step sums those daily predictions and multiplies by the price. The peak identifies p*, the price with the highest predicted GMV within the candidate range, matching the blue daily trajectory above. Each candidate price is held constant across the 14 days in this illustration"
         );
         let plot;
         if (isSales) {
-          plot = '<path class="journey-chart-axis" d="M30 40V132H284M26 46l4-6 4 6M278 128l6 4-6 4"/>' +
-            label(30,16,T("每日预测销量", "Predicted daily units")[lang],"pricing-curve-axis-label") +
-            scenarios.map((scenario,index) => {
+          // Fills connect adjacent price trajectories, never cumulative sales or uncertainty bounds.
+          const bands = scenarios.slice(0,-1).map((scenario,index) =>
+            '<path class="pricing-scenario-band pricing-scenario-band--' + index + '" d="M' + today + ' L' +
+            scenarioPoints(scenario).join(' L') + ' L' + scenarioPoints(scenarios[index + 1]).reverse().join(' L') + ' Z"/>').join('');
+          const historicalPath = history.map((value,i) => (i ? "L" : "M") + point(32 + (todayX - 32) * i / (history.length - 1),dailyY(value))).join(' ');
+          plot = '<path class="journey-chart-axis" d="M25 44V184H285M21 50l4-6 4 6M279 180l6 4-6 4"/>' +
+            '<path class="pricing-today-guide" d="M' + todayX + ' 43V184"/>' +
+            label(25,15,T("每日销量", "Daily sales")[lang],"pricing-curve-axis-label") +
+            label(50,35,T("历史", "Past")[lang],"pricing-period-label","middle") +
+            label(173,35,T("不同价格下的未来预测", "Forecasts by price")[lang],"pricing-period-label","middle") + bands +
+            '<path class="pricing-history-line" d="' + historicalPath + '"/>' +
+            history.slice(0,-1).map((value,i) => '<circle class="pricing-history-point" cx="' + (32 + (todayX - 32) * i / (history.length - 1)).toFixed(2) + '" cy="' + dailyY(value).toFixed(2) + '" r="2.2"/>').join('') +
+            // Render the selected trajectory last so its 14 daily markers stay visible.
+            scenarios.filter(scenario => scenario.kind !== "selected").concat(scenarios.filter(scenario => scenario.kind === "selected")).map(scenario => {
               const values = forecast(scenario.price);
-              const curve = values.map((value,i) => (i ? "L" : "M") + dayX(i).toFixed(2) + " " + dailyY(value).toFixed(2)).join(" ");
-              const legendX = 43 + index * 86;
+              const curve = 'M' + today + ' L' + scenarioPoints(scenario).join(' L');
+              const endpointY = dailyY(values[values.length - 1]);
               return '<g class="pricing-scenario pricing-scenario--' + scenario.kind + '" data-price="' + scenario.price + '">' +
                 '<path class="pricing-curve-line" data-curve="daily-sales" d="' + curve + '"/>' +
-                values.map((value,i) => '<circle class="pricing-daily-point" data-day="' + (i + 1) + '" cx="' + dayX(i).toFixed(2) + '" cy="' + dailyY(value).toFixed(2) + '" r="2.3"/>').join('') +
-                '<path class="pricing-curve-line" d="M' + legendX + ' 32h16"/>' + label(legendX + 21,36,scenario.label,"pricing-scenario-label") + '</g>';
+                (scenario.kind === "selected" ? values.map((value,i) => '<circle class="pricing-daily-point" data-day="' + (i + 1) + '" cx="' + dayX(i).toFixed(2) + '" cy="' + dailyY(value).toFixed(2) + '" r="2.2"/>').join('') : '') +
+                '<path class="pricing-endpoint-guide" d="M249 ' + endpointY.toFixed(2) + 'h7"/>' +
+                label(261,endpointY + 3.5,scenario.label,"pricing-scenario-label") + '</g>';
             }).join('') +
-            [0,6,13].map(index => '<path class="journey-chart-axis" d="M' + dayX(index) + ' 132v4"/>' + label(dayX(index),153,T("第 " + (index + 1) + " 天", "Day " + (index + 1))[lang],"pricing-curve-axis-label","middle")).join('');
+            '<circle class="pricing-today-point" cx="' + todayX + '" cy="' + dailyY(history[history.length - 1]).toFixed(2) + '" r="3"/>' +
+            label(todayX,204,T("今天", "Today")[lang],"pricing-period-label","middle") +
+            [6,13].map(index => '<path class="journey-chart-axis" d="M' + dayX(index) + ' 184v4"/>' + label(dayX(index),204,T("第 " + (index + 1) + " 天", "Day " + (index + 1))[lang],"pricing-period-label","middle")).join('');
         } else {
           plot = '<path class="journey-chart-axis" d="M30 30V113H284M26 36l4-6 4 6M278 109l6 4-6 4"/>' +
             '<path class="pricing-curve-area" d="' + gmvPath + ' L272 113H40Z"/><path class="pricing-curve-guide" d="M156 45V113"/>' +
@@ -472,7 +497,10 @@
       };
       const chart = kind => '<span class="bi"><span class="zh" lang="zh-CN">' + svg("zh",kind) + '</span><span class="en" lang="en">' + svg("en",kind) + '</span></span>';
       return '<span class="growth-journey-diagram pricing-decision"><span class="pricing-step-label">' + bi(T("01 · 逐日销量预测", "01 · Daily sales forecasting")) +
-        '</span><span class="pricing-forecast-output">' + escapeHTML(String.raw`\(\hat{\mathbf Y}(p)\in\mathbb R^{14}\)`) + '</span>' + chart("sales") +
+        '</span><span class="pricing-forecast-output">' + escapeHTML(String.raw`\(\mathrm{Sales}=f(\mathrm{Price},\,\mathrm{other})\)`) +
+        '</span><span class="pricing-forecast-context">' + bi(T("固定其他输入，比较不同价格下的未来销量", "Hold other inputs fixed; compare future sales by price")) + '</span>' + chart("sales") +
+        '<span class="pricing-scenario-key">' + bi(T("价格由低到高", "Price: low to high")) + '<span>p₁ &lt; p₂ &lt; <b>p*</b> &lt; p₄ &lt; p₅</span></span>' +
+        '<span class="pricing-scenario-note">' + bi(T("彩色分层表示价格情景，非置信区间", "Colors show price scenarios, not confidence intervals")) + '</span>' +
         '<span class="pricing-formula"><span class="pricing-aggregation-label">' + bi(T("决策时汇总 14 个日预测值", "Sum the 14 daily predictions for pricing")) + '</span>' +
         escapeHTML(String.raw`\(\widehat{\mathrm{GMV}}(p)=p\sum_{t=1}^{14}\hat y_t(p)\)`) +
         '<span class="pricing-formula-arrow" aria-hidden="true">↓</span></span><span class="pricing-step-label">' + bi(T("02 · GMV 最大化决策", "02 · Maximize predicted GMV")) + '</span>' + chart("gmv") +
