@@ -514,7 +514,7 @@
       bi(T("整体运营目标 → 各档期目标", "Overall objective → Cycle goals")) + '</strong><span>' +
       bi(T("价量预测工具 · 商品信号 · 历史记忆", "Forecasting tool · Product signals · Memory")) + '</span></span>' + connector +
       '<span class="agent-plan-loop"><span class="agent-plan-engine"><strong id="agent-plan-title">' +
-      bi(T("Agent 生成多档期规划", "Agent plans across cycles")) + '</strong><span class="agent-plan-model">Qwen3.5-35B-A3B</span><span class="agent-plan-orchestration">' +
+      bi(T("Agent 生成多档期规划", "Agent plans across cycles")) + '</strong><span class="agent-plan-model"><img class="agent-plan-model-logo" src="assets/logos/skills/qwen.svg" alt="" width="14" height="14" decoding="async">Qwen3.5-35B-A3B</span><span class="agent-plan-orchestration">' +
       bi(T("LangGraph 工作流编排", "LangGraph orchestration")) + '</span></span>' + connector +
       '<span class="agent-plan-campaigns">' + [1,2,3].map(number => '<span class="agent-plan-campaign"><span class="agent-plan-cycle">' +
         bi(T("档期 0" + number, "Cycle 0" + number)) + '</span><strong>' + bi(T("周期目标", "Cycle goal")) +
@@ -666,9 +666,11 @@
         paperResult(publication.venue,publication.year,publication.authorship)) + '<div class="project-footer">' + tags(project.tags) +
       '<a class="text-link" href="#' + project.related + '">' + bi(ui.workLink,true) + arrow + '</a></div></div>';
   };
+  const repositoryLink = project => project.repository ? '<a class="text-link project-repository-link" href="' + escapeHTML(project.repository) +
+    '" target="_blank" rel="noopener noreferrer">' + bi(T("GitHub 仓库", "GitHub repository"),true) + diagonal + '</a>' : "";
   const renderProject = project => '<details class="project-card" id="' + project.id + '"><summary class="project-summary">' +
     projectVisual(project) + '<div class="project-heading"><div class="eyebrow">' + bi(project.category) +
-    '</div><h3>' + bi(project.title) + '</h3><p>' + bi(project.description) + '</p></div>' + toggle() + '</summary>' +
+    '</div><h3>' + bi(project.title) + '</h3><p>' + bi(project.description) + '</p>' + repositoryLink(project) + '</div>' + toggle() + '</summary>' +
     renderProjectBody(project) + '</details>';
   const renderProjectBody = project => project.id === "project-deformer" ? renderDeformerBody(project) :
     project.researchStudy?.narrative ? renderResearchBody(project) :
@@ -687,7 +689,7 @@
     '<h4 class="small-label">' + bi(ui.result) +
     '</h4>' + (project.id === "project-agent" ? renderTable(project.table) : project.wikiStudy ? renderWikiResults(project.wikiStudy) : project.researchStudy ? renderResearchResults(project.researchStudy) : project.paperStudy ? renderPaperResults(project.paperStudy) : project.table && !project.visualStory ? renderTable(project.table) : '') +
     (project.metrics ? renderMetrics(project.metrics) : '') + '<p class="project-outcome">' + bi(project.outcome) + '</p>' +
-    '<div class="project-footer">' + tags(project.tags) + (project.related ?
+    '<div class="project-footer">' + tags(project.tags) + repositoryLink(project) + (project.related ?
       '<a class="text-link" href="#' + project.related + '">' + bi(ui.workLink, true) + arrow + '</a>' : '') + '</div></div>';
   const renderTechnology = (technology,index) => '<article class="technology-card" id="' + technology.id +
     '" aria-labelledby="' + technology.id + '-title"><header class="technology-card-header"><span class="technology-number" aria-hidden="true">' +
@@ -769,7 +771,7 @@
     '<div class="preview-mobile-projects" role="group" aria-label="Related projects"></div>' +
     '<div class="preview-workspace"><div class="preview-detail">' +
     '<header class="preview-project-header"><div class="eyebrow" id="preview-project-category"></div>' +
-    '<h2 id="preview-project-title"></h2><p id="preview-project-description"></p></header>' +
+    '<h2 id="preview-project-title"></h2><p id="preview-project-description"></p><div id="preview-project-repository"></div></header>' +
     '<nav class="preview-tabs" aria-label="Project sections">' + [
       ["diagram",T("图解", "Visuals")],["context",T("背景", "Context")],
       ["approach",T("方案", "Approach")],["results",T("结果", "Results")]
@@ -1135,7 +1137,7 @@
       {key:"diagram",title:project.id === "project-agent" ? T("工作流", "Workflow") : project.id === "project-qwen" ? T("路线图", "Roadmap") : T("图解", "Visuals")},{key:"context",title:T("背景", "Context")},
       {key:"approach",title:["project-qwen","project-agent"].includes(project.id) ? T("细节", "Details") : T("方案", "Approach")},{key:"results",title:T("结果", "Results")}
     ];
-    const returnLink = body.querySelector(".project-footer .text-link");
+    const returnLink = body.querySelector(".project-footer .text-link:not(.project-repository-link)");
     if (returnLink) {
       returnLink.dataset.previewClose = "";
       returnLink.innerHTML = bi(T("关闭项目 · 恢复布局", "Close project · Restore layout"),true) + arrow;
@@ -1149,6 +1151,7 @@
       preview.querySelector("#preview-project-category").innerHTML = bi(project.category);
       preview.querySelector("#preview-project-title").innerHTML = bi(viewInfo?.title || project.title);
       preview.querySelector("#preview-project-description").innerHTML = bi(viewInfo?.description || project.description);
+      preview.querySelector("#preview-project-repository").innerHTML = repositoryLink(project);
       previewContent.replaceChildren(body);
       previewScroll.scrollTop = 0;
       typesetMath(preview);

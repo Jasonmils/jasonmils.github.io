@@ -981,6 +981,7 @@ const portfolio = {
     {
       id:"project-wiki",index:"02",category:T("个人项目 · 多模态知识工程", "Independent project · Multimodal knowledge engineering"),
       title:T("AITradingWiki", "AITradingWiki"),
+      repository:"https://github.com/Jasonmils/AITradingWiki",
       description:T("将文档与视频转为带来源定位的研究页面，串联多模态摄入、有界检索、具名审批与写后验证", "Turn documents and videos into locator-bound research pages through multimodal ingestion, bounded retrieval, exact-page approval and post-write verification"),
       context:T("投资研究资料分散在 PDF、Office 文档、长视频和历史研究页面中。项目以 Codex 调用 Skills 和确定性 Python 工具组织证据处理，并以 Obsidian 浏览 Markdown 知识页、链接和图谱，让后续研究能够追溯到原文、视频时间点与画面，同时保留观点归属和未覆盖范围", "Investment research spans PDFs, Office files, long videos and existing research pages. Codex invokes Skills and deterministic Python tools to process evidence, while Obsidian browses Markdown pages, links and graphs. Subsequent research can trace claims to source text, video times and visuals while retaining attribution and coverage gaps"),
       challenge:T("文档结构、音频转录与幻灯片需要不同的预处理和定位方式；ASR、OCR 和模型整理的证据状态也需要分别记录。视频涉及音频和派生文字的独立传输授权，知识更新涉及精确批准范围、并发编辑与写入完成验证。资料规模增长时，还需要控制每次检索进入上下文的内容量", "Document structure, audio transcripts and slides need different preprocessing and locators, with separate evidence states for ASR, OCR and model refinement. Video introduces independent authorization for audio and derived-text transfers; knowledge updates require exact approval scope, concurrency checks and completion verification. Retrieval must also control context size as the collection grows"),
