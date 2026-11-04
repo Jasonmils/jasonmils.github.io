@@ -583,7 +583,7 @@ const portfolio = {
     sayHello: T("联系我", "Get in touch"),
     glance: T("经历概览", "At a glance"),
     agenda: T("讲解目录", "On this page"),
-    headline: T("AI 算法工程师", "AI Algorithm Engineer"),
+    headline: T("AI算法工程师 x 产品经理", "AI Algorithm Engineer x Product Manager"),
     contextDetails: T("业务背景与职责", "Context & responsibilities"),
     stories: T("重点经历", "Selected stories"),
     storyNotes: T("讲解补充 · 挑战与行动", "Speaker notes · challenge & actions"),
