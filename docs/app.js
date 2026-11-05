@@ -727,7 +727,8 @@
     '<button type="button" data-language="en" lang="en" aria-label="Switch to English">EN</button></div></div>' +
     '<div class="page-shell" id="top"><div class="site-layout"><aside class="profile">' +
     '<div class="profile-main"><a class="profile-name" href="#top"><span class="profile-kicker">JASON DING</span><h1>' + bi(data.name) + '</h1></a>' +
-    '<p class="profile-role">' + bi(ui.headline) + '</p><p class="profile-tagline">' + bi(data.tagline) + '</p>' +
+    '<p class="profile-role">' + bi(ui.headline) + '</p>' +
+    '<p class="profile-supporting">' + bi(ui.supportingExperience) + '</p><p class="profile-tagline">' + bi(data.tagline) + '</p>' +
     '<nav class="section-nav" aria-label="On this page">' + navLinks(true) + '</nav></div>' +
     '<div class="profile-footer"><a class="profile-email" href="mailto:' + data.email + '">' +
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>' +

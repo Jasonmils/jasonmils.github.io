@@ -574,7 +574,7 @@ const portfolio = {
   alias: "Jason",
   email: "jasondean910@outlook.com",
   scholar: "https://scholar.google.com.hk/citations?user=ei8WkXgAAAAJ&hl=en",
-  tagline: T("用大模型、预测与 Agent，将真实业务问题转化为可用的解决方案", "I turn real-world problems into practical solutions with language models, forecasting and agents"),
+  tagline: T("专注大模型、时序预测与 Agent，也关注有审美的产品。", "I focus on language models, time-series forecasting and agents, with an interest in beautifully designed products."),
   ui: {
     skip: T("跳到主要内容", "Skip to main content"),
     nav: [T("经历", "Experience"), T("项目", "Projects"), T("技能", "Skills"), T("教育", "Education")],
@@ -583,7 +583,8 @@ const portfolio = {
     sayHello: T("联系我", "Get in touch"),
     glance: T("经历概览", "At a glance"),
     agenda: T("讲解目录", "On this page"),
-    headline: T("AI算法工程师 x 产品经理", "AI Algorithm Engineer x Product Manager"),
+    headline: T("AI 算法工程师", "AI Algorithm Engineer"),
+    supportingExperience: T("具备产品定义与原型验证经验", "With experience in product definition and prototype validation"),
     contextDetails: T("业务背景与职责", "Context & responsibilities"),
     stories: T("重点经历", "Selected stories"),
     storyNotes: T("讲解补充 · 挑战与行动", "Speaker notes · challenge & actions"),
