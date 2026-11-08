@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <!-- Abbreviated motifs for closed cards; the original figures appear on expansion. -->
+  <symbol id="project-agent" viewBox="0 0 160 100">
+    <g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M32 29h18q6 0 6 6v9h10m30 7h14q5 0 5 5v14h13M35 77h16q5 0 5-5V57h10"/>
+      <path d="M93 32v-9q0-6 6-6h19" stroke-dasharray="3 5"/>
+      <g fill="var(--illustration-light)"><rect x="12" y="18" width="22" height="22" rx="6"/><rect x="16" y="68" width="20" height="16" rx="4"/><rect x="125" y="60" width="21" height="20" rx="5"/></g>
+      <rect x="65" y="31" width="35" height="35" rx="9" fill="var(--illustration-fill)"/>
+      <path d="m82.5 39 2.5 7 7 2.5-7 2.5-2.5 7-2.5-7-7-2.5 7-2.5z" fill="currentColor" stroke="none"/>
+      <circle cx="122" cy="17" r="3" fill="currentColor"/>
+    </g>
+  </symbol>
+  <symbol id="project-wiki" viewBox="0 0 160 100">
+    <g stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M29 28h60v55H29z" fill="var(--illustration-fill)"/>
+      <path d="M37 21h59v55H37z" fill="var(--illustration-light)"/>
+      <path d="M46 14h44l14 14v40H46z" fill="var(--illustration-fill)"/>
+      <path d="M89 14v15h15M55 38h29m-29 9h23m-23 9h13" fill="none"/>
+      <circle cx="105" cy="61" r="17" fill="var(--illustration-light)"/>
+      <path d="m118 74 14 14" stroke-width="5"/><path d="m98 61 5 5 10-11" fill="none"/>
+    </g>
+  </symbol>
+  <symbol id="project-qwen" viewBox="0 0 160 100">
+    <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 18v62h132M16 60h129m-129-19h129" opacity=".25"/>
+      <path d="m68 56 14-13 13 3 14-18 13 6 19-17v26l-19 9-13-5-14 16-13-4z" fill="var(--illustration-fill)" stroke="none"/>
+      <path d="m18 68 13-11 11 5 15-13 11 7"/><path d="M68 19v61" stroke-dasharray="3 5" opacity=".6"/>
+      <path d="m68 56 14-8 13 4 14-15 13 3 19-12" stroke-width="3"/>
+      <g fill="var(--illustration-light)"><circle cx="68" cy="56" r="3.5"/><circle cx="109" cy="37" r="3.5"/><circle cx="141" cy="28" r="3.5"/></g>
+    </g>
+  </symbol>
+  <symbol id="project-ring" viewBox="0 0 160 100">
+    <g stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" transform="rotate(-22 80 50)">
+      <path d="M34 48c0-17 20-31 46-31s46 14 46 31v9c0 17-20 31-46 31S34 74 34 57z" fill="var(--illustration-fill)"/>
+      <path fill-rule="evenodd" fill="var(--illustration-light)" d="M126 48a46 31 0 1 1-92 0 46 31 0 1 1 92 0Zm-14 0a32 18 0 1 0-64 0 32 18 0 1 0 64 0Z"/>
+      <path d="M49 51c6-8 18-14 31-14s26 6 31 14" fill="none" opacity=".55"/>
+      <g fill="currentColor" stroke="none"><circle cx="76" cy="37" r="2"/><circle cx="84" cy="37" r="2"/></g>
+    </g>
+  </symbol>
+  <symbol id="project-deformer" viewBox="0 0 160 100">
+    <g stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+      <path d="M18 28h43v43H18zM99 28h43v43H99z" fill="var(--illustration-light)"/>
+      <path d="M18 28h14v43H18zm81 0h14v14H99zm14 14h15v15h-15zm15 15h14v14h-14z" fill="currentColor" stroke="none"/>
+      <path d="M32 28h15v43H32zm81 0h15v14h-15zm15 14h14v15h-14z" fill="var(--illustration-fill)" stroke="none"/>
+      <path d="M32 28v43m15-43v43M18 42h43M18 57h43M113 28v43m15-43v43M99 42h43M99 57h43" opacity=".5" fill="none"/>
+      <path d="M69 50h22m-6-6 6 6-6 6" stroke-width="2.5" fill="none"/>
+    </g>
+  </symbol>
+  <symbol id="project-hust-wind" viewBox="0 0 160 100">
+    <g fill="var(--illustration-fill)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+      <g id="turbine"><path d="m80 37-2 44h5l-2-44m-1-2-5-24 2-3 5 24m0 3 22 6 2 3-24-5m-4-3-17 15-3 1 17-19"/><circle cx="80" cy="35" r="3" fill="var(--illustration-light)"/></g>
+      <use href="#turbine" transform="translate(-26 18) scale(.72)"/><use href="#turbine" transform="translate(68 25) scale(.68)"/>
+      <path d="m32 80 44 8 44-8" stroke-dasharray="3 4" fill="none"/><circle cx="79" cy="88" r="3" fill="currentColor"/>
+    </g>
+  </symbol>
+  <symbol id="project-hust-price" viewBox="0 0 160 100">
+    <g stroke="currentColor" stroke-linejoin="round" stroke-linecap="round" fill="none" stroke-width="2">
+      <path d="M17 20v60h128" opacity=".55"/>
+      <path d="M22 55 39 37 51 46 64 28 78 37 95 22 110 33 128 19 143 26v23l-15-7-18 17-15-12-17 16-14-7-13 15-12-9-17 9z" fill="var(--illustration-fill)" stroke="none"/>
+      <path d="m22 62 17-13 12 9 13-18 14 9 17-16 15 13 18-15 15 6" stroke-width="2.8"/>
+      <path d="M128 19v24m-4-24h8m-8 24h8" stroke-width="1.6"/><circle cx="128" cy="31" r="3.5" fill="var(--illustration-light)"/>
+    </g>
+  </symbol>
+  <symbol id="project-hust-review" viewBox="0 0 160 100">
+    <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="115" cy="26" r="12" fill="var(--illustration-fill)"/>
+      <path d="M90 30h-6m7-15-4-3m28-5V3m19 10 4-4m1 18h6" opacity=".65"/>
+      <path d="M65 15h8l11 64H54z" fill="var(--illustration-light)"/>
+      <path d="m57 40 22 15-22 17m23-32-23 15 25 19M50 30h37l-13-8H63zm-6 17h48l-13-8H55z"/>
+      <path d="M13 30q16 13 37 0m37 0q7 6 13 6M13 47q13 12 31 0m48 0q24 15 48 0" opacity=".65"/><path d="M44 81h49"/>
+    </g>
+  </symbol>
+</svg>

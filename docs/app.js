@@ -176,8 +176,9 @@
     '</summary><div class="paper-disclosure-body">' + ["similarity","acf"].map(renderDeformerFigure).join('') + '</div></details></div>';
   const paperResult = (venue, year, authorship) => '<div class="paper-result"><span class="paper-result-year">' + year +
     '</span><div><strong>' + escapeHTML(venue) + '</strong><span>' + bi(authorship) + '</span></div></div>';
-  const renderGrowthAB = (compact = false) => '<div class="ab-results' + (compact ? ' ab-results--compact' : '') + '">' +
-    productGrowthABResults.phases.map(phase => '<article class="ab-phase"><div class="phase-label">' + bi(phase.label) +
+  const renderGrowthAB = (compact = false, anchorPrefix = "") => '<div class="ab-results' + (compact ? ' ab-results--compact' : '') + '">' +
+    productGrowthABResults.phases.map(phase => '<article class="ab-phase"' +
+      (anchorPrefix ? ' id="' + escapeHTML(anchorPrefix + "-" + phase.id) + '"' : '') + '><div class="phase-label">' + bi(phase.label) +
       '</div><h5 class="ab-treatment">' + bi(phase.treatment) + '</h5><p class="ab-control">' +
       bi(T("对照：" + phase.control.zh, "Control: " + phase.control.en)) + '</p><p class="ab-planning">' + bi(phase.planning) +
       '</p><div class="ab-measures"><div><div class="adoption-value">' + phase.adoption + '<span>%</span></div><div class="chart-label">' +
@@ -402,15 +403,15 @@
       return '<svg class="journey-chart journey-chart--growth" viewBox="0 0 300 186" width="300" height="186" role="img" aria-labelledby="' +
         id + '-title ' + id + '-desc"><title id="' + id + '-title">' + escapeHTML(title[lang]) + '</title><desc id="' + id + '-desc">' +
         escapeHTML(description[lang]) + '</desc><path class="journey-chart-axis" d="M34 32V154H278M30 38l4-6 4 6M272 150l6 4-6 4"/>' +
-        '<path class="journey-chart-history" d="M48 125C75 120 100 95 134 94"/>' +
+        '<path class="journey-chart-history chart-trace" pathLength="1" d="M48 125C75 120 100 95 134 94"/>' +
         '<path class="journey-chart-risk" data-path="risk" d="M134 94C176 102 214 128 252 132"/>' +
-        '<path class="journey-chart-incubation" data-path="incubation" d="M134 94C176 85 213 56 252 42"/>' +
-        '<path class="journey-chart-retention" data-path="retention" d="M134 94C176 91 213 90 252 94"/>' +
+        '<path class="journey-chart-incubation chart-trace" data-path="incubation" pathLength="1" d="M134 94C176 85 213 56 252 42"/>' +
+        '<path class="journey-chart-retention chart-trace" data-path="retention" pathLength="1" d="M134 94C176 91 213 90 252 94"/>' +
         '<circle class="journey-chart-history-point" cx="48" cy="125" r="3"/><circle class="journey-chart-current" cx="134" cy="94" r="4"/>' +
         '<circle class="journey-chart-growth-point" cx="252" cy="42" r="4"/><circle class="journey-chart-retention-point" cx="252" cy="94" r="4"/>' +
         label(34,20,T("成长层级", "Growth tier"),"journey-chart-axis-label") + label(278,178,T("档期", "Campaigns"),"journey-chart-axis-label","end") +
         label(134,176,T("当前", "Now"),"journey-chart-current-label","middle") + label(170,30,T("高潜孵化", "Incubation"),"journey-chart-incubation-label") +
-        label(225,79,T("防滑落", "Retain tier"),"journey-chart-retention-label") + label(252,147,T("滑落风险", "Decline risk"),"journey-chart-risk-label","end") + '</svg>';
+        label(270,79,T("防滑落", "Retain tier"),"journey-chart-retention-label","end") + label(252,147,T("滑落风险", "Decline risk"),"journey-chart-risk-label","end") + '</svg>';
     };
     return '<span class="agent-plan-growth"><span class="bi"><span class="zh" lang="zh-CN">' + svg("zh") +
       '</span><span class="en" lang="en">' + svg("en") + '</span></span><span class="journey-chart-note">' +
@@ -474,7 +475,7 @@
               const curve = 'M' + today + ' L' + scenarioPoints(scenario).join(' L');
               const endpointY = dailyY(values[values.length - 1]);
               return '<g class="pricing-scenario pricing-scenario--' + scenario.kind + '" data-price="' + scenario.price + '">' +
-                '<path class="pricing-curve-line" data-curve="daily-sales" d="' + curve + '"/>' +
+                '<path class="pricing-curve-line chart-trace" data-curve="daily-sales" pathLength="1" d="' + curve + '"/>' +
                 (scenario.kind === "selected" ? values.map((value,i) => '<circle class="pricing-daily-point" data-day="' + (i + 1) + '" cx="' + dayX(i).toFixed(2) + '" cy="' + dailyY(value).toFixed(2) + '" r="2.2"/>').join('') : '') +
                 '<path class="pricing-endpoint-guide" d="M249 ' + endpointY.toFixed(2) + 'h7"/>' +
                 label(261,endpointY + 3.5,scenario.label,"pricing-scenario-label") + '</g>';
@@ -485,7 +486,7 @@
         } else {
           plot = '<path class="journey-chart-axis" d="M30 30V113H284M26 36l4-6 4 6M278 109l6 4-6 4"/>' +
             '<path class="pricing-curve-area" d="' + gmvPath + ' L272 113H40Z"/><path class="pricing-curve-guide" d="M156 45V113"/>' +
-            '<path class="pricing-curve-line" data-curve="gmv" d="' + gmvPath + '"/>' +
+            '<path class="pricing-curve-line chart-trace" data-curve="gmv" pathLength="1" d="' + gmvPath + '"/>' +
             '<circle class="pricing-curve-halo" cx="156" cy="45" r="8"/><circle class="pricing-curve-point" cx="156" cy="45" r="4"/>' +
             label(30,16,T("预测 GMV", "Predicted GMV")[lang],"pricing-curve-axis-label") +
             label(156,30,T("预测 GMV 最大", "Maximum predicted GMV")[lang],"pricing-curve-maximum","middle") +
@@ -504,8 +505,9 @@
         '<span class="pricing-formula"><span class="pricing-aggregation-label">' + bi(T("决策时汇总 14 个日预测值", "Sum the 14 daily predictions for pricing")) + '</span>' +
         escapeHTML(String.raw`\(\widehat{\mathrm{GMV}}(p)=p\sum_{t=1}^{14}\hat y_t(p)\)`) +
         '<span class="pricing-formula-arrow" aria-hidden="true">↓</span></span><span class="pricing-step-label">' + bi(T("02 · GMV 最大化决策", "02 · Maximize predicted GMV")) + '</span>' + chart("gmv") +
-        '<strong class="pricing-decision-choice">' + bi(T("选择曲线峰值对应的价格 p*", "Choose p* at the peak of predicted GMV")) +
-        '</strong><span class="journey-chart-note">' + bi(T("候选价格范围内的决策示意 · 非实际业务数据", "Decision within the candidate price range · Illustration only")) + '</span></span>';
+        '<span class="pricing-rule"><strong>' + bi(T("决策规则", "Pricing rule")) + '</strong>' +
+        bi(T("在候选价格中，选取预测 GMV 最高的价格 p*。", "Choose the candidate price p* with the highest predicted GMV.")) +
+        '</span><span class="journey-chart-note">' + bi(T("候选价格范围内的决策示意 · 非实际业务数据", "Decision within the candidate price range · Illustration only")) + '</span></span>';
     }
     const connector = '<span class="agent-plan-connector" aria-hidden="true"></span>';
     // Three campaigns illustrate the planning horizon, not a fixed production schedule.
@@ -528,11 +530,12 @@
   };
   const renderGrowthJourney = journey => '<nav class="growth-journey" aria-labelledby="' + escapeHTML(journey.stages[0].target) +
     '-journey-label"><p class="sr-only" id="' + escapeHTML(journey.stages[0].target) + '-journey-label">' + bi(journey.label) + '</p><div class="growth-journey-route"><ol class="growth-journey-stages">' +
-    journey.stages.map((stage,i) => '<li>' + (i ? '<span class="growth-journey-direction" aria-hidden="true">' + arrow + '</span>' : '') + '<a class="growth-journey-stage growth-journey-stage--' + (i ? 'long' : 'short') + '" href="#' +
-      escapeHTML(stage.target) + '"><span class="growth-journey-top"><span class="growth-journey-number" aria-hidden="true">' + stage.number +
+    journey.stages.map((stage,i) => '<li>' + (i ? '<span class="growth-journey-direction" aria-hidden="true">' + arrow + '</span>' : '') + '<div class="growth-journey-stage growth-journey-stage--' + (i ? 'long' : 'short') + '"><span class="growth-journey-top"><span class="growth-journey-number" aria-hidden="true">' + stage.number +
       '</span><span class="growth-journey-horizon">' + bi(stage.horizon) + '</span></span><strong>' + bi(stage.title) +
-      '</strong><span class="growth-journey-action">' + bi(stage.action) + '</span>' + (stage.diagram ? renderGrowthDiagram(stage.diagram) : '') + '<span class="growth-journey-link">' +
-      arrow + '</span></a></li>').join('') +
+      '</strong><span class="growth-journey-action">' + bi(stage.action) + '</span>' + (stage.diagram ? renderGrowthDiagram(stage.diagram) : '') + '<a class="growth-journey-link" href="#' + escapeHTML(stage.target) + '">' +
+      bi(T("查看方案", "View approach"),true) + arrow + '</a></div>' +
+      (stage.diagram ? '<button class="journey-enlarge" type="button" aria-haspopup="dialog">' +
+        diagonal + bi(T("放大图表", "Enlarge chart"),true) + '</button>' : '') + '</li>').join('') +
     '</ol></div><div class="growth-journey-foundation">' +
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h11l-3-3M19 16H8l3 3M19 8v4M5 16v-4"/></svg><div><strong>' +
     bi(journey.connection) + '</strong><p>' + bi(journey.detail) + '</p></div></div></nav>';
@@ -550,8 +553,9 @@
         '<span class="contribution-index" aria-hidden="true">0' + (j+1) + '</span><span class="contribution-copy"><strong>' + bi(link.label) +
         '</strong><span class="contribution-action">' + bi(link.action) + '</span><span class="contribution-state">' +
         bi(T("正在对照", "In view"),true) + '</span></span><span class="contribution-arrow" aria-hidden="true">' + arrow + '</span></a>').join('') + '</div></div>' +
-      '<div class="strategy-impact"><strong>' + bi(phase.result) + '</strong>' +
-      (phase.resultTable ? renderTable(phase.resultTable) : '<p>' + bi(phase.resultNote) + '</p>') + '</div></section>'
+      '<div class="strategy-impact" id="' + phase.id + '-results">' +
+      (phase.resultValue ? '<div class="cumulative-result"><strong>' + escapeHTML(phase.resultValue) + '</strong>' + bi(phase.result) + '</div>' : '<strong>' + bi(phase.result) + '</strong>') +
+      (phase.resultTable ? renderTable(phase.resultTable, phase.id + "-results") : '<p>' + bi(phase.resultNote) + '</p>') + '</div></section>'
     ).join('') + '</div></div>';
   const renderExperience = exp => '<article class="experience-card" id="' + exp.id + '">' +
     '<div class="experience-timeline"><span class="date">' + exp.date.replace(' — ', '<span class="date-dash">—</span>') +
@@ -567,7 +571,7 @@
     '</p></div><div><h4 class="small-label">' + bi(ui.responsibility) +
     '</h4><p>' + bi(exp.responsibilities) +
     '</p></div></div></details>' + renderStoryBoard(exp)) + '</div></article>';
-  const renderTable = table => table.phases ? renderGrowthAB(true) + visualNote(table.note) : '<div class="table-wrap"><table class="result-table"><thead><tr>' +
+  const renderTable = (table, anchorPrefix = "") => table.phases ? renderGrowthAB(true, anchorPrefix) + visualNote(table.note) : '<div class="table-wrap"><table class="result-table"><thead><tr>' +
     table.headers.map(h => '<th scope="col">' + bi(h) + '</th>').join('') + '</tr></thead><tbody>' +
     table.rows.map(row => '<tr>' + row.map(cell => '<td>' + bi(cell) + '</td>').join('') + '</tr>').join('') +
     '</tbody></table></div><p class="table-note">' + bi(table.note) + '</p>';
@@ -579,7 +583,8 @@
       '" height="' + cover.height + '" loading="lazy" decoding="async">';
     const picture = typeof cover.src === "string" ? img(cover.src) : '<span class="bi project-cover-translations">' +
       '<span class="zh" lang="zh-CN">' + img(cover.src.zh) + '</span><span class="en" lang="en">' + img(cover.src.en) + '</span></span>';
-    return '<span class="project-visual" aria-hidden="true">' + picture + '</span>';
+    return '<span class="project-visual" aria-hidden="true"><svg class="project-symbol" viewBox="0 0 160 100" focusable="false"><use href="assets/project-covers/concepts.svg#' +
+      escapeHTML(project.id) + '"/></svg><span class="project-original">' + picture + '</span></span>';
   };
   // Technical diagrams live in the project deep dives; experiences retain their overview.
   // Preserve earlier story anchors so bookmarked links still open the appropriate project.
@@ -692,7 +697,7 @@
     '<div class="project-footer">' + tags(project.tags) + repositoryLink(project) + (project.related ?
       '<a class="text-link" href="#' + project.related + '">' + bi(ui.workLink, true) + arrow + '</a>' : '') + '</div></div>';
   const renderTechnology = (technology,index) => '<article class="technology-card" id="' + technology.id +
-    '" aria-labelledby="' + technology.id + '-title"><header class="technology-card-header"><span class="technology-number" aria-hidden="true">' +
+    '" tabindex="-1" aria-labelledby="' + technology.id + '-title"><header class="technology-card-header"><span class="technology-number" aria-hidden="true">' +
     String(index+1).padStart(2,"0") + '</span><div><h3 id="' + technology.id + '-title">' + escapeHTML(technology.name) +
     '</h3><p>' + bi(technology.title) + '</p></div><span class="technology-icon">' + diagramIcon(technology.icon) + '</span></header>' +
     tags(technology.tags) + '<dl class="technology-work"><div><dt>' + bi(ui.technologyProblem) + '</dt><dd>' +
@@ -711,6 +716,16 @@
     (controls ? '<div class="section-controls"><button class="quiet-button" type="button" data-expand-all>' +
       bi(ui.expandAll, true) + '</button><button class="quiet-button" type="button" data-collapse-all>' +
       bi(ui.collapseAll, true) + '</button></div>' : '') + '</div>';
+  const renderHighlights = () => '<section class="impact-summary" aria-labelledby="impact-heading"><h2 id="impact-heading">' +
+    bi(ui.highlightsTitle) + '</h2><ul class="impact-cards">' + data.highlights.map(item =>
+      '<li><a class="impact-card" href="#' + escapeHTML(item.target) + '"><strong class="impact-value">' +
+      escapeHTML(item.value.slice(0,-1)) + '<span>%</span></strong><span class="impact-label">' + bi(item.label) +
+      '</span><span class="impact-context">' + bi(item.context) + '</span><span class="impact-arrow" aria-hidden="true">' +
+      arrow + '</span></a></li>').join('') + '</ul></section>';
+  const signature = '<span class="signature-line"><svg class="signature-mark" viewBox="0 0 80 45" aria-hidden="true">' +
+    '<path d="M6 15C15 11 32 7 44 8M35 7C33 16 28 29 21 36C14 43 5 40 7 33C9 26 24 21 42 18' +
+    'M36 34C42 26 47 16 50 9M42 13C54 3 71 2 71 13C71 24 51 36 37 34C47 32 62 29 74 29"/></svg>' +
+    '<span class="profile-kicker">JASON DING</span></span>';
   const themeSwitch = () => '<div class="theme-switch" role="group" aria-label="颜色主题">' +
     '<button type="button" data-theme-choice="light" aria-label="浅色主题" aria-pressed="false">' +
     '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>' +
@@ -719,23 +734,29 @@
   document.getElementById("app").innerHTML =
     '<a class="skip-link" href="#main">' + bi(ui.skip, true) + '</a>' +
     '<div class="ambient-light" aria-hidden="true"></div><div class="reading-line" aria-hidden="true"></div>' +
-    '<div class="language-dock"><div class="perspective-switch" role="group" aria-label="Portfolio perspective / 浏览视角">' +
+    '<header class="language-dock site-toolbar"><nav class="mobile-index" aria-label="Page sections">' + navLinks() + '</nav>' +
+    '<button type="button" class="display-toggle" aria-controls="display-options" aria-expanded="false">' +
+    '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7h7m4 0h7M3 17h11m4 0h3"/><circle cx="12" cy="7" r="2"/><circle cx="16" cy="17" r="2"/></svg>' +
+    '<span class="sr-only">' + bi(T("视角、主题与语言", "View, theme and language")) + '</span></button>' +
+    '<div class="display-options" id="display-options"><div class="perspective-switch" role="group" aria-label="Portfolio perspective / 浏览视角">' +
     '<button type="button" data-perspective="experience" aria-controls="experience technology" aria-pressed="true">' + bi(ui.experienceView,true) + '</button>' +
     '<button type="button" data-perspective="technology" aria-controls="experience technology" aria-pressed="false">' + bi(ui.technologyView,true) + '</button>' +
     '</div>' + themeSwitch() + '<div class="language-switch" role="group" aria-label="Language / 语言">' +
     '<button type="button" data-language="zh" lang="zh-CN" aria-label="切换到中文">中</button>' +
-    '<button type="button" data-language="en" lang="en" aria-label="Switch to English">EN</button></div></div>' +
+    '<button type="button" data-language="en" lang="en" aria-label="Switch to English">EN</button></div></div></header>' +
     '<div class="page-shell" id="top"><div class="site-layout"><aside class="profile">' +
-    '<div class="profile-main"><a class="profile-name" href="#top"><span class="profile-kicker">JASON DING</span><h1>' + bi(data.name) + '</h1></a>' +
+    '<div class="profile-main"><a class="profile-name" href="#top"><h1>' + bi(data.name) + '</h1>' + signature + '</a>' +
     '<p class="profile-role">' + bi(ui.headline) + '</p>' +
     '<p class="profile-supporting">' + bi(ui.supportingExperience) + '</p><p class="profile-tagline">' + bi(data.tagline) + '</p>' +
     '<nav class="section-nav" aria-label="On this page">' + navLinks(true) + '</nav></div>' +
-    '<div class="profile-footer"><a class="profile-email" href="mailto:' + data.email + '">' +
+    '<div class="profile-footer"><p class="profile-status">' + bi(T("杭州 · 开放学术交流与合作机会", "Hangzhou · Open to research discussions and collaborations")) + '</p>' +
+    '<a class="resume-download" href="assets/resume/Yizhou-Ding-zh.pdf" download><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/></svg>' +
+    bi(T("下载简历（PDF）", "Download CV (PDF)"),true) + '</a><a class="profile-email" href="mailto:' + data.email + '">' +
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>' +
     data.email + diagonal + '</a><a class="profile-scholar" href="' + data.scholar + '" target="_blank" rel="noopener noreferrer">' +
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5-10-5m4 3v5l6 3 6-3v-5M22 9v7"/></svg>Google Scholar' + diagonal +
-    '</a></div></aside><nav class="mobile-index" aria-label="Page sections">' + navLinks() + '</nav><main class="main-content" id="main">' +
-    '<section class="section" id="experience">' + heading(ui.workTitle) + data.experience.map(renderExperience).join('') + '</section>' +
+    '</a></div></aside><main class="main-content" id="main">' +
+    '<section class="section" id="experience">' + renderHighlights() + heading(ui.workTitle) + data.experience.map(renderExperience).join('') + '</section>' +
     '<section class="section technology-view" id="technology" hidden>' + heading(ui.technologyTitle) +
     renderTechnologyRoute() + '<div class="technology-list">' + data.technologies.map(renderTechnology).join('') + '</div></section>' +
     '<section class="section" id="projects">' + heading(ui.projectTitle,true) +
@@ -795,6 +816,8 @@
       button.setAttribute("aria-pressed", String(button.dataset.language === lang)));
     document.querySelector(".preview-close").setAttribute("aria-label", lang === "zh" ? "关闭项目详情" : "Close project details");
     document.querySelector(".perspective-switch").setAttribute("aria-label", ui.perspective[lang]);
+    document.querySelector(".resume-download").href = "assets/resume/Yizhou-Ding-" + lang + ".pdf";
+    document.querySelector(".mobile-index").setAttribute("aria-label",lang === "zh" ? "页面导航" : "Page sections");
     window.portfolioTheme?.syncControls();
     if (persist) { try { localStorage.setItem("jason-portfolio-language",lang); } catch (_) {} }
     const path = persist ? window.portfolioLanguage.pathnameFor(lang) : location.pathname;
@@ -831,6 +854,17 @@
   }
   const disclosureAnimations = new WeakMap();
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if ("IntersectionObserver" in window && !reducedMotion.matches) {
+    const chartObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (entry.isIntersecting && entry.intersectionRect.width > 0) {
+          entry.target.classList.add("chart-entered");
+          chartObserver.unobserve(entry.target);
+        }
+      }
+    }, {threshold:0.2});
+    document.querySelectorAll(".journey-chart").forEach(chart => chartObserver.observe(chart));
+  }
   const preview = document.getElementById("project-preview");
   const previewScroll = preview.querySelector(".preview-scroll");
   const previewContent = preview.querySelector(".preview-content");
@@ -1071,6 +1105,26 @@
     previewScroll.scrollTop = detailScroll;
     updateComparisonGlass();
   }
+  // Keep copied SVG titles, tab controls and fragment links local to each dialog.
+  function prefixClonedIds(root,prefix) {
+    const ids = new Map();
+    root.querySelectorAll("[id]").forEach(element => {
+      const original = element.id;
+      element.id = prefix + original;
+      ids.set(original,element.id);
+    });
+    root.querySelectorAll("*").forEach(element => {
+      ["aria-labelledby","aria-describedby","aria-controls","aria-owns","aria-activedescendant","for","headers"].forEach(attribute => {
+        if (element.hasAttribute(attribute)) element.setAttribute(attribute,
+          element.getAttribute(attribute).split(/\s+/).map(id => ids.get(id) || id).join(" "));
+      });
+      ["href","xlink:href"].forEach(attribute => {
+        const value = element.getAttribute(attribute);
+        if (value?.startsWith("#") && ids.has(value.slice(1)))
+          element.setAttribute(attribute,"#" + ids.get(value.slice(1)));
+      });
+    });
+  }
   function openProjectPreview(id, origin, requestedView = "") {
     const project = projectCatalog.find(item => item.id === id);
     if (!project) return;
@@ -1107,24 +1161,7 @@
         outcome:story.result,learning:story.takeaway,tags:story.stack,metrics:undefined});
       body = wrapper.firstElementChild;
     } else body = document.getElementById(id).querySelector(".project-body").cloneNode(true);
-    // Keep copied IDs and references within the preview consistent.
-    const previewIds = new Map();
-    body.querySelectorAll("[id]").forEach(element => {
-      const original = element.id;
-      element.id = "preview-" + original;
-      previewIds.set(original,element.id);
-    });
-    body.querySelectorAll("*").forEach(element => {
-      ["aria-labelledby","aria-describedby","aria-controls","aria-owns","aria-activedescendant","for","headers"].forEach(attribute => {
-        if (element.hasAttribute(attribute)) element.setAttribute(attribute,
-          element.getAttribute(attribute).split(/\s+/).map(id => previewIds.get(id) || id).join(" "));
-      });
-      ["href","xlink:href"].forEach(attribute => {
-        const value = element.getAttribute(attribute);
-        if (value?.startsWith("#") && previewIds.has(value.slice(1)))
-          element.setAttribute(attribute,"#" + previewIds.get(value.slice(1)));
-      });
-    });
+    prefixClonedIds(body,"preview-");
     const narrative = body.classList.contains("research-narrative");
     if (!narrative) {
       const diagram = body.querySelector(".project-study") || body.querySelector(".flow");
@@ -1254,32 +1291,67 @@
       scheduleReadingUpdate();
     };
   }
+  function openDiagramDialog(trigger,modifier,title,caption,content) {
+    const dialog = document.createElement("dialog");
+    dialog.className = "forecast-dialog " + modifier;
+    dialog.setAttribute("aria-labelledby","forecast-dialog-title");
+    dialog.innerHTML = '<header><div><h2 id="forecast-dialog-title">' + title + '</h2>' + caption +
+      '</div><button type="button" data-forecast-close autofocus>' + bi(T("关闭", "Close"),true) + '</button></header>';
+    prefixClonedIds(content,"enlarged-");
+    dialog.append(content);
+    document.body.append(dialog);
+    dialog.addEventListener("close",() => {
+      dialog.remove();
+      if (preview.open) setPreviewLayout();
+      trigger.focus({preventScroll:true});
+    },{once:true});
+    dialog.showModal();
+  }
+  const toolbar = document.querySelector(".site-toolbar");
+  const displayToggle = toolbar.querySelector(".display-toggle");
+  function closeDisplayOptions(restoreFocus = false) {
+    if (displayToggle.getAttribute("aria-expanded") !== "true") return;
+    displayToggle.setAttribute("aria-expanded","false");
+    if (restoreFocus) displayToggle.focus({preventScroll:true});
+  }
+  window.matchMedia("(max-width:980px)").addEventListener("change",() => closeDisplayOptions());
+  toolbar.addEventListener("focusout",event => {
+    if (event.relatedTarget && !toolbar.contains(event.relatedTarget)) closeDisplayOptions();
+  });
   document.addEventListener("click",event => {
+    if (displayToggle.contains(event.target)) {
+      const open = displayToggle.getAttribute("aria-expanded") === "true";
+      displayToggle.setAttribute("aria-expanded",String(!open));
+      return;
+    }
+    if (!toolbar.contains(event.target) || event.target.closest(".mobile-index")) closeDisplayOptions();
     const perspectiveButton = event.target.closest("button[data-perspective]");
     if (perspectiveButton) {
+      closeDisplayOptions(true);
       if (perspectiveButton.dataset.perspective !== document.body.dataset.perspective) setPerspective(perspectiveButton.dataset.perspective);
+      return;
+    }
+    const journeyEnlarge = event.target.closest(".journey-enlarge");
+    if (journeyEnlarge) {
+      const stage = journeyEnlarge.closest("li").querySelector(".growth-journey-stage");
+      const viewport = document.createElement("div");
+      viewport.className = "journey-diagram-viewport";
+      viewport.tabIndex = 0;
+      viewport.setAttribute("role","region");
+      viewport.setAttribute("aria-labelledby","forecast-dialog-title");
+      viewport.append(stage.querySelector(".growth-journey-diagram").cloneNode(true));
+      openDiagramDialog(journeyEnlarge,"journey-dialog",stage.querySelector(":scope > strong").innerHTML,
+        '<p class="journey-pan-hint">' + bi(T("左右滑动可查看完整图表。", "Scroll sideways to see the full chart.")) + '</p>',viewport);
       return;
     }
     const forecastEnlarge = event.target.closest("[data-forecast-enlarge],[data-agent-enlarge]");
     if (forecastEnlarge) {
       const isAgent = forecastEnlarge.hasAttribute("data-agent-enlarge");
-      const dialog = document.createElement("dialog");
-      dialog.className = "forecast-dialog" + (isAgent ? " agent-workflow-dialog" : "");
-      dialog.setAttribute("aria-labelledby","forecast-dialog-title");
-      dialog.innerHTML = '<header><div><h2 id="forecast-dialog-title">' +
-        bi(isAgent ? T("运营 Agent MVP · 从规划到反馈", "Operations Agent MVP · From planning to feedback") : T("LLM 增强价量预估 · 双线优化路径", "LLM-enhanced forecasting · Two optimization tracks")) +
-        '</h2><p>' + bi(isAgent ? T("多个节点采用简化实现：工具提供预测，Agent 组织建议，人工审核后执行", "Several nodes use simplified implementations: tools forecast, the Agent proposes recommendations, and humans review them before execution") : T("Qwen3 提供任务表征，DEFormer 完成价量预测", "Qwen3 supplies task features; DEFormer forecasts price–sales responses")) +
-        '</p></div><button type="button" data-forecast-close autofocus>' + bi(T("关闭", "Close"),true) + '</button></header>';
+      const title = isAgent ? T("运营 Agent MVP · 从规划到反馈", "Operations Agent MVP · From planning to feedback") : T("LLM 增强价量预估 · 双线优化路径", "LLM-enhanced forecasting · Two optimization tracks");
+      const caption = isAgent ? T("多个节点采用简化实现：工具提供预测，Agent 组织建议，人工审核后执行", "Several nodes use simplified implementations: tools forecast, the Agent proposes recommendations, and humans review them before execution") : T("Qwen3 提供任务表征，DEFormer 完成价量预测", "Qwen3 supplies task features; DEFormer forecasts price–sales responses");
       const roadmap = forecastEnlarge.closest(isAgent ? ".agent-workflow" : ".forecast-roadmap").cloneNode(true);
       roadmap.querySelector(".forecast-map-toolbar").remove();
-      dialog.append(roadmap);
-      document.body.append(dialog);
-      dialog.addEventListener("close",() => {
-        dialog.remove();
-        if (preview.open) setPreviewLayout();
-        forecastEnlarge.focus({preventScroll:true});
-      },{once:true});
-      dialog.showModal();
+      openDiagramDialog(forecastEnlarge,isAgent ? "agent-workflow-dialog" : "",bi(title),'<p>' + bi(caption) + '</p>',roadmap);
       return;
     }
     const forecastClose = event.target.closest("[data-forecast-close]");
@@ -1346,6 +1418,12 @@
     }
     const link = event.target.closest('a[data-language-hash]');
     if (link) {
+      if (link.closest(".technology-route") && location.hash === link.hash &&
+          !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+        event.preventDefault();
+        openHashTarget();
+        return;
+      }
       const target = document.getElementById(link.dataset.languageHash.slice(1));
       if (target) {
         revealPerspectiveFor(target);
@@ -1360,6 +1438,11 @@
     }
   });
   document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && displayToggle.getAttribute("aria-expanded") === "true") {
+      event.preventDefault();
+      closeDisplayOptions(true);
+      return;
+    }
     // The enlarged roadmap owns its native Escape handling and focus trap.
     if (document.querySelector(".forecast-dialog[open]")) return;
     if ((preview.open || previewMotion.pending) && event.key === "Escape") {
@@ -1385,7 +1468,9 @@
       (current + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
     selectStory(tabs[index].dataset.storyTab, true);
   });
+  let arrivalObserver;
   function openHashTarget() {
+    arrivalObserver?.disconnect();
     settlePreviewMotion();
     if (preview.open) closeProjectPreview(true);
     const id = decodeURIComponent(location.hash.slice(1));
@@ -1399,7 +1484,19 @@
       if (ancestor.tagName === "DETAILS") setDisclosure(ancestor, true);
       ancestor = ancestor.parentElement;
     }
-    target.scrollIntoView();
+    if (target.classList.contains("technology-card")) {
+      target.focus({preventScroll:true});
+      if (!reducedMotion.matches && "IntersectionObserver" in window) {
+        arrivalObserver = new IntersectionObserver((entries,observer) => {
+          if (!entries.some(entry => entry.isIntersecting)) return;
+          observer.disconnect();
+          const rest = getComputedStyle(target).boxShadow;
+          target.animate([{boxShadow:"0 0 0 3px var(--accent), 0 0 24px var(--arrival-glow)"},{boxShadow:rest}],{duration:1050,easing:"ease-out"});
+        },{rootMargin:"0px 0px -55% 0px"});
+        arrivalObserver.observe(target.querySelector("header"));
+      }
+    }
+    target.scrollIntoView({behavior:reducedMotion.matches ? "instant" : "smooth",block:"start"});
   }
   window.addEventListener("hashchange",openHashTarget);
   window.addEventListener("popstate", event => {
@@ -1409,8 +1506,9 @@
   let framePending = false;
   function updateReadingState() {
     const limit = document.documentElement.scrollHeight - window.innerHeight;
+    toolbar.classList.toggle("is-scrolled",window.scrollY > 8);
     document.querySelector(".reading-line").style.width = (limit > 0 ? Math.min(100,window.scrollY / limit * 100) : 0) + "%";
-    let active = "experience";
+    let active = sectionIds[0];
     sectionIds.forEach(id => {
       if (document.getElementById(id).getBoundingClientRect().top <= window.innerHeight * .36) active = id;
     });

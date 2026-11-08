@@ -24,7 +24,7 @@
     const dark = theme === "dark";
     document.documentElement.dataset.theme = dark ? "dark" : "light";
     document.documentElement.style.colorScheme = dark ? "dark" : "light";
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content",dark ? "#111214" : "#f1f2f4");
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content",dark ? "#111214" : "#fafbf9");
     syncControls();
   }
   window.portfolioTheme = {

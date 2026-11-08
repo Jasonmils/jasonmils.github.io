@@ -5,7 +5,7 @@
     --paper:#111214;
     --ink:#f0f1f4;
     --muted:#a9adb7;
-    --accent:#9aafff;
+    --accent:#9ab9ff;
     --accent-deep:#c4d0ff;
     --line:#ffffff1c;
     --soft:#26282e;
@@ -18,7 +18,7 @@
     --glass-shadow:inset 0 1px 0 #ffffff0b,0 12px 36px -20px #0009,0 2px 6px #0003;
   }
   html[data-theme="dark"] ::selection {background:#8ea6ff;color:#111827}
-  html[data-theme="dark"] .ambient-light {background:radial-gradient(ellipse at 5% 10%,#6b30384d,transparent 52%),radial-gradient(ellipse at 95% 40%,#244d804d,transparent 54%),radial-gradient(ellipse at 48% 85%,#ffffff05,transparent 48%)}
+  html[data-theme="dark"] .ambient-light {background:radial-gradient(ellipse at 100% 0%,#23324766,transparent 60%)}
   html[data-theme="dark"] .skip-link {background:var(--ink);color:var(--paper)}
 
   /* Main reading surfaces and component text. */
@@ -36,11 +36,9 @@
   html[data-theme="dark"] :is(.toggle-plus,.contribution-arrow,.strategy-number,.growth-journey-number,.action-list li:before,.decision>.number) {background:var(--theme-raised);color:var(--muted);border-color:var(--line);box-shadow:inset 0 1px 0 #ffffff08}
   html[data-theme="dark"] :is(summary:hover .toggle-plus,details[open]>summary .toggle-plus) {background:#333744;color:var(--ink);border-color:#ffffff1f}
   html[data-theme="dark"] .strategy-number {color:var(--accent)}
-  html[data-theme="dark"] :is(.section-nav a:hover,.section-nav a:focus-visible,.section-nav a.active,.mobile-index>a.active) {background:#ffffff0a;border-color:var(--line);box-shadow:none}
+  html[data-theme="dark"] .mobile-index>a.active {background:#ffffff0a;border-color:var(--line);box-shadow:none}
   html[data-theme="dark"] .mobile-index>a {color:var(--muted)}
   html[data-theme="dark"] .mobile-index>a.active {color:var(--accent)}
-  html[data-theme="dark"] .nav-line {background:#555966}
-  html[data-theme="dark"] :is(.section-nav a.active,.section-nav a:hover,.section-nav a:focus-visible) .nav-line {background:var(--accent)}
   html[data-theme="dark"] :is(.story-tabs button:hover,.story-tabs button[aria-selected="true"],.perspective-switch button[aria-pressed="true"]) {background:#353b4c;color:var(--accent-deep);border-color:#ffffff19;box-shadow:none}
   html[data-theme="dark"] .language-switch button[aria-pressed="true"] {background:#3c4e80;color:#f4f6ff;box-shadow:inset 0 1px 0 #ffffff12}
   html[data-theme="dark"] .language-switch button {color:var(--muted)}
@@ -84,12 +82,12 @@
 
   /* Interactive forecasting lanes and the Agent graph. */
   html[data-theme="dark"] :is(.forecast-map-toolbar button,.forecast-dialog header button) {background:var(--theme-raised);border-color:var(--line);color:var(--theme-body)}
-  html[data-theme="dark"] .forecast-lane--upstream {--lane-color:#b99be9;--lane-border:#64507f;background:#282230;border-color:#58466d}
+  html[data-theme="dark"] .forecast-lane--upstream {--lane-color:#acbff2;--lane-border:#475b84;background:#222c3f;border-color:#465775}
   html[data-theme="dark"] .forecast-lane--downstream {--lane-color:#8bbbe7;--lane-border:#395d79;background:#1c2934;border-color:#3a5269}
   html[data-theme="dark"] .forecast-node {background:#202329;border-color:var(--lane-border)}
   html[data-theme="dark"] .forecast-node:is(:hover,[aria-pressed="true"]) {border-color:var(--lane-color)}
   html[data-theme="dark"] :is(.forecast-node-caption,.forecast-legend,.forecast-reading-guide,.forecast-interaction-hint,.forecast-step-panel p,.forecast-step-panel h5>span:first-child) {color:var(--muted)}
-  html[data-theme="dark"] .forecast-transfer {color:#d49c7e}
+  html[data-theme="dark"] .forecast-transfer {color:#a1b9d9}
   html[data-theme="dark"] .forecast-transfer>span {background:var(--theme-panel)}
   html[data-theme="dark"] :is(.forecast-step-panel,.forecast-detail) {background:#21242b;border-color:var(--line)}
   html[data-theme="dark"] .forecast-step-panel .forecast-step-evidence {color:#b6c9f0;border-color:var(--line)}
@@ -98,8 +96,8 @@
   html[data-theme="dark"] .agent-orchestration i {background:#ab95e2;box-shadow:0 0 0 3px #a58cdf1a}
   html[data-theme="dark"] .agent-node {background:#252932;border-color:#4c5262;color:var(--ink);box-shadow:0 3px 9px #0002}
   html[data-theme="dark"] .agent-node-top {color:#a6b7d1}
-  html[data-theme="dark"] .agent-node--memory {background:#302c24;border-color:#6a5c40}
-  html[data-theme="dark"] .agent-node--memory .agent-node-top {color:#cfb884}
+  html[data-theme="dark"] .agent-node--memory {background:#2b2932;border-color:#5a5367}
+  html[data-theme="dark"] .agent-node--memory .agent-node-top {color:#c8b5df}
   html[data-theme="dark"] .agent-node--forecast {background:#222e3b}
   html[data-theme="dark"] .agent-node--forecast .agent-node-top {color:#91bbe2}
   html[data-theme="dark"] .agent-node--review {background:#22322e;border-color:#46675b}
@@ -115,31 +113,29 @@
   /* Compact overview charts keep distinct series colors against dark surfaces. */
   html[data-theme="dark"] :is(.growth-journey-stage,.growth-journey-stage--long) {background:var(--theme-panel);border-color:var(--line);box-shadow:inset 0 1px 0 #ffffff06}
   html[data-theme="dark"] .growth-journey-stage--long {background:var(--theme-panel)}
-  html[data-theme="dark"] .growth-journey-stage:hover {border-color:#91a8da70;box-shadow:var(--glass-shadow)}
   html[data-theme="dark"] :is(.growth-journey-stage>strong,.growth-journey-stage--long>strong,.growth-detail #ali-long-term h5,.growth-journey-foundation strong) {color:var(--ink)}
   html[data-theme="dark"] :is(.growth-journey-horizon,.growth-journey-action,.growth-journey-foundation p,.journey-chart-note,.agent-plan,.agent-plan-brief>span,.agent-plan-model,.agent-plan-orchestration,.agent-plan-campaign>strong,.agent-plan-memory>span) {color:var(--muted)}
   html[data-theme="dark"] :is(.growth-journey-link,.growth-journey-stage--long .growth-journey-link,.pricing-step-label,.pricing-forecast-output,.pricing-formula,.pricing-formula-arrow) {color:#afc4f7}
   html[data-theme="dark"] :is(.growth-journey-number,.growth-journey-stage--long .growth-journey-number,.growth-detail #ali-long-term .strategy-number) {background:#343447;color:#bdcafa;border-color:var(--line)}
-  html[data-theme="dark"] :is(.growth-journey-direction,.growth-journey-foundation,.agent-plan-engine,.agent-plan-campaign,.agent-plan-review,.agent-plan-memory,.pricing-decision-choice) {background:#ffffff07;border-color:#ffffff24;box-shadow:inset 0 1px 0 #ffffff05}
+  html[data-theme="dark"] :is(.growth-journey-direction,.growth-journey-foundation,.agent-plan-engine,.agent-plan-campaign,.agent-plan-review,.agent-plan-memory) {background:#ffffff07;border-color:#ffffff24;box-shadow:inset 0 1px 0 #ffffff05}
   html[data-theme="dark"] :is(.agent-plan-brief,.agent-plan-engine>strong,.agent-plan-memory>strong,.agent-plan-memory .agent-plan-replan) {color:#ceb8e9}
   html[data-theme="dark"] .agent-plan-cycle {background:#b493dc17;color:#ceb8e9}
   html[data-theme="dark"] .agent-plan-review {color:#9cc2d0}
-  html[data-theme="dark"] .pricing-decision-choice {color:#c3d4ff}
   html[data-theme="dark"] :is(.agent-plan-growth,.agent-plan-memory .agent-plan-replan,.pricing-formula) {border-color:var(--line)}
   html[data-theme="dark"] :is(.journey-chart-axis-label,.journey-chart-current-label,.pricing-curve-axis-label) {fill:#aeb8ce}
   html[data-theme="dark"] :is(.journey-chart-incubation-label,.journey-chart-retention-label,.pricing-curve-maximum,.pricing-curve-price) {fill:#b7c9f9}
   html[data-theme="dark"] .journey-chart-risk-label {fill:#a8a4b8}
-  html[data-theme="dark"] .pricing-scenario {color:#e4b48c}
-  html[data-theme="dark"] .pricing-scenario--lowest {color:#e9bd75}
+  html[data-theme="dark"] .pricing-scenario {color:#afcadc}
+  html[data-theme="dark"] .pricing-scenario--lowest {color:#c5d9e7}
   html[data-theme="dark"] .pricing-scenario--selected {color:#9eb7ff}
-  html[data-theme="dark"] .pricing-scenario--higher {color:#c4aedb}
-  html[data-theme="dark"] .pricing-scenario--highest {color:#b49dce}
+  html[data-theme="dark"] .pricing-scenario--higher {color:#9bbfe7}
+  html[data-theme="dark"] .pricing-scenario--highest {color:#88add9}
   html[data-theme="dark"] .pricing-scenario-band {fill-opacity:.30}
   html[data-theme="dark"] :is(.pricing-forecast-context,.pricing-scenario-key,.pricing-scenario-note) {color:#aeb8ce}
   html[data-theme="dark"] .pricing-scenario-key b {color:#9eb7ff}
   html[data-theme="dark"] .pricing-period-label {fill:#aeb8ce}
   html[data-theme="dark"] .pricing-history-line {stroke:#929db2}
-  html[data-theme="dark"] .pricing-history-point {fill:#ceb09a;stroke:var(--theme-panel)}
+  html[data-theme="dark"] .pricing-history-point {fill:#afbdce;stroke:var(--theme-panel)}
   html[data-theme="dark"] .pricing-today-guide {stroke:#78849b}
   html[data-theme="dark"] .pricing-today-point {fill:var(--theme-panel);stroke:#b5c0d4}
   html[data-theme="dark"] .pricing-curve-line {stroke:#9eb7ff}
@@ -147,8 +143,6 @@
   html[data-theme="dark"] .pricing-curve-point {fill:#a4baff;stroke:var(--theme-panel)}
   html[data-theme="dark"] :is(.journey-chart-current,.journey-chart-growth-point,.journey-chart-retention-point) {stroke:var(--theme-panel)}
   html[data-theme="dark"] .pricing-daily-point {fill:var(--theme-panel);stroke:currentColor}
-  html[data-theme="dark"] :is(.technology-card:before,.technology-card:nth-child(n+4):before,.technology-card:nth-child(n+7):before) {border-color:#242733;box-shadow:0 0 0 3px #33394b}
-  html[data-theme="dark"] .technology-list:before {background:linear-gradient(#576c9e,#67567e,#4e7276)}
 }
 
 /* Respect the platform's transparency preference without losing the spotlight. */

@@ -2,11 +2,11 @@
    Artwork, plotted series and brand logos retain their original rendering. */
 @media screen {
   :root {
-    --glass-surface:rgba(255,255,255,.42);
-    --glass-inset:rgba(255,255,255,.24);
+    --glass-surface:rgba(255,255,255,.86);
+    --glass-inset:rgba(239,244,249,.54);
     --glass-inset-border:rgba(110,130,164,.16);
-    --glass-border:rgba(255,255,255,.72);
-    --glass-shadow:inset 0 1px 0 #ffffffa6,0 10px 30px -22px #26395738;
+    --glass-border:#dbe2e9;
+    --glass-shadow:inset 0 1px 0 #ffffffe6,0 8px 22px -18px #1c314745;
     --glass-inset-shadow:inset 0 1px 0 #ffffff80;
     --glass-sheet:rgba(248,250,254,.82);
     --glass-fallback:#f5f7fb;
@@ -44,7 +44,7 @@
     .research-contribution,.technology-evidence,.forecast-step-panel,.forecast-detail,
     .agent-canvas,.forecast-lane,.forecast-node,.agent-node,.contribution-link,
     .growth-journey-foundation,.agent-plan-engine,.agent-plan-campaign,
-    .agent-plan-review,.agent-plan-memory,.pricing-decision-choice) {
+    .agent-plan-review,.agent-plan-memory) {
     background:var(--glass-inset);
     border-color:var(--glass-inset-border);
     box-shadow:var(--glass-inset-shadow);
@@ -58,12 +58,22 @@
     -webkit-backdrop-filter:blur(28px) saturate(115%);
   }
   html[data-theme] .preview-detail {background:transparent}
-  html[data-theme] :is(.project-card:hover,.growth-journey-stage:hover) {box-shadow:var(--glass-shadow)}
   /* Keep selected links distinct without adding another color gradient. */
   html[data-theme] .contribution-link[aria-current],
   html[data-theme] .project-compare-open .contribution-link.comparison-focus {
     background:var(--glass-node);border-color:var(--accent);
   }
+}
+@media screen and (hover:hover) and (pointer:fine) {
+  html[data-theme] .project-card:not([open]):hover {
+    border-color:var(--accent);
+  }
+}
+@media screen and (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  .project-card {
+    transition:transform .2s var(--ease),border-color .2s,box-shadow .2s;
+  }
+  .project-card:not([open]):hover {transform:translateY(-2px)}
 }
 @media screen and (max-width:600px) {
   :root {--glass-blur:14px}
@@ -81,7 +91,7 @@
     .research-contribution,.technology-evidence,.forecast-step-panel,.forecast-detail,
     .agent-canvas,.forecast-lane,.forecast-node,.agent-node,.contribution-link,
     .growth-journey-foundation,.agent-plan-engine,.agent-plan-campaign,
-    .agent-plan-review,.agent-plan-memory,.pricing-decision-choice,
+    .agent-plan-review,.agent-plan-memory,
     .project-preview,.project-compare-open .project-preview,.forecast-dialog) {
       background:var(--glass-fallback);
       backdrop-filter:none;
@@ -103,7 +113,7 @@
     .research-contribution,.technology-evidence,.forecast-step-panel,.forecast-detail,
     .agent-canvas,.forecast-lane,.forecast-node,.agent-node,.contribution-link,
     .growth-journey-foundation,.agent-plan-engine,.agent-plan-campaign,
-    .agent-plan-review,.agent-plan-memory,.pricing-decision-choice,
+    .agent-plan-review,.agent-plan-memory,
     .project-preview,.project-compare-open .project-preview,.forecast-dialog) {
       background:var(--glass-fallback);
       backdrop-filter:none;
@@ -111,4 +121,39 @@
     }
     html[data-theme] .agent-node.agent-node--planner {background:#57468f}
   }
+}
+
+/* One continuous backing protects the spaces between the floating controls. */
+@media screen{
+ :root{--toolbar-bg:rgba(250,251,249,.96);--toolbar-solid:#fafbf9;--arrival-glow:#3863ce50}
+ html[data-theme="dark"]{--toolbar-bg:rgba(24,27,33,.97);--toolbar-solid:#181b21;--arrival-glow:#a3bdff55}
+ .site-toolbar{top:14px;padding:4px;border:1px solid transparent;border-radius:28px;background:var(--toolbar-solid)}
+ .site-toolbar.is-scrolled{border-color:var(--line);box-shadow:0 4px 18px #15243a17}
+ html[data-theme="dark"] .site-toolbar.is-scrolled{box-shadow:0 4px 18px #0004}
+ html[data-theme] .site-toolbar :is(.language-switch,.perspective-switch,.theme-switch){
+  background:transparent;border-color:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none
+ }
+ html[data-theme] .site-toolbar :is(.perspective-switch,.theme-switch){border-right:1px solid var(--line);border-radius:0;padding-right:8px}
+ html[data-theme] .project-card:not([open]) .project-visual{background:#eef4fb;border-color:#cedced}
+ html[data-theme] #project-agent:not([open]) .project-visual{background:#f3eff8;border-color:#dfd4eb}
+ html[data-theme="dark"] .project-card:not([open]) .project-visual{background:#202b3b;border-color:#3d4e67}
+ html[data-theme="dark"] #project-agent:not([open]) .project-visual{background:#30293d;border-color:#4e425d}
+ html[data-theme="dark"] .project-symbol{color:#a1c1f4;--illustration-fill:#3a5375;--illustration-light:#233348}
+ html[data-theme="dark"] #project-agent .project-symbol{color:#ccadea;--illustration-fill:#5b496f;--illustration-light:#372d45}
+ html[data-theme="dark"] :is(.education-logo,.experience-logo--hust,.experience-logo--psl,.experience-logo--wut){
+  background:rgba(255,255,255,.90);box-shadow:0 0 12px #ffffff0c
+ }
+ html[data-theme="dark"] :is(.education-logo,.experience-logo--hust,.experience-logo--psl) img{mix-blend-mode:multiply}
+ html[data-theme] .technology-card:target{border-color:var(--accent)}
+ @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .site-toolbar{background:var(--toolbar-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+ }
+}
+@media screen and (max-width:980px){
+ .site-toolbar.language-dock{padding:calc(3px + env(safe-area-inset-top)) max(8px,calc((100vw - 760px)/2)) 3px;border-width:0 0 1px;border-radius:0;border-color:var(--line)}
+ html[data-theme] .site-toolbar .mobile-index{border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+ .site-toolbar .display-options{background:var(--toolbar-solid)}
+}
+@media screen and (prefers-reduced-transparency:reduce){
+ .site-toolbar{background:var(--toolbar-solid);backdrop-filter:none;-webkit-backdrop-filter:none}
 }

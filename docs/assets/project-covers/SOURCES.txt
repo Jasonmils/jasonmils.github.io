@@ -1,3 +1,6 @@
+concepts.svg contains eight original vector drawings for the collapsed project cards.
+The expanded cards use the figures and screenshots described below.
+
 Project-cover images captured from the corresponding existing project detail diagrams.
 Agent: operating feedback loop. Wiki: evidence workflow. Qwen: training tree.
 Ring: discovery-to-prototype flow. Review: generation/demand/grid flow.

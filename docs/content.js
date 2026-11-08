@@ -451,6 +451,7 @@ const projectCovers = {
     "height": 1155
   }
 };
+const forecastGMVLift = "+5.06%";
 const productGrowthABPhases = [
   {
     id:"01",label:T("第一期","Phase 1"),
@@ -575,6 +576,23 @@ const portfolio = {
   email: "jasondean910@outlook.com",
   scholar: "https://scholar.google.com.hk/citations?user=ei8WkXgAAAAJ&hl=en",
   tagline: T("专注大模型、时序预测与 Agent，也关注有审美的产品。", "I focus on language models, time-series forecasting and agents, with an interest in beautifully designed products."),
+  highlights: [
+    {
+      value:forecastGMVLift, label:T("项目累计 GMV 提升", "Cumulative GMV lift"),
+      context:T("价量预测项目以初始版本为基线，统计多轮迭代的效果。", "Forecasting gains across releases, measured against the first version."),
+      target:"ali-short-term-results",
+    },
+    {
+      value:productGrowthABPhases[1].adoption + "%", label:T("运营建议采纳率", "Adoption rate"),
+      context:T("第二期引入 Agent，为运营团队提供跨档期规划建议。", "In Phase 2, operators adopted suggestions from the Agent workflow."),
+      target:"ali-long-term-results-02",
+    },
+    {
+      value:"+" + productGrowthABPhases[0].growth + "%", label:T("GMV 增幅较对照组高", "Higher GMV growth"),
+      context:T("第一期以人工运营为对照，实验组使用价量预测模型。", "Phase 1 compared forecast-assisted operations with a manual control."),
+      target:"ali-long-term-results-01",
+    },
+  ],
   ui: {
     skip: T("跳到主要内容", "Skip to main content"),
     nav: [T("经历", "Experience"), T("项目", "Projects"), T("技能", "Skills"), T("教育", "Education")],
@@ -592,6 +610,7 @@ const portfolio = {
     collapseNotes: T("收起全部讲解", "Close all notes"),
     backTop: T("回到顶部", "Back to top"),
     workTitle: T("工作与研究经历", "Work & research"),
+    highlightsTitle: T("阿里巴巴项目成绩", "Results at Alibaba"),
     perspective: T("浏览视角", "Portfolio perspective"),
     experienceView: T("经历视角", "Experience"),
     technologyView: T("AI 技术视角", "AI technology"),
@@ -748,7 +767,8 @@ const portfolio = {
             title:T("优化预测，支持当期定价", "Better forecasts for campaign pricing"),
             goal:T("每个候选价格预测 14 天逐日销量；汇总销量 × 价格，选择预测 GMV 最高的价格", "Forecast 14 daily sales values per candidate price; multiply total units by price and select the highest predicted GMV"),
             contribution:T("主导 DEFormer 与 SubAttention 研究；以结构化推理 SFT、RLVR 和 OPD 连续增强 Qwen3 任务表征，验证下游预测效果", "Led DEFormer and SubAttention research; improved Qwen3 task representations through structured-reasoning SFT, RLVR and OPD, validating downstream forecasts"),
-            result:T("项目累计 GMV +5.06%", "Cumulative project GMV +5.06%"),
+            result:T("项目累计 GMV 提升", "Cumulative project GMV lift"),
+            resultValue:forecastGMVLift,
             resultNote:T("多轮迭代相对初始版本的整体结果", "Overall result across iterations versus the initial version"),
             links:[
               {target:"project-deformer",label:T("DEFormer 研究", "DEFormer research"), action:T("表征诊断 · 双路编码 · 多任务训练", "Diagnosis · Dual-path inputs · Multitask training")},
@@ -1050,7 +1070,7 @@ const portfolio = {
         note:qwenPostTrainingNote,
       },
       metrics:[
-        {value:"+5.06%",label:T("GMV","GMV")},
+        {value:forecastGMVLift,label:T("GMV","GMV")},
         {value:"+5.50%",label:T("子订单数","Sub-order count")},
         {value:"+4.51%",label:T("GMV 覆盖率","GMV coverage")},
       ],
