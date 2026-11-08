@@ -489,7 +489,7 @@
             '<path class="pricing-curve-line chart-trace" data-curve="gmv" pathLength="1" d="' + gmvPath + '"/>' +
             '<circle class="pricing-curve-halo" cx="156" cy="45" r="8"/><circle class="pricing-curve-point" cx="156" cy="45" r="4"/>' +
             label(30,16,T("预测 GMV", "Predicted GMV")[lang],"pricing-curve-axis-label") +
-            label(156,30,T("预测 GMV 最大", "Maximum predicted GMV")[lang],"pricing-curve-maximum","middle") +
+            label(167,39,T("预测 GMV 最大", "Peak GMV")[lang],"pricing-curve-maximum") +
             label(156,135,T("最优价格 p*", "Optimal price p*")[lang],"pricing-curve-price","middle") +
             label(284,135,T("价格 p", "Price p")[lang],"pricing-curve-axis-label","end");
         }
