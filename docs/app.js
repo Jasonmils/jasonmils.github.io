@@ -752,12 +752,6 @@
     (controls ? '<div class="section-controls"><button class="quiet-button" type="button" data-expand-all>' +
       bi(ui.expandAll, true) + '</button><button class="quiet-button" type="button" data-collapse-all>' +
       bi(ui.collapseAll, true) + '</button></div>' : '') + '</div>';
-  const renderHighlights = () => '<section class="impact-summary" aria-labelledby="impact-heading"><h2 id="impact-heading">' +
-    bi(ui.highlightsTitle) + '</h2><ul class="impact-cards">' + data.highlights.map(item =>
-      '<li><a class="impact-card" href="#' + escapeHTML(item.target) + '"><strong class="impact-value">' +
-      escapeHTML(item.value.slice(0,-1)) + '<span>%</span></strong><span class="impact-label">' + bi(item.label) +
-      '</span><span class="impact-context">' + bi(item.context) + '</span><span class="impact-arrow" aria-hidden="true">' +
-      arrow + '</span></a></li>').join('') + '</ul></section>';
   const signature = '<span class="signature-line"><svg class="signature-mark" viewBox="0 0 80 45" aria-hidden="true">' +
     '<path d="M6 15C15 11 32 7 44 8M35 7C33 16 28 29 21 36C14 43 5 40 7 33C9 26 24 21 42 18' +
     'M36 34C42 26 47 16 50 9M42 13C54 3 71 2 71 13C71 24 51 36 37 34C47 32 62 29 74 29"/></svg>' +
@@ -790,7 +784,7 @@
     data.email + diagonal + '</a><a class="profile-scholar" href="' + data.scholar + '" target="_blank" rel="noopener noreferrer">' +
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5-10-5m4 3v5l6 3 6-3v-5M22 9v7"/></svg>Google Scholar' + diagonal +
     '</a></div></aside><main class="main-content" id="main">' +
-    '<section class="section" id="experience">' + renderHighlights() + heading(ui.workTitle) + data.experience.map(renderExperience).join('') + '</section>' +
+    '<section class="section" id="experience">' + heading(ui.workTitle) + data.experience.map(renderExperience).join('') + '</section>' +
     '<section class="section technology-view" id="technology" hidden>' + heading(ui.technologyTitle) +
     renderTechnologyRoute() + '<div class="technology-list">' + data.technologies.map(renderTechnology).join('') + '</div></section>' +
     '<section class="section" id="projects">' + heading(ui.projectTitle,true) +
