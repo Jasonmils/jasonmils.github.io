@@ -746,7 +746,6 @@ const portfolio = {
       entity:T("浙江天猫技术有限公司 · 营销算法团队", "Zhejiang Tmall Technology Co., Ltd. · Marketing Algorithms Team"),
       role:T("AI 算法工程师 · 绩效 E & A+", "AI Algorithm Engineer · Performance ratings E & A+"), date:"2024.07 — 2026.08",
       overview:T("以 DEFormer、Qwen3 表征与后训练优化价量预测，支持当期定价；复用预测工具，以 LangGraph 与记忆模块支持多档期规划", "Improved price–sales forecasts with DEFormer, Qwen3 features and post-training for pricing; reused the tools with LangGraph and a memory module for multi-cycle planning"),
-      focus:[T("价量预测", "Price–sales forecasting"), T("短期增长", "Near-term growth"), T("长期商品成长", "Long-term product growth")],
       strategy:{
         title:T("从短期交易增长，到长期商品成长", "From near-term GMV to long-term product growth"),
         journey:{
@@ -843,7 +842,6 @@ const portfolio = {
       entity:T("创业孵化器 · 智能戒指初创团队", "Startup incubator · Smart-ring venture"),
       role:T("产品经理（实习）", "Product Manager Intern"),date:"2024.01 — 2024.06",
       overview:T("主导智能戒指从概念到首代样机的产品开发，通过 200+ 用户访谈定义需求，并协同软硬件工程师和天使用户推进原型验证与迭代", "Led product development of a smart ring from concept to its first prototype, defining requirements through 200+ user interviews and coordinating engineering work, early-adopter testing and iteration"),
-      focus:[T("用户研究", "User Research"), T("产品定义", "Product Definition"), T("智能硬件", "Smart Hardware")],
       strategy:{
         title:T("从用户需求，到可验证的首代产品", "From user needs to a testable first product"),
         goalLabel:T("产品目标", "Product objective"), contributionLabel:T("我的贡献", "My contribution"),
@@ -898,7 +896,6 @@ const portfolio = {
       entity:T("联合培养 · 硕士阶段科研项目 · 新能源电力系统", "Joint master’s training · Research projects · Renewable power systems"),
       role:T("主要研究成员", "Core Research Contributor"),date:"2021.01 — 2024.01",
       overview:T("围绕新能源电力系统开展时序预测研究，探索个性化联邦学习、动态图与区间预测；参与方法设计、实验验证及英文论文写作", "Researched time-series forecasting for renewable power systems through personalized federated learning, dynamic graphs and interval prediction, contributing to method design, experiments and academic writing"),
-      focus:["Federated Learning", "Dynamic Graphs", "Forecasting"],
       strategy:{
         title:T("围绕真实运行约束，连接预测与系统研究", "Connect forecasting research to operating constraints"),
         goalLabel:T("研究目标", "Research objective"), contributionLabel:T("我的贡献", "My contribution"),

@@ -52,12 +52,6 @@
     return '<span class="tag">' + (logo ? '<img class="tag-logo" src="assets/logos/skills/' + logo +
       '.svg" alt="" width="16" height="16" loading="lazy" decoding="async">' : '') + bi(v,true) + '</span>';
   }).join('') + '</div>';
-  // Reserve space for each complete translated group, so tags stay with their paragraph.
-  const experienceOverview = exp => '<div class="experience-overview bi">' + ["zh", "en"].map(lang =>
-    '<div class="' + lang + '" lang="' + (lang === "zh" ? "zh-CN" : "en") + '"><p>' +
-    escapeHTML(exp.overview[lang]) + '</p>' + tags(exp.focus.map(tag =>
-      typeof tag === "object" ? tag[lang] : tag)) + '</div>'
-  ).join('') + '</div>';
   const toggle = () => '<span class="detail-toggle"><span class="when-open">' + bi(ui.collapse, true) +
     '</span><span class="when-closed">' + bi(ui.expand, true) + '</span><span class="toggle-plus" aria-hidden="true"><svg class="toggle-chevron" viewBox="0 0 12 12"><path d="m2.5 4.25 3.5 3.5 3.5-3.5"/></svg></span></span>';
   const sectionIds = ["experience","projects","skills","education"];
@@ -606,7 +600,7 @@
     '"><span class="experience-logos">' + experienceLogos[exp.id].map(logo => institutionLogo(logo)).join('') + '</span>' +
     '<div class="experience-heading"><h3>' + bi(exp.company) + '</h3><div class="experience-role">' + bi(exp.role) +
     '</div><div class="company-entity">' + bi(exp.entity) + '</div></div></header>' +
-    experienceOverview(exp) + (exp.strategy ? renderStrategy(exp.strategy) :
+    '<p class="experience-overview">' + bi(exp.overview) + '</p>' + (exp.strategy ? renderStrategy(exp.strategy) :
     '<details class="context-disclosure"><summary class="context-summary">' + bi(ui.contextDetails, true) + toggle() +
     '</summary><div class="context-grid"><div><h4 class="small-label">' + bi(ui.background) +
     '</h4><p>' + bi(exp.background) +
