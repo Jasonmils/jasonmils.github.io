@@ -393,7 +393,7 @@
     innox: [{id:"innox",src:"assets/logos/innox.png"}],
     hust: [institutionLogos.hust,institutionLogos.psl]
   };
-  const renderProductGrowthCurve = () => {
+  const renderProductGrowthCurve = (compact = false) => {
     const title = T("跨档期商品成长：高潜孵化与成长层级防滑落", "Product growth across campaigns: incubation and growth-tier retention");
     const description = T("策略示意。横轴为档期，纵轴为成长层级；从当前商品状态出发，高潜商品进行孵化，有滑落风险的商品进行层级维持。虚线表示滑落风险，图中无实际业务数据", "Strategy illustration. Campaigns are on the horizontal axis and growth tier on the vertical axis. Incubate products with growth potential and retain the tier of products at risk. The dashed path denotes decline risk; no actual business data is plotted");
     const svg = lang => {
@@ -414,10 +414,10 @@
         label(270,79,T("防滑落", "Retain tier"),"journey-chart-retention-label","end") + label(252,147,T("滑落风险", "Decline risk"),"journey-chart-risk-label","end") + '</svg>';
     };
     return '<span class="agent-plan-growth"><span class="bi"><span class="zh" lang="zh-CN">' + svg("zh") +
-      '</span><span class="en" lang="en">' + svg("en") + '</span></span><span class="journey-chart-note">' +
-      bi(T("评估 → 运营 → 反馈 · 示意", "Assess → Act → Review · Illustration")) + '</span></span>';
+      '</span><span class="en" lang="en">' + svg("en") + '</span></span>' + (compact ? '' : '<span class="journey-chart-note">' +
+      bi(T("评估 → 运营 → 反馈 · 示意", "Assess → Act → Review · Illustration")) + '</span>') + '</span>';
   };
-  const renderGrowthDiagram = kind => {
+  const renderGrowthDiagram = (kind, compact = false) => {
     if (kind === "price") {
       // Illustrative daily forecasts only. GMV is derived from all 14 outputs at each price.
       const dailyProfile = [0.66,0.61,0.83,0.77,0.91,1.07,1.00,0.94,1.14,1.08,1.30,1.17,1.23,1.32];
@@ -497,6 +497,8 @@
           '<title id="' + id + '-title">' + escapeHTML(title[lang]) + '</title><desc id="' + id + '-desc">' + escapeHTML(description[lang]) + '</desc>' + plot + '</svg>';
       };
       const chart = kind => '<span class="bi"><span class="zh" lang="zh-CN">' + svg("zh",kind) + '</span><span class="en" lang="en">' + svg("en",kind) + '</span></span>';
+      if (compact) return '<span class="growth-journey-diagram compact-pricing">' + chart("sales") + chart("gmv") +
+        '<span class="peak-note"><span aria-hidden="true">🎯</span>' + bi(T("取 GMV 峰值价格 p*", "Choose price p* at peak GMV")) + '</span></span>';
       return '<span class="growth-journey-diagram pricing-decision"><span class="pricing-step-label">' + bi(T("01 · 逐日销量预测", "01 · Daily sales forecasting")) +
         '</span><span class="pricing-forecast-output">' + escapeHTML(String.raw`\(\mathrm{Sales}=f(\mathrm{Price},\,\mathrm{other})\)`) +
         '</span><span class="pricing-forecast-context">' + bi(T("固定其他输入，比较不同价格下的未来销量", "Hold other inputs fixed; compare future sales by price")) + '</span>' + chart("sales") +
@@ -508,6 +510,16 @@
         '<span class="pricing-rule"><strong>' + bi(T("决策规则", "Pricing rule")) + '</strong>' +
         bi(T("在候选价格中，选取预测 GMV 最高的价格 p*。", "Choose the candidate price p* with the highest predicted GMV.")) +
         '</span><span class="journey-chart-note">' + bi(T("候选价格范围内的决策示意 · 非实际业务数据", "Decision within the candidate price range · Illustration only")) + '</span></span>';
+    }
+    if (compact) {
+      const steps = [
+        [T("目标分解","Set cycle goals"), T("结合商品信号与历史记忆","Use product signals and past feedback")],
+        [T("LangGraph 编排","Orchestrate with LangGraph"), T("调用 Qwen3.5 生成各档期策略","Use Qwen3.5 to plan each cycle")],
+        [T("闭环迭代","Refine the next plan"), T("将运营反馈写入 SKU 记忆","Write feedback to SKU memory")]
+      ];
+      return '<div class="growth-journey-diagram compact-planning">' + renderProductGrowthCurve(true) +
+        '<ol class="plan-steps">' + steps.map(([label,desc],i) => '<li><i>0' + (i+1) + '</i><div><strong>' +
+        bi(label) + '</strong><small>' + bi(desc) + '</small></div></li>').join('') + '</ol></div>';
     }
     const connector = '<span class="agent-plan-connector" aria-hidden="true"></span>';
     // Three campaigns illustrate the planning horizon, not a fixed production schedule.
@@ -528,19 +540,48 @@
       '</span><span class="agent-plan-replan">' + bi(T("检索历史反馈，调整下一轮规划", "Retrieve feedback to refine the next plan")) + '</span></span></span>' +
       '<span class="journey-chart-note">' + bi(T("多档期工作流示意 · 人工审核后执行", "Illustrative workflow · Execution after human review")) + '</span></span>';
   };
-  const renderGrowthJourney = journey => '<nav class="growth-journey" aria-labelledby="' + escapeHTML(journey.stages[0].target) +
-    '-journey-label"><p class="sr-only" id="' + escapeHTML(journey.stages[0].target) + '-journey-label">' + bi(journey.label) + '</p><div class="growth-journey-route"><ol class="growth-journey-stages">' +
-    journey.stages.map((stage,i) => '<li>' + (i ? '<span class="growth-journey-direction" aria-hidden="true">' + arrow + '</span>' : '') + '<div class="growth-journey-stage growth-journey-stage--' + (i ? 'long' : 'short') + '"><span class="growth-journey-top"><span class="growth-journey-number" aria-hidden="true">' + stage.number +
-      '</span><span class="growth-journey-horizon">' + bi(stage.horizon) + '</span></span><strong>' + bi(stage.title) +
-      '</strong><span class="growth-journey-action">' + bi(stage.action) + '</span>' + (stage.diagram ? renderGrowthDiagram(stage.diagram) : '') + '<a class="growth-journey-link" href="#' + escapeHTML(stage.target) + '">' +
-      bi(T("查看方案", "View approach"),true) + arrow + '</a></div>' +
-      (stage.diagram ? '<button class="journey-enlarge" type="button" aria-haspopup="dialog">' +
-        diagonal + bi(T("放大图表", "Enlarge chart"),true) + '</button>' : '') + '</li>').join('') +
-    '</ol></div><div class="growth-journey-foundation">' +
-    '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h11l-3-3M19 16H8l3 3M19 8v4M5 16v-4"/></svg><div><strong>' +
-    bi(journey.connection) + '</strong><p>' + bi(journey.detail) + '</p></div></div></nav>';
-  const renderStrategy = strategy => '<div class="experience-strategy' + (strategy.journey ? ' growth-detail' : '') + '"><h4 class="strategy-title">' + bi(strategy.title) +
-    '</h4>' + (strategy.journey ? renderGrowthJourney(strategy.journey) : '') + '<div class="strategy-phases">' + strategy.phases.map((phase, i) =>
+  const graphTools = kind => '<div class="graph-tools">' + [["large",T("放大图表","Enlarge charts")],["detail",T("查看方案","View approach")]].map(([mode,label]) =>
+    '<button type="button" aria-haspopup="dialog" data-growth-graph="' + kind + '" data-mode="' + mode + '">' +
+    bi(label,true) + (mode === "large" ? diagonal : arrow) + '</button>').join('') + '</div>';
+  const caseTitles = [T("单期交易增长","Single-cycle growth"),T("多期商品成长","Multi-cycle growth")];
+  const caseSubtitles = [T("价量预测与短期 GMV 最大化","Price–sales forecasts for near-term GMV"),T("LangGraph Agent 与多档期规划","Multi-cycle planning with LangGraph")];
+  const caseLinks = [
+    [["project-deformer",T("DEFormer 表征优化","DEFormer feature optimization")],["project-qwen",T("LoRA SFT 后分别探索 RLVR 与 OPD","LoRA SFT with separate RLVR and OPD experiments")]],
+    [["project-agent",T("LangGraph 多档期工作流","Multi-cycle orchestration with LangGraph")],["project-agent",T("SKU 跨周期记忆","Cross-cycle SKU memory"),"memory"]]
+  ];
+  const renderCases = strategy => '<div class="case-tabs" role="tablist" aria-label="Growth cases">' +
+    strategy.phases.map((phase,i) => '<button type="button" role="tab" id="tab-' + phase.id + '" aria-controls="' + phase.id +
+    '" aria-selected="' + !i + '" tabindex="' + (i ? -1 : 0) + '"><i>' + phase.number + '</i>' + bi(caseTitles[i],true) + '</button>').join('') + '</div>' +
+    strategy.phases.map((phase,i) => {
+      const kind = strategy.journey.stages[i].diagram;
+      const goal = i ? phase.goal : T("定价时既要考虑销量，也要考虑单价。用未来 14 天的销量预测比较各个候选价格。","Pricing balances units sold against unit price. Compare candidate prices using 14 days of sales forecasts.");
+      const result = i ? '<div class="case-ab">' + productGrowthABResults.phases.map(p => '<article id="' + phase.id + '-results-' + p.id + '"><b>' +
+        bi(p.label) + '</b><small>' + bi(T("对照：" + p.control.zh,"Control: " + p.control.en)) + '</small><dl>' +
+        [[p.adoption,T("采纳率","Adoption")],[p.growth,T("GMV 增幅较对照高","Higher GMV growth vs. control")]].map(([v,label]) =>
+          '<div><dt>' + bi(label) + '</dt><dd>' + v + '%</dd></div>').join('') + '</dl></article>').join('') + '</div>' :
+        '<div class="case-metric"><b>' + escapeHTML(phase.resultValue) + '</b>' + bi(phase.result) + '<small>' + bi(phase.resultNote) + '</small></div>';
+      return '<section class="case-panel" role="tabpanel" tabindex="0" id="' + phase.id + '" aria-labelledby="tab-' + phase.id + '"' + (i ? ' hidden' : '') +
+        '><h5>' + bi(caseSubtitles[i]) + '</h5><div class="case-columns"><div class="case-visual">' + renderGrowthDiagram(kind,true) + graphTools(kind) +
+        '</div><div class="case-copy"><h6>' + bi(strategy.goalLabel) + '</h6><p>' + bi(goal) + '</p><h6>' + bi(strategy.contributionLabel) +
+        '</h6><div class="case-links">' + caseLinks[i].map(([id,label,step]) => '<a' + (step ? ' data-growth-step="' + step + '"' : '') + ' href="#' + id + '" data-open-project="' + id + '">' + bi(label,true) + arrow + '</a>').join('') +
+        '</div><div id="' + phase.id + '-results"><h6>' + bi(i ? T("两期线上 A/B 实验","Two online A/B tests") : T("项目成果","Project outcome")) +
+        '</h6>' + result + '</div></div></div></section>';
+    }).join('');
+  function selectCase(id, focus = false) {
+    document.querySelectorAll(".case-tabs [role=tab]").forEach(tab => {
+      const panel = document.getElementById(tab.getAttribute("aria-controls"));
+      const active = panel.id === id;
+      panel.hidden = !active; tab.tabIndex = active ? 0 : -1; tab.setAttribute("aria-selected",String(active));
+      if (active && focus) tab.focus();
+    });
+  }
+  const renderStrategy = strategy => {
+    if (strategy.journey) {
+      return '<div id="growth-layout" class="experience-strategy growth-detail"><h4 class="strategy-title">' +
+        bi(strategy.title) + '</h4>' + renderCases(strategy) + '</div>';
+    }
+    return '<div class="experience-strategy"><h4 class="strategy-title">' + bi(strategy.title) +
+      '</h4><div class="strategy-phases">' + strategy.phases.map((phase, i) =>
       (i ? '<div class="strategy-bridge"><span class="bridge-arrow" aria-hidden="true">↓</span><div><strong>' +
         bi(strategy.bridgeLabel) + '</strong><p>' + bi(strategy.bridge) + '</p></div></div>' : '') +
       '<section class="strategy-phase" id="' + phase.id + '" aria-labelledby="' + phase.id + '-title"><header class="strategy-phase-header">' +
@@ -557,6 +598,7 @@
       (phase.resultValue ? '<div class="cumulative-result"><strong>' + escapeHTML(phase.resultValue) + '</strong>' + bi(phase.result) + '</div>' : '<strong>' + bi(phase.result) + '</strong>') +
       (phase.resultTable ? renderTable(phase.resultTable, phase.id + "-results") : '<p>' + bi(phase.resultNote) + '</p>') + '</div></section>'
     ).join('') + '</div></div>';
+  };
   const renderExperience = exp => '<article class="experience-card" id="' + exp.id + '">' +
     '<div class="experience-timeline"><span class="date">' + exp.date.replace(' — ', '<span class="date-dash">—</span>') +
     '</span><span class="kind">' + bi(ui[exp.kind], true) + '</span></div><div class="experience-content">' +
@@ -933,8 +975,8 @@
   function currentContribution() {
     const matches = link => link.dataset.openProject === preview.dataset.project &&
       (link.dataset.projectView || "") === (preview.dataset.view || "");
-    if (previewOrigin?.matches(".contribution-link") && matches(previewOrigin) && previewOrigin.getClientRects().length) return previewOrigin;
-    return Array.from(document.querySelectorAll(".contribution-link")).find(link => matches(link) && link.getClientRects().length);
+    if (previewOrigin?.matches(".contribution-link, .case-links a") && matches(previewOrigin) && previewOrigin.getClientRects().length) return previewOrigin;
+    return Array.from(document.querySelectorAll(".contribution-link, .case-links a")).find(link => matches(link) && link.getClientRects().length);
   }
   function updateComparisonGlass() {
     comparisonGlassFrame = 0;
@@ -1066,7 +1108,7 @@
   }
   function alignComparisonSource() {
     const source = currentContribution() || previewOrigin;
-    const anchor = source?.closest(".technology-card") || source?.closest(".strategy-phase") || source?.closest(".story-panel") || source;
+    const anchor = source?.closest(".technology-card") || source?.closest(".strategy-phase, .case-panel") || source?.closest(".story-panel") || source;
     if (anchor) window.scrollTo({top:window.scrollY + anchor.getBoundingClientRect().top - 88,behavior:"instant"});
     // Longer research overviews still keep the selected contribution in view.
     if (source && source.getBoundingClientRect().bottom > window.innerHeight - 36) {
@@ -1144,7 +1186,7 @@
       previewOrigin = origin;
       previewReturnOrigin = origin;
       previewPagePosition = {x:window.scrollX,y:window.scrollY,width:window.innerWidth};
-      previewReturnAnchor = origin?.closest(".technology-card") || origin?.closest(".strategy-phase") || origin?.closest(".story-panel") || origin;
+      previewReturnAnchor = origin?.closest(".technology-card") || origin?.closest(".strategy-phase, .case-panel") || origin?.closest(".story-panel") || origin;
       previewReturnOffset = previewReturnAnchor?.getBoundingClientRect().top || 0;
     }
     if (origin && !preview.contains(origin)) previewOrigin = origin;
@@ -1328,17 +1370,17 @@
       if (perspectiveButton.dataset.perspective !== document.body.dataset.perspective) setPerspective(perspectiveButton.dataset.perspective);
       return;
     }
-    const journeyEnlarge = event.target.closest(".journey-enlarge");
-    if (journeyEnlarge) {
-      const stage = journeyEnlarge.closest("li").querySelector(".growth-journey-stage");
-      const viewport = document.createElement("div");
-      viewport.className = "journey-diagram-viewport";
-      viewport.tabIndex = 0;
-      viewport.setAttribute("role","region");
-      viewport.setAttribute("aria-labelledby","forecast-dialog-title");
-      viewport.append(stage.querySelector(".growth-journey-diagram").cloneNode(true));
-      openDiagramDialog(journeyEnlarge,"journey-dialog",stage.querySelector(":scope > strong").innerHTML,
-        '<p class="journey-pan-hint">' + bi(T("左右滑动可查看完整图表。", "Scroll sideways to see the full chart.")) + '</p>',viewport);
+    const caseTab = event.target.closest(".case-tabs [role=tab]");
+    if (caseTab) { selectCase(caseTab.getAttribute("aria-controls")); return; }
+    const graph = event.target.closest("[data-growth-graph]");
+    if (graph) {
+      const kind = graph.dataset.growthGraph, detail = graph.dataset.mode === "detail";
+      const viewport = document.createElement("div"); viewport.className = "journey-diagram-viewport"; viewport.tabIndex = 0;
+      viewport.innerHTML = renderGrowthDiagram(kind,!detail);
+      typesetMath(viewport);
+      openDiagramDialog(graph,"journey-dialog",bi(caseSubtitles[kind === "price" ? 0 : 1]),
+        detail ? '<p>' + bi(kind === "price" ? T("固定其他条件，将每个价格下的 14 天预测销量相加，再乘以该价格。比较各候选价格的预测 GMV。","Hold other inputs fixed. Sum the 14 daily forecasts for each candidate price, multiply by that price, then compare predicted GMV.") :
+        T("预测工具评估商品状态，Agent 结合历史反馈提出建议，由运营人员审核执行。","Forecasts assess product state. The Agent uses past feedback to propose plans for human review and execution.")) + '</p>' : '',viewport);
       return;
     }
     const forecastEnlarge = event.target.closest("[data-forecast-enlarge],[data-agent-enlarge]");
@@ -1358,6 +1400,7 @@
       event.preventDefault();
       projectTrigger.closest(".forecast-dialog")?.close();
       openProjectPreview(projectTrigger.dataset.openProject, projectTrigger);
+      if (projectTrigger.dataset.growthStep) preview.querySelector('[data-agent-step="' + projectTrigger.dataset.growthStep + '"]')?.click();
       return;
     }
     const previewClose = event.target.closest("[data-preview-close]");
@@ -1423,6 +1466,7 @@
       }
       const target = document.getElementById(link.dataset.languageHash.slice(1));
       if (target) {
+        if (target.closest(".case-panel")) selectCase(target.closest(".case-panel").id);
         revealPerspectiveFor(target);
         const panel = target.closest(".story-panel");
         if (panel) selectStory(panel.id);
@@ -1456,6 +1500,14 @@
       }
       return;
     }
+    const caseTab = event.target.closest(".case-tabs [role=tab]");
+    if (caseTab && ["ArrowLeft","ArrowRight","Home","End"].includes(event.key)) {
+      event.preventDefault();
+      const tabs = [...caseTab.parentElement.children];
+      const delta = event.key === "ArrowRight" ? 1 : -1;
+      const idx = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : (tabs.indexOf(caseTab) + delta + tabs.length) % tabs.length;
+      selectCase(tabs[idx].getAttribute("aria-controls"),true); return;
+    }
     const tab = event.target.closest("[data-story-tab]");
     if (!tab || !["ArrowLeft","ArrowRight","Home","End"].includes(event.key)) return;
     event.preventDefault();
@@ -1473,6 +1525,7 @@
     const id = decodeURIComponent(location.hash.slice(1));
     const target = document.getElementById(id);
     if (!target) return;
+    if (target.closest(".case-panel")) selectCase(target.closest(".case-panel").id);
     revealPerspectiveFor(target);
     const panel = target.closest(".story-panel");
     if (panel) selectStory(panel.id);

@@ -1395,3 +1395,38 @@ html[data-preview-motion] .comparison-glass{transition:none}
  .site-toolbar .mobile-index a{font-size:12px}
  .site-toolbar .display-options{gap:3px}
 }
+
+/* Growth case tabs and accompanying charts. */
+#growth-layout{scroll-margin-top:78px;min-width:0}
+.case-tabs,.graph-tools{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.growth-journey-diagram:is(.compact-pricing,.compact-planning){display:grid;align-content:start;gap:16px;margin:18px auto 12px;color:var(--ink)}
+.compact-pricing>.bi+.bi{padding-top:16px;border-top:1px solid var(--line)}
+.peak-note{display:flex;align-items:baseline;gap:5px;font-size:clamp(12px,.94vw,14px);line-height:1.55;color:var(--accent)}
+.compact-planning .agent-plan-growth{padding:0 0 12px;margin:0;border-color:var(--line)}
+.plan-steps{display:grid;gap:14px;list-style:none;padding:0;margin:0}
+.plan-steps>li{display:grid;grid-template-columns:24px 1fr;align-items:baseline;gap:10px;position:relative}
+.plan-steps li:not(:last-child):before{content:"";position:absolute;left:11px;top:26px;bottom:-11px;width:1px;background:var(--line)}
+.plan-steps i,.case-tabs i{font:500 11px var(--font-mono);color:var(--muted)}
+.plan-steps i{text-align:center;border:1px solid var(--line);border-radius:50%;line-height:22px}
+.plan-steps strong{font-size:15px}.plan-steps small,.case-ab small,.case-metric small{display:block;margin-top:3px;font-size:13px;color:var(--muted);line-height:1.55}
+.graph-tools{margin-top:auto;padding-top:10px;border-top:1px solid var(--line);justify-content:space-between}
+.graph-tools button,.case-links a{display:inline-flex;align-items:center;gap:5px;min-height:36px;color:var(--accent);font-size:13px;background:none;border:0;text-decoration:none;cursor:pointer}
+.graph-tools button:hover,.case-links a:hover{text-decoration:underline}
+.graph-tools svg,.case-links svg{width:14px;height:14px}
+.case-tabs{flex-wrap:nowrap;border-bottom:1px solid var(--line);margin:12px 0 0;gap:4px}
+.case-tabs button{padding:10px 8px;display:flex;align-items:baseline;gap:6px;color:var(--muted);background:transparent;border:0;border-bottom:2px solid transparent;font:inherit;font-size:14px;cursor:pointer}
+.case-tabs button[aria-selected=true]{color:var(--accent);border-bottom-color:currentColor;font-weight:650}
+.case-panel{padding:20px clamp(12px,2vw,24px);border:1px solid var(--line);border-top:none;border-radius:0 0 16px 16px;color:var(--ink);scroll-margin-top:85px}
+.case-panel[hidden]{display:none}.case-panel h5{font-size:clamp(18px,1.5vw,23px);line-height:1.4;margin:0 0 20px}
+.case-columns{display:grid;grid-template-columns:minmax(0,.98fr) minmax(0,1.02fr);gap:clamp(16px,2.5vw,32px)}
+.case-visual{min-width:0}.case-visual .growth-journey-diagram{margin:0 auto 14px;max-width:320px}
+.case-copy{border-left:1px solid var(--line);padding-left:clamp(12px,2vw,26px);min-width:0}
+.case-copy h6{margin:0 0 6px;font-size:13px;color:var(--muted);letter-spacing:.02em}
+.case-copy p{margin:0 0 20px;font-size:15px;line-height:1.65}
+.case-links{display:grid;gap:3px;margin-bottom:22px}
+.case-links a{justify-content:space-between;border-bottom:1px solid var(--line);line-height:1.5;padding:4px 0}.case-links svg{flex:none}
+.case-metric b{display:block;font:600 clamp(34px,3.5vw,50px)/1.15 var(--font-display);color:var(--accent);letter-spacing:-.04em}
+.case-metric small{margin-top:8px}.case-ab article{padding:10px 0;border-top:1px solid var(--line)}
+.case-ab dl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 0}.case-ab dl div{display:flex;flex-direction:column-reverse;justify-content:flex-end}
+.case-ab dt{font-size:12px;line-height:1.5;color:var(--muted)}.case-ab dd{margin:0;font:600 clamp(23px,2.2vw,32px) var(--font-display);color:var(--accent)}
+@media(max-width:750px){.case-columns{grid-template-columns:1fr}.case-copy{padding:16px 0 0;border-left:0;border-top:1px solid var(--line)}.case-tabs button{font-size:13px}.case-visual .growth-journey-diagram{max-width:350px}}
