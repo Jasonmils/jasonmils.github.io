@@ -749,9 +749,7 @@
     '<p class="profile-role">' + bi(ui.headline) + '</p>' +
     '<p class="profile-supporting">' + bi(ui.supportingExperience) + '</p><p class="profile-tagline">' + bi(data.tagline) + '</p>' +
     '<nav class="section-nav" aria-label="On this page">' + navLinks(true) + '</nav></div>' +
-    '<div class="profile-footer"><p class="profile-status">' + bi(T("杭州 · 开放学术交流与合作机会", "Hangzhou · Open to research discussions and collaborations")) + '</p>' +
-    '<a class="resume-download" href="assets/resume/Yizhou-Ding-zh.pdf" download><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/></svg>' +
-    bi(T("下载简历（PDF）", "Download CV (PDF)"),true) + '</a><a class="profile-email" href="mailto:' + data.email + '">' +
+    '<div class="profile-footer"><a class="profile-email" href="mailto:' + data.email + '">' +
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>' +
     data.email + diagonal + '</a><a class="profile-scholar" href="' + data.scholar + '" target="_blank" rel="noopener noreferrer">' +
     '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5-10-5m4 3v5l6 3 6-3v-5M22 9v7"/></svg>Google Scholar' + diagonal +
@@ -816,7 +814,6 @@
       button.setAttribute("aria-pressed", String(button.dataset.language === lang)));
     document.querySelector(".preview-close").setAttribute("aria-label", lang === "zh" ? "关闭项目详情" : "Close project details");
     document.querySelector(".perspective-switch").setAttribute("aria-label", ui.perspective[lang]);
-    document.querySelector(".resume-download").href = "assets/resume/Yizhou-Ding-" + lang + ".pdf";
     document.querySelector(".mobile-index").setAttribute("aria-label",lang === "zh" ? "页面导航" : "Page sections");
     window.portfolioTheme?.syncControls();
     if (persist) { try { localStorage.setItem("jason-portfolio-language",lang); } catch (_) {} }

@@ -1364,10 +1364,6 @@ html[data-preview-motion] .comparison-glass{transition:none}
  .main-content{padding-top:26px}
 }
 
-.profile-status{display:flex;align-items:baseline;gap:8px;color:var(--muted);font-size:13px;line-height:1.6}
-.profile-status::before{content:"";width:7px;height:7px;flex:none;align-self:flex-start;margin-top:.5em;border-radius:50%;background:#318359}
-.profile-footer .resume-download{align-self:flex-start;padding:6px 12px;border:1px solid var(--line);border-radius:7px;color:var(--accent);font-weight:550}
-.profile-footer .resume-download:hover{border-color:var(--accent)}
 .strategy-impact .cumulative-result{display:flex;align-items:baseline;gap:6px 15px;flex-wrap:wrap;font-weight:600;color:var(--ink)}
 .cumulative-result>strong{color:var(--accent);font:600 38px/1.15 var(--font-display);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
 .project-symbol{color:#3967ae;--illustration-fill:#d8e7fc;--illustration-light:#f7faff}
@@ -1394,10 +1390,8 @@ html[data-preview-motion] .comparison-glass{transition:none}
  .display-toggle[aria-expanded="true"] + .display-options{display:flex}
  .site-toolbar .display-options .perspective-switch{width:auto;flex:1}
  .site-toolbar .display-options .perspective-switch button{padding-inline:7px}
- .profile-status{flex-basis:100%}
 }
 @media(max-width:380px){
  .site-toolbar .mobile-index a{font-size:12px}
  .site-toolbar .display-options{gap:3px}
 }
-@media print{.resume-download{display:none!important}}
