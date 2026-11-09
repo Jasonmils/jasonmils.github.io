@@ -1416,6 +1416,42 @@ html[data-preview-motion] .comparison-glass{transition:none}
 .case-tabs button[aria-selected=true]{color:var(--accent);border-bottom-color:currentColor;font-weight:650}
 .case-panel{padding:20px clamp(12px,2vw,24px);border:1px solid var(--line);border-top:none;border-radius:0 0 16px 16px;color:var(--ink);scroll-margin-top:85px}
 .case-panel[hidden]{display:none}.case-panel h5{font-size:clamp(18px,1.5vw,23px);line-height:1.4;margin:0 0 20px}
+@media screen and (prefers-reduced-motion:no-preference) {
+  @keyframes case-enter {
+    from {opacity:0;transform:translateY(4px)}
+    to {opacity:1;transform:translateY(0)}
+  }
+  .case-panel:not([hidden]) {animation:case-enter 200ms cubic-bezier(.16,1,.3,1)}
+}
+.experience-milestones,.journal-tags {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+.experience-milestones li,.journal-tags li {
+  border:1px solid var(--glass-inset-border,var(--line));
+  background:var(--glass-inset,var(--soft));
+  border-radius:9px;
+  max-width:100%;
+  line-height:1.45;
+}
+.experience-milestones li {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 11px;
+  font-size:13px;
+  font-weight:600;
+}
+.experience-milestones .diagram-icon {width:16px;height:16px}
+.publication-card {display:block}
+.publication-heading,.publication-heading>span {display:flex;align-items:center;gap:6px}
+.publication-heading {justify-content:space-between;flex-wrap:wrap;gap:6px 16px}
+.publication-heading>span,.journal-tags li {color:var(--accent);font-size:12px}
+.publication-heading .icon {width:14px;height:14px}
+.publication-card:is(:hover,:focus-visible) .publication-heading>span {text-decoration:underline;text-underline-offset:3px}
+.journal-tags li {padding:4px 9px;font-weight:550}
 .case-columns{display:grid;grid-template-columns:minmax(0,.98fr) minmax(0,1.02fr);gap:clamp(16px,2.5vw,32px)}
 .case-visual{min-width:0}.case-visual .growth-journey-diagram{margin:0 auto 14px;max-width:320px}
 .case-copy{border-left:1px solid var(--line);padding-left:clamp(12px,2vw,26px);min-width:0}

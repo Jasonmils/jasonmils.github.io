@@ -841,7 +841,12 @@ const portfolio = {
       shortCompany:T("深圳科创学院", "Shenzhen InnoX"),
       entity:T("创业孵化器 · 智能戒指初创团队", "Startup incubator · Smart-ring venture"),
       role:T("产品经理（实习）", "Product Manager Intern"),date:"2024.01 — 2024.06",
-      overview:T("主导智能戒指从概念到首代样机的产品开发，通过 200+ 用户访谈定义需求，并协同软硬件工程师和天使用户推进原型验证与迭代", "Led product development of a smart ring from concept to its first prototype, defining requirements through 200+ user interviews and coordinating engineering work, early-adopter testing and iteration"),
+      overview:T("我根据用户访谈确定智能戒指优先支持的健康监测功能，再与软硬件工程师一起开发样机，组织早期用户测试并收集反馈。", "I used interviews to prioritize health-monitoring features for the smart ring, then worked with hardware and software engineers on the prototype and organized testing with early users."),
+      milestones:[
+        {icon:"people", label:T("200+ 次用户访谈", "200+ user interviews")},
+        {icon:"prototype", label:T("首代智能戒指样机", "First smart-ring prototype")},
+        {icon:"energy", label:T("团队获种子轮投资", "Team secured seed funding")}
+      ],
       strategy:{
         title:T("从用户需求，到可验证的首代产品", "From user needs to a testable first product"),
         goalLabel:T("产品目标", "Product objective"), contributionLabel:T("我的贡献", "My contribution"),
@@ -908,7 +913,8 @@ const portfolio = {
             {target:"project-hust-price",label:T("日前电价点预测与区间预测", "Point & interval price forecasting"),action:T("以 ARUCNN–GRU 提取时间依赖，用 Dense Skip Attention 学习特征权重，通过 MAE 与平滑分位损失支持两种预测模式", "Extracted temporal dependencies with ARUCNN–GRU, learned feature weights through Dense Skip Attention, and supported two forecast modes through MAE and smooth quantile losses")},
             {target:"project-hust-review",label:T("新能源系统 AI 方法综述", "AI for renewable power operations"),action:T("梳理预测、调度、控制与电力市场中的 AI 方法，独立完成相关章节的文献研究、英文写作与修订", "Reviewed AI across forecasting, dispatch, control and electricity markets, independently researching, writing and revising the relevant sections")},
           ],
-          result:T("3 篇相关论文 · 连接方法与应用", "Three publications · Methods & applications"),
+          result:T("3 篇相关论文", "3 publications"),
+          journals:[priceResearchStudy, windResearchStudy, reviewResearchStudy].map(study => study.narrative.publication.venue),
           resultNote:T("共同第一作者 1 篇、第二作者 2 篇；发表于 2023–2025 年", "One co-first-authored and two second-authored papers, published in 2023–2025"),
         }],
       },

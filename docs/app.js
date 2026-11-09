@@ -569,6 +569,18 @@
       if (active && focus) tab.focus();
     });
   }
+  const renderPhaseResult = phase => {
+    const id = phase.id + '-results';
+    if (phase.journals) {
+      return '<a class="strategy-impact publication-card" id="' + id + '" href="' + escapeHTML(data.scholar) + '" target="_blank" rel="noopener noreferrer">' +
+        '<div class="publication-heading"><strong>' + bi(phase.result) + '</strong><span>' + bi(T("查看 Google 学术", "View Google Scholar"), true) + diagonal +
+        '</span></div><p>' + bi(phase.resultNote) + '</p><ul class="journal-tags">' +
+        phase.journals.map(venue => '<li lang="en">' + escapeHTML(venue) + '</li>').join('') + '</ul></a>';
+    }
+    return '<div class="strategy-impact" id="' + id + '">' +
+      (phase.resultValue ? '<div class="cumulative-result"><strong>' + escapeHTML(phase.resultValue) + '</strong>' + bi(phase.result) + '</div>' : '<strong>' + bi(phase.result) + '</strong>') +
+      (phase.resultTable ? renderTable(phase.resultTable, id) : '<p>' + bi(phase.resultNote) + '</p>') + '</div>';
+  };
   const renderStrategy = strategy => {
     if (strategy.journey) {
       return '<div id="growth-layout" class="experience-strategy growth-detail"><h4 class="strategy-title">' +
@@ -588,9 +600,7 @@
         '<span class="contribution-index" aria-hidden="true">0' + (j+1) + '</span><span class="contribution-copy"><strong>' + bi(link.label) +
         '</strong><span class="contribution-action">' + bi(link.action) + '</span><span class="contribution-state">' +
         bi(T("正在对照", "In view"),true) + '</span></span><span class="contribution-arrow" aria-hidden="true">' + arrow + '</span></a>').join('') + '</div></div>' +
-      '<div class="strategy-impact" id="' + phase.id + '-results">' +
-      (phase.resultValue ? '<div class="cumulative-result"><strong>' + escapeHTML(phase.resultValue) + '</strong>' + bi(phase.result) + '</div>' : '<strong>' + bi(phase.result) + '</strong>') +
-      (phase.resultTable ? renderTable(phase.resultTable, phase.id + "-results") : '<p>' + bi(phase.resultNote) + '</p>') + '</div></section>'
+      renderPhaseResult(phase) + '</section>'
     ).join('') + '</div></div>';
   };
   const renderExperience = exp => '<article class="experience-card" id="' + exp.id + '">' +
@@ -600,7 +610,10 @@
     '"><span class="experience-logos">' + experienceLogos[exp.id].map(logo => institutionLogo(logo)).join('') + '</span>' +
     '<div class="experience-heading"><h3>' + bi(exp.company) + '</h3><div class="experience-role">' + bi(exp.role) +
     '</div><div class="company-entity">' + bi(exp.entity) + '</div></div></header>' +
-    '<p class="experience-overview">' + bi(exp.overview) + '</p>' + (exp.strategy ? renderStrategy(exp.strategy) :
+    '<p class="experience-overview">' + bi(exp.overview) + '</p>' +
+    (exp.milestones ? '<ul class="experience-milestones">' + exp.milestones.map(item =>
+      '<li>' + diagramIcon(item.icon) + bi(item.label, true) + '</li>').join('') + '</ul>' : '') +
+    (exp.strategy ? renderStrategy(exp.strategy) :
     '<details class="context-disclosure"><summary class="context-summary">' + bi(ui.contextDetails, true) + toggle() +
     '</summary><div class="context-grid"><div><h4 class="small-label">' + bi(ui.background) +
     '</h4><p>' + bi(exp.background) +
