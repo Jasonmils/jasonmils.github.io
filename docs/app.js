@@ -543,31 +543,73 @@
     [["project-deformer",T("DEFormer 表征优化","DEFormer feature optimization")],["project-qwen",T("LoRA SFT 后分别探索 RLVR 与 OPD","LoRA SFT with separate RLVR and OPD experiments")]],
     [["project-agent",T("LangGraph 多档期工作流","Multi-cycle orchestration with LangGraph")],["project-agent",T("SKU 跨周期记忆","Cross-cycle SKU memory"),"memory"]]
   ];
-  const renderCases = strategy => '<div class="case-tabs" role="tablist" aria-label="Growth cases">' +
-    strategy.phases.map((phase,i) => '<button type="button" role="tab" id="tab-' + phase.id + '" aria-controls="' + phase.id +
+  const renderCases = strategy => '<div class="case-tabs" role="tablist" aria-label="Growth cases"><div class="case-tabs-indicator" aria-hidden="true"></div>' +
+    strategy.phases.map((phase,i) => '<button type="button" class="case-tab' + (i ? '' : ' active') + '" role="tab" id="tab-' + phase.id + '" aria-controls="' + phase.id +
     '" aria-selected="' + !i + '" tabindex="' + (i ? -1 : 0) + '"><i>' + phase.number + '</i>' + bi(caseTitles[i],true) + '</button>').join('') + '</div>' +
     strategy.phases.map((phase,i) => {
       const kind = strategy.journey.stages[i].diagram;
-      const goal = i ? phase.goal : T("定价时既要考虑销量，也要考虑单价。用未来 14 天的销量预测比较各个候选价格。","Pricing balances units sold against unit price. Compare candidate prices using 14 days of sales forecasts.");
-      const result = i ? '<div class="case-ab">' + productGrowthABResults.phases.map(p => '<article id="' + phase.id + '-results-' + p.id + '"><b>' +
+      const goal = i ? phase.goal : T("定价目标是实现销售额GMV=价格x销量最大化，但价格会影响销量，所以通过实现未来14天价量预测以完成目标","The pricing goal is to maximize GMV (price × units sold). Since price affects demand, we forecast sales at each candidate price over the next 14 days and choose the price with the highest predicted GMV.");
+      const resultId = phase.id + '-results';
+      const result = i ? '<div id="' + resultId + '"><h6>' + bi(T("两期线上 A/B 实验","Two online A/B tests")) + '</h6><div class="case-ab">' + productGrowthABResults.phases.map(p => '<article id="' + phase.id + '-results-' + p.id + '"><b>' +
         bi(p.label) + '</b><small>' + bi(T("对照：" + p.control.zh,"Control: " + p.control.en)) + '</small><dl>' +
         [[p.adoption,T("采纳率","Adoption")],[p.growth,T("GMV 增幅较对照高","Higher GMV growth vs. control")]].map(([v,label]) =>
-          '<div><dt>' + bi(label) + '</dt><dd>' + v + '%</dd></div>').join('') + '</dl></article>').join('') + '</div>' :
-        '<div class="case-metric"><b>' + escapeHTML(phase.resultValue) + '</b>' + bi(phase.result) + '<small>' + bi(phase.resultNote) + '</small></div>';
+          '<div><dt>' + bi(label) + '</dt><dd>' + v + '%</dd></div>').join('') + '</dl></article>').join('') + '</div></div>' :
+        '<div class="case-metric" id="' + resultId + '"><b>' + escapeHTML(phase.resultValue) + '</b>' + bi(phase.result) + '</div>';
       return '<section class="case-panel" role="tabpanel" tabindex="0" id="' + phase.id + '" aria-labelledby="tab-' + phase.id + '"' + (i ? ' hidden' : '') +
-        '><h5>' + bi(caseSubtitles[i]) + '</h5><div class="case-columns"><div class="case-visual">' + renderGrowthDiagram(kind,true) + graphTools(kind) +
+        '><h5>' + bi(caseSubtitles[i]) + '</h5>' + (i ? '' : result) + '<div class="case-columns"><div class="case-visual">' + renderGrowthDiagram(kind,true) + graphTools(kind) +
         '</div><div class="case-copy"><h6>' + bi(strategy.goalLabel) + '</h6><p>' + bi(goal) + '</p><h6>' + bi(strategy.contributionLabel) +
         '</h6><div class="case-links">' + caseLinks[i].map(([id,label,step]) => '<a' + (step ? ' data-growth-step="' + step + '"' : '') + ' href="#' + id + '" data-open-project="' + id + '">' + bi(label,true) + arrow + '</a>').join('') +
-        '</div><div id="' + phase.id + '-results"><h6>' + bi(i ? T("两期线上 A/B 实验","Two online A/B tests") : T("项目成果","Project outcome")) +
-        '</h6>' + result + '</div></div></div></section>';
+        '</div>' + (i ? result : '') + '</div></div></section>';
     }).join('');
+  function alignCaseIndicator(group, selectionChanged = false) {
+    const selected = group.querySelector(".case-tab.active");
+    const width = selected?.offsetWidth;
+    if (!width) {
+      group.classList.remove("indicator-ready");
+      return;
+    }
+    const indicator = group.querySelector(".case-tabs-indicator");
+    const transform = "translateX(" + selected.offsetLeft + "px)";
+    const size = width + "px";
+    const ready = group.classList.contains("indicator-ready");
+    if (ready && indicator.style.transform === transform && indicator.style.width === size) return;
+    const slide = ready && selectionChanged;
+    group.classList.toggle("indicator-ready", slide);
+    indicator.style.transform = transform;
+    indicator.style.width = size;
+    if (!slide) {
+      // Commit layout and language changes immediately; animate travel between tabs.
+      indicator.getBoundingClientRect();
+      group.classList.add("indicator-ready");
+    } else if (!reducedMotion.matches) {
+      // Equal-width labels still give the glass a slight stretch during travel.
+      indicator.animate([
+        {scale:getComputedStyle(indicator).scale},
+        {scale:"1.04 .97",offset:.3},
+        {scale:".99 1.01",offset:.72},
+        {scale:"1"}
+      ], {duration:360,easing:"ease-out"});
+    }
+  }
   function selectCase(id, focus = false) {
-    document.querySelectorAll(".case-tabs [role=tab]").forEach(tab => {
+    const selected = document.getElementById("tab-" + id);
+    if (!selected) return;
+    const group = selected.parentElement;
+    const selectionChanged = !selected.classList.contains("active");
+    group.querySelectorAll(".case-tab").forEach(tab => {
       const panel = document.getElementById(tab.getAttribute("aria-controls"));
-      const active = panel.id === id;
-      panel.hidden = !active; tab.tabIndex = active ? 0 : -1; tab.setAttribute("aria-selected",String(active));
-      if (active && focus) tab.focus();
+      const active = tab === selected;
+      panel.hidden = !active;
+      tab.tabIndex = active ? 0 : -1;
+      tab.setAttribute("aria-selected",String(active));
+      tab.classList.toggle("active",active);
     });
+    alignCaseIndicator(group,selectionChanged);
+    if (focus) selected.focus();
+  }
+  function revealCaseFor(target) {
+    const id = target.closest(".case-tab")?.getAttribute("aria-controls") || target.closest(".case-panel")?.id;
+    if (id) selectCase(id);
   }
   const renderPhaseResult = phase => {
     const id = phase.id + '-results';
@@ -841,6 +883,14 @@
     ].map(([key,label]) => '<button type="button" data-preview-section="' + key + '">' + bi(label,true) + '</button>').join('') +
     '</nav><div class="preview-scroll" tabindex="0"><div class="preview-content"></div></div></div></div></dialog>'
   );
+  document.querySelectorAll(".case-tabs").forEach(group => {
+    const align = () => alignCaseIndicator(group);
+    // Font loading, translation changes and restoring the experience view can all resize the tabs.
+    const observer = new ResizeObserver(align);
+    observer.observe(group);
+    group.querySelectorAll(".case-tab").forEach(tab => observer.observe(tab));
+    window.addEventListener("resize",align);
+  });
   function setLanguage(language, persist = true) {
     const lang = language === "en" ? "en" : "zh";
     document.documentElement.className = "lang-" + lang;
@@ -1371,7 +1421,7 @@
       if (perspectiveButton.dataset.perspective !== document.body.dataset.perspective) setPerspective(perspectiveButton.dataset.perspective);
       return;
     }
-    const caseTab = event.target.closest(".case-tabs [role=tab]");
+    const caseTab = event.target.closest(".case-tab");
     if (caseTab) { selectCase(caseTab.getAttribute("aria-controls")); return; }
     const graph = event.target.closest("[data-growth-graph]");
     if (graph) {
@@ -1472,7 +1522,7 @@
       }
       const target = document.getElementById(link.dataset.languageHash.slice(1));
       if (target) {
-        if (target.closest(".case-panel")) selectCase(target.closest(".case-panel").id);
+        revealCaseFor(target);
         revealPerspectiveFor(target);
         const panel = target.closest(".story-panel");
         if (panel) selectStory(panel.id);
@@ -1506,10 +1556,10 @@
       }
       return;
     }
-    const caseTab = event.target.closest(".case-tabs [role=tab]");
+    const caseTab = event.target.closest(".case-tab");
     if (caseTab && ["ArrowLeft","ArrowRight","Home","End"].includes(event.key)) {
       event.preventDefault();
-      const tabs = [...caseTab.parentElement.children];
+      const tabs = [...caseTab.parentElement.querySelectorAll(".case-tab")];
       const delta = event.key === "ArrowRight" ? 1 : -1;
       const idx = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : (tabs.indexOf(caseTab) + delta + tabs.length) % tabs.length;
       selectCase(tabs[idx].getAttribute("aria-controls"),true); return;
@@ -1531,7 +1581,7 @@
     const id = decodeURIComponent(location.hash.slice(1));
     const target = document.getElementById(id);
     if (!target) return;
-    if (target.closest(".case-panel")) selectCase(target.closest(".case-panel").id);
+    revealCaseFor(target);
     revealPerspectiveFor(target);
     const panel = target.closest(".story-panel");
     if (panel) selectStory(panel.id);

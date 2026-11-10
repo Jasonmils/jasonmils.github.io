@@ -766,9 +766,8 @@ const portfolio = {
             title:T("优化预测，支持当期定价", "Better forecasts for campaign pricing"),
             goal:T("每个候选价格预测 14 天逐日销量；汇总销量 × 价格，选择预测 GMV 最高的价格", "Forecast 14 daily sales values per candidate price; multiply total units by price and select the highest predicted GMV"),
             contribution:T("主导 DEFormer 与 SubAttention 研究；以结构化推理 SFT、RLVR 和 OPD 连续增强 Qwen3 任务表征，验证下游预测效果", "Led DEFormer and SubAttention research; improved Qwen3 task representations through structured-reasoning SFT, RLVR and OPD, validating downstream forecasts"),
-            result:T("项目累计 GMV 提升", "Cumulative project GMV lift"),
+            result:T("项目累计 GMV", "Cumulative project GMV"),
             resultValue:forecastGMVLift,
-            resultNote:T("多轮迭代相对初始版本的整体结果", "Overall result across iterations versus the initial version"),
             links:[
               {target:"project-deformer",label:T("DEFormer 研究", "DEFormer research"), action:T("表征诊断 · 双路编码 · 多任务训练", "Diagnosis · Dual-path inputs · Multitask training")},
               {target:"project-qwen",label:T("结构化推理与后训练", "Structured reasoning & post-training"), action:T("LoRA SFT → RLVR → OPD · 下游预测验证", "LoRA SFT → RLVR → OPD · Downstream validation")},
