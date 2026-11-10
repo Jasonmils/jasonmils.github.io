@@ -1,8 +1,10 @@
-/* Shared frosted surfaces. Background color comes from the page, not card gradients.
-   Artwork, plotted series and brand logos retain their original rendering. */
+/* Shared frosted surfaces for the portfolio. */
 @media screen {
   :root {
-    --glass-surface:rgba(255,255,255,.86);
+    --brand-text:linear-gradient(135deg,#0369a1,#4f46c7);
+    --case-edge:linear-gradient(135deg,#91b8d29c,#94a3b833 55%,#b4a3db96);
+    --case-glow:rgba(80,112,201,.17);
+    --glass-surface:rgba(255,255,255,.76);
     --glass-inset:rgba(239,244,249,.54);
     --glass-inset-border:rgba(110,130,164,.16);
     --glass-border:#dbe2e9;
@@ -15,7 +17,10 @@
     --glass-planner:rgba(87,70,143,.88);
   }
   html[data-theme="dark"] {
-    --glass-surface:rgba(29,32,40,.58);
+    --brand-text:linear-gradient(135deg,#38bdf8,#98a3ff 52%,#c084fc);
+    --case-edge:linear-gradient(135deg,#6baade70,#cddaff15 55%,#9d7be46e);
+    --case-glow:rgba(93,144,238,.19);
+    --glass-surface:rgba(15,23,42,.72);
     --glass-inset:rgba(255,255,255,.035);
     --glass-inset-border:rgba(255,255,255,.12);
     --glass-border:rgba(255,255,255,.13);
@@ -27,12 +32,48 @@
     --glass-planner:rgba(91,73,137,.88);
   }
   html[data-theme] :is(.context-disclosure,.story-notes,.project-card,.strategy-phase,
-    .skill-group,.technology-card,.technology-route,.growth-journey-stage) {
+    .skill-group,.technology-card,.technology-route,.growth-journey-stage,.case-panel) {
     background:var(--glass-surface);
     border-color:var(--glass-border);
     box-shadow:var(--glass-shadow);
     backdrop-filter:blur(var(--glass-blur)) saturate(115%);
     -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(115%);
+  }
+  @supports (background-clip:text) or (-webkit-background-clip:text) {
+    @media (forced-colors:none) {
+      .profile-name h1 .bi,.case-metric b {
+        width:fit-content;
+        background:var(--brand-text);
+        -webkit-background-clip:text;
+        background-clip:text;
+        color:transparent;
+      }
+    }
+  }
+  html[data-theme] .case-panel {
+    position:relative;
+    border:1px solid var(--glass-border);
+    border-radius:16px;
+    margin-top:10px;
+  }
+  @supports (mask-composite:exclude) {
+    .case-panel::before {
+      content:"";
+      position:absolute;
+      inset:-1px;
+      padding:1px;
+      border-radius:inherit;
+      pointer-events:none;
+      background:var(--case-edge);
+      mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+      mask-composite:exclude;
+    }
+  }
+  html[data-theme] .journey-dialog {box-shadow:0 25px 60px -14px #02061780}
+  html[data-theme] :is(.journey-dialog,.project-preview)::backdrop {
+    background:rgba(7,12,23,.64);
+    -webkit-backdrop-filter:blur(8px);
+    backdrop-filter:blur(8px);
   }
   /* Inner panels share their parent's tint without stacking heavy blur layers. */
   html[data-theme] :is(.strategy-impact,.result-box,.learning-box,.diagram-flow li,.ab-phase,
@@ -65,15 +106,16 @@
   }
 }
 @media screen and (hover:hover) and (pointer:fine) {
-  html[data-theme] .project-card:not([open]):hover {
+  html[data-theme] :is(.case-panel,.project-card:not([open])):hover {
     border-color:var(--accent);
+    box-shadow:var(--glass-shadow),0 8px 28px -8px var(--case-glow);
   }
 }
 @media screen and (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
-  .project-card {
+  .case-panel,.project-card {
     transition:transform .2s var(--ease),border-color .2s,box-shadow .2s;
   }
-  .project-card:not([open]):hover {transform:translateY(-2px)}
+  :is(.case-panel,.project-card:not([open])):hover {transform:translateY(-2px)}
 }
 @media screen and (max-width:600px) {
   :root {--glass-blur:14px}
@@ -81,7 +123,7 @@
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
   @media screen {
     html[data-theme] :is(.context-disclosure,.story-notes,.project-card,.strategy-phase,
-    .skill-group,.technology-card,.technology-route,.growth-journey-stage,
+    .skill-group,.technology-card,.technology-route,.growth-journey-stage,.case-panel,
     .strategy-impact,.result-box,.learning-box,.diagram-flow li,.ab-phase,
     .training-node,.training-branch,.comparison-chart,.milestone-results>div,
     .forecast-research,.outcome-strip,.prediction-model,.prediction-outputs>div,
@@ -103,7 +145,7 @@
 @media (prefers-reduced-transparency:reduce) {
   @media screen {
     html[data-theme] :is(.context-disclosure,.story-notes,.project-card,.strategy-phase,
-    .skill-group,.technology-card,.technology-route,.growth-journey-stage,
+    .skill-group,.technology-card,.technology-route,.growth-journey-stage,.case-panel,
     .strategy-impact,.result-box,.learning-box,.diagram-flow li,.ab-phase,
     .training-node,.training-branch,.comparison-chart,.milestone-results>div,
     .forecast-research,.outcome-strip,.prediction-model,.prediction-outputs>div,
@@ -125,11 +167,17 @@
 
 /* One continuous backing protects the spaces between the floating controls. */
 @media screen{
- :root{--toolbar-bg:rgba(250,251,249,.96);--toolbar-solid:#fafbf9;--arrival-glow:#3863ce50}
- html[data-theme="dark"]{--toolbar-bg:rgba(24,27,33,.97);--toolbar-solid:#181b21;--arrival-glow:#a3bdff55}
- .site-toolbar{top:14px;padding:4px;border:1px solid transparent;border-radius:28px;background:var(--toolbar-solid)}
- .site-toolbar.is-scrolled{border-color:var(--line);box-shadow:0 4px 18px #15243a17}
- html[data-theme="dark"] .site-toolbar.is-scrolled{box-shadow:0 4px 18px #0004}
+ :root{--toolbar-bg:rgba(255,255,255,.90);--toolbar-solid:#f8fafc;--toolbar-rim:#ffffffed;--toolbar-shadow:#142d4c1a;--arrival-glow:#3863ce50}
+ html[data-theme="dark"]{--toolbar-bg:rgba(15,23,42,.92);--toolbar-solid:#121a2b;--toolbar-rim:#ffffff26;--toolbar-shadow:#0006;--arrival-glow:#a3bdff55}
+ .site-toolbar {
+   top:14px;
+   padding:4px;
+   border:1px solid var(--glass-border);
+   border-radius:999px;
+   background:var(--toolbar-solid);
+   box-shadow:inset 0 1px var(--toolbar-rim),0 6px 24px var(--toolbar-shadow);
+ }
+ .site-toolbar.is-scrolled {box-shadow:inset 0 1px var(--toolbar-rim),0 8px 32px var(--toolbar-shadow)}
  html[data-theme] .site-toolbar :is(.language-switch,.perspective-switch,.theme-switch){
   background:transparent;border-color:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none
  }
@@ -146,14 +194,15 @@
  html[data-theme="dark"] :is(.education-logo,.experience-logo--hust,.experience-logo--psl) img{mix-blend-mode:multiply}
  html[data-theme] .technology-card:target{border-color:var(--accent)}
  @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  .site-toolbar{background:var(--toolbar-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  .site-toolbar{background:var(--toolbar-bg);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%)}
  }
 }
 @media screen and (max-width:980px){
- .site-toolbar.language-dock{padding:calc(3px + env(safe-area-inset-top)) max(8px,calc((100vw - 760px)/2)) 3px;border-width:0 0 1px;border-radius:0;border-color:var(--line)}
+ .site-toolbar.language-dock{inset:calc(6px + env(safe-area-inset-top)) max(6px,calc((100% - 760px)/2)) auto;padding:3px 6px}
  html[data-theme] .site-toolbar .mobile-index{border:0;border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
  .site-toolbar .display-options{background:var(--toolbar-solid)}
 }
 @media screen and (prefers-reduced-transparency:reduce){
+ html[data-theme] :is(.journey-dialog,.project-preview)::backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
  .site-toolbar{background:var(--toolbar-solid);backdrop-filter:none;-webkit-backdrop-filter:none}
 }

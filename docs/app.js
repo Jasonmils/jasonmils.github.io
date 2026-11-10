@@ -1376,7 +1376,12 @@
     const graph = event.target.closest("[data-growth-graph]");
     if (graph) {
       const kind = graph.dataset.growthGraph, detail = graph.dataset.mode === "detail";
-      const viewport = document.createElement("div"); viewport.className = "journey-diagram-viewport"; viewport.tabIndex = 0;
+      const viewport = document.createElement("div");
+      viewport.className = "journey-diagram-viewport";
+      if (!detail) {
+        viewport.classList.add("enlarged-chart");
+        viewport.tabIndex = 0;
+      }
       viewport.innerHTML = renderGrowthDiagram(kind,!detail);
       typesetMath(viewport);
       openDiagramDialog(graph,"journey-dialog",bi(caseSubtitles[kind === "price" ? 0 : 1]),

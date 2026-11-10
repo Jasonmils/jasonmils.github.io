@@ -885,14 +885,23 @@ body.project-preview-open{overflow:hidden}
 .journey-enlarge{position:absolute;right:14px;bottom:12px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 8px;min-height:40px;border:0;border-radius:6px;background:transparent;color:var(--accent);font-size:12px;font-weight:500}
 .journey-enlarge .icon{width:14px;height:14px}
 .journey-enlarge:hover{background:var(--soft)}
-.journey-dialog[open]{display:flex;flex-direction:column;width:min(620px,calc(100vw - 20px));overflow:hidden;container-type:inline-size}
-.journey-dialog>header{flex:none}
-.journey-pan-hint{display:none}
-.journey-diagram-viewport{margin-top:16px;min-height:0;overflow:auto;overscroll-behavior:contain}
+.journey-dialog[open] {
+  width:min(620px,calc(100% - 24px));
+  max-height:85vh;
+  max-height:85dvh;
+  margin:auto;
+  padding:clamp(16px,4vw,28px);
+  border-radius:20px;
+  overflow:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+}
+.journey-diagram-viewport{margin-top:16px}
+.journey-diagram-viewport>.growth-journey-diagram{width:100%;max-width:540px;margin:0 auto;padding:3px 4px 8px}
+.journey-diagram-viewport.enlarged-chart{overflow-x:auto}
+.enlarged-chart>.growth-journey-diagram{min-width:460px}
 .journey-diagram-viewport:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.journey-diagram-viewport>.growth-journey-diagram{width:clamp(460px,100%,540px);max-width:none;margin:0 auto;padding:3px 4px 8px}
 .journey-dialog .journey-chart path{animation:none}
-@container (max-width:459px){.journey-pan-hint{display:block}}
 @media print{.journey-enlarge{display:none}}
 .growth-journey-stage--long .growth-journey-link{color:#795f9c}
 .growth-journey-direction{position:absolute;top:50%;left:-16px;display:grid;place-items:center;width:28px;height:28px;transform:translate(-50%,-50%);border:1px solid #ffffffdf;border-radius:50%;color:#8797bc;background:#ffffffb3}
@@ -1063,14 +1072,20 @@ body.project-preview-open{overflow:hidden}
 @media(prefers-reduced-transparency:reduce){.language-switch,.mobile-index{background:#ffffff;backdrop-filter:none;-webkit-backdrop-filter:none}.story-body,.project-visual{background:#fff}}
 /* Glass materials: translucent controls, softly lit panels, solid readable ink. */
 :root{
- --paper:#fafbf9;--soft:#edf2f7;--ink:#192432;--muted:#586575;--line:#dce2e8;
+ --glow-sky:rgba(186,230,253,.42);--glow-violet:rgba(233,213,255,.38);
+ --paper:#f8fafc;--soft:#edf2f7;--ink:#192432;--muted:#586575;--line:#dce2e8;
  --glass-surface:linear-gradient(145deg,rgba(255,255,255,.82),rgba(255,255,255,.52));
  --glass-border:rgba(255,255,255,.88);
  --glass-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.4),0 12px 36px -20px rgba(45,63,103,.25),0 2px 6px rgba(45,63,103,.04);
 }
 body{isolation:isolate}
-/* A light wash behind the reading column leaves the profile on plain paper. */
-.ambient-light{display:block;background:radial-gradient(ellipse at 100% 0%,#eaf1fa80,transparent 56%)}
+/* Paint the soft edges directly on one fixed, viewport-sized layer. */
+.ambient-light {
+  display:block;
+  background:
+    radial-gradient(ellipse at 0% 0%,var(--glow-sky),transparent 52%),
+    radial-gradient(ellipse at 100% 10%,var(--glow-violet),transparent 55%);
+}
 .language-switch,.mobile-index,.story-tabs{
  background:var(--glass-surface);border-color:var(--glass-border);border-radius:999px;box-shadow:var(--glass-shadow);
  backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);
