@@ -2,7 +2,8 @@
 @media screen {
   :root {
     --electric-text:linear-gradient(135deg,#c41969 0%,#803ac6 42%,#087a91 100%);
-    --metric-surface:#f6f3fb;
+    --metric-surface:linear-gradient(155deg,rgba(255,255,255,.82),rgba(232,236,242,.48));
+    --metric-shadow:inset 0 1px 1px #fffffff2,0 2px 6px -3px #19283b26;
     --text-glow:rgba(168,85,247,.14);
     --case-edge:linear-gradient(135deg,#91b8d29c,#94a3b833 55%,#b4a3db96);
     --case-glow:rgba(80,112,201,.17);
@@ -20,7 +21,8 @@
   }
   html[data-theme="dark"] {
     --electric-text:linear-gradient(135deg,#ff2e93 0%,#a855f7 42%,#06b6d4 100%);
-    --metric-surface:#23283c;
+    --metric-surface:linear-gradient(155deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
+    --metric-shadow:inset 0 1px 1px #ffffff24,0 2px 6px -3px #0006;
     --text-glow:rgba(168,85,247,.35);
     --case-edge:linear-gradient(135deg,#6baade70,#cddaff15 55%,#9d7be46e);
     --case-glow:rgba(93,144,238,.19);
@@ -58,17 +60,18 @@
     }
   }
   .case-metric {
-    --case-edge:linear-gradient(135deg,rgba(244,63,94,.6),rgba(147,51,234,.5) 45%,rgba(14,165,233,.15));
-    position:relative;
     display:flex;
     flex-wrap:wrap;
     align-items:center;
     gap:8px 22px;
     margin-bottom:20px;
     padding:14px 18px;
-    border:1px solid var(--glass-border);
+    border:1px solid var(--glass-inset-border);
     border-radius:16px;
     background:var(--metric-surface);
+    box-shadow:var(--metric-shadow);
+    -webkit-backdrop-filter:blur(12px);
+    backdrop-filter:blur(12px);
     color:var(--ink);
   }
   .case-tabs {
@@ -107,8 +110,7 @@
     margin-top:10px;
   }
   @supports (mask-composite:exclude) or (-webkit-mask-composite:xor) {
-    .case-metric {border-color:transparent;background-clip:padding-box}
-    .case-panel::before,.case-metric::before {
+    .case-panel::before {
       content:"";
       position:absolute;
       inset:-1px;
@@ -159,9 +161,6 @@
   }
 }
 @media screen and (hover:hover) and (pointer:fine) {
-  .case-metric:hover {
-    --case-edge:linear-gradient(135deg,rgba(244,63,94,.95),rgba(168,85,247,.9) 50%,rgba(56,189,248,.7));
-  }
   html[data-theme] :is(.case-panel,.project-card:not([open])):hover {
     border-color:var(--accent);
     box-shadow:var(--glass-shadow),0 8px 28px -8px var(--case-glow);
@@ -185,7 +184,7 @@
 }
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
   @media screen {
-    html[data-theme] :is(.context-disclosure,.story-notes,.project-card,.strategy-phase,
+    html[data-theme] :is(.case-metric,.context-disclosure,.story-notes,.project-card,.strategy-phase,
     .skill-group,.technology-card,.technology-route,.growth-journey-stage,.case-panel,
     .strategy-impact,.result-box,.learning-box,.diagram-flow li,.ab-phase,
     .training-node,.training-branch,.comparison-chart,.milestone-results>div,
@@ -207,7 +206,7 @@
 }
 @media (prefers-reduced-transparency:reduce) {
   @media screen {
-    html[data-theme] :is(.context-disclosure,.story-notes,.project-card,.strategy-phase,
+    html[data-theme] :is(.case-metric,.context-disclosure,.story-notes,.project-card,.strategy-phase,
     .skill-group,.technology-card,.technology-route,.growth-journey-stage,.case-panel,
     .strategy-impact,.result-box,.learning-box,.diagram-flow li,.ab-phase,
     .training-node,.training-branch,.comparison-chart,.milestone-results>div,
